@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
 
         Log.d(TAG, "onCreate " + WechatLoginManager.isWetchatInstalled(this));
 
-        Drawable drawable = getResources().getDrawable(R.drawable.kale);
+        Drawable drawable = getResources().getDrawable(R.mipmap.ic_launcher);
         bitmap = ((BitmapDrawable) drawable).getBitmap();
 
         final View rooView = findViewById(R.id.view);

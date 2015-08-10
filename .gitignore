@@ -15,3 +15,5 @@ app/mirror
 /.idea/workspace.xml
 /.idea/libraries
 .gradle/
+.idea
+.idea/workspace.xml
