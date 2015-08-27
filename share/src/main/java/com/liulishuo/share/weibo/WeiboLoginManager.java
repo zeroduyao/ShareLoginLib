@@ -22,11 +22,15 @@ import org.json.JSONObject;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by echo on 5/19/15.
@@ -49,6 +53,21 @@ public class WeiboLoginManager implements ILoginManager {
     public WeiboLoginManager(Context context) {
         mContext = context;
         mSinaAppKey = ShareBlock.getInstance().getWeiboAppId();
+    }
+
+    public static boolean isWeiboInstalled(@NonNull Context context) {
+        PackageManager pm;
+        if ((pm = context.getApplicationContext().getPackageManager()) == null) {
+            return false;
+        }
+        List<PackageInfo> packages = pm.getInstalledPackages(0);
+        for (PackageInfo info : packages) {
+            String name = info.packageName.toLowerCase(Locale.ENGLISH);
+            if ("com.sina.weibo".equals(name)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
