@@ -19,3 +19,4 @@ app/mirror
 .idea/workspace.xml
 /build
 local.properties
+gradle
