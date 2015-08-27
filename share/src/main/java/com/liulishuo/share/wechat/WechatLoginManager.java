@@ -58,7 +58,10 @@ public class WechatLoginManager implements ILoginManager {
             }
         }
     }
-
+    
+    /**
+     * @return 是否已经安装微信
+     */
     public static boolean isWetchatInstalled(Context context) {
         IWXAPI api = WXAPIFactory.createWXAPI(context, ShareBlock.getInstance().getWechatAppId(), true);
         return api.isWXAppInstalled();

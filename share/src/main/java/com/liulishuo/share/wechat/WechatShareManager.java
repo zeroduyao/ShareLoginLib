@@ -59,7 +59,6 @@ public class WechatShareManager implements IShareManager {
         if (!TextUtils.isEmpty(mWeChatAppId)) {
             initWeixinShare(context);
         }
-
     }
 
     private void initWeixinShare(Context context) {
@@ -69,6 +68,14 @@ public class WechatShareManager implements IShareManager {
         } else {
             mIWXAPI.registerApp(mWeChatAppId);
         }
+    }
+
+    /**
+     * @return 是否已经安装微信
+     */
+    public static boolean isWetchatInstalled(Context context) {
+        IWXAPI api = WXAPIFactory.createWXAPI(context, ShareBlock.getInstance().getWechatAppId(), true);
+        return api.isWXAppInstalled();
     }
 
     private void shareText(int shareType, ShareContent shareContent) {
