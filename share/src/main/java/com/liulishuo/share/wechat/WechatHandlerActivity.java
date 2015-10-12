@@ -20,6 +20,11 @@ public class WechatHandlerActivity extends Activity implements IWXAPIEventHandle
 
     private IWXAPI mIWXAPI;
 
+    /**
+     * BaseResp的getType函数获得的返回值，1:第三方授权， 2:分享
+     */
+    private static final int TYPE_LOGIN = 1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,7 +52,7 @@ public class WechatHandlerActivity extends Activity implements IWXAPIEventHandle
     @Override
     public void onResp(BaseResp resp) {
         if (resp != null) {
-            if (resp instanceof SendAuth.Resp) {
+            if (resp instanceof SendAuth.Resp && resp.getType() == TYPE_LOGIN) {
                 onLoginResp((SendAuth.Resp) resp);
                 WechatLoginManager.parseLoginResp((SendAuth.Resp) resp);
             } else {

@@ -112,7 +112,7 @@ public class WechatLoginManager implements ILoginManager {
                             mAccessToken = jsonObject.getString("access_token");
                             mOpenid = jsonObject.getString("openid");
                             long expires_in = jsonObject.getLong("expires_in");
-
+                            
                             mLoginListener.onLoginComplete(mOpenid, mAccessToken, expires_in, jsonObject.toString());
                         } catch (JSONException e) {
                             e.printStackTrace();
