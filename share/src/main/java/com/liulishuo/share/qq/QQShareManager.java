@@ -24,6 +24,7 @@ import java.util.ArrayList;
 public class QQShareManager implements IShareManager {
 
     public static final int QZONE_SHARE_TYPE = 0;
+
     public static final int QQ_SHARE_TYPE = 1;
 
     private Tencent mTencent;
@@ -57,7 +58,7 @@ public class QQShareManager implements IShareManager {
      * QQShare.SHARE_TO_QQ_FLAG_QZONE_ITEM_HIDE，分享时隐藏分享到QZone按钮
      *
      * target必须是真实的可跳转链接才能跳到QQ = =！
-     * 
+     *
      * 发送给QQ好友
      */
     private void shareToQQ(Activity activity, ShareContent shareContent) {
@@ -69,7 +70,7 @@ public class QQShareManager implements IShareManager {
         params.putString(QQShare.SHARE_TO_QQ_IMAGE_URL,"http://imgcache.qq.com/qzone/space_item/pre/0/66768.gif");
         params.putString(QQShare.SHARE_TO_QQ_APP_NAME,  "测试应用222222");
         params.putInt(QQShare.SHARE_TO_QQ_EXT_INT,  "其他附加功能");*/
-        
+
         final Bundle params = new Bundle();
         if (shareContent.getTitle() == null) {
             // 分享的是纯图片
@@ -83,17 +84,16 @@ public class QQShareManager implements IShareManager {
             params.putString(QQShare.SHARE_TO_QQ_SUMMARY, shareContent.getSummary());
             params.putString(QQShare.SHARE_TO_QQ_TARGET_URL, shareContent.getURL());
             params.putString(QQShare.SHARE_TO_QQ_IMAGE_URL, shareContent.getImageUrl());
-        } 
+        }
         params.putString(QQShare.SHARE_TO_QQ_APP_NAME, ShareBlock.getInstance().getAppName());
-        
-        mTencent.shareToQQ(activity, params, shareListener);
+
+        mTencent.shareToQQ(activity, params, mShareListener);
     }
 
     /**
      * 分享到QQ空间
-     * 
-     * @see "http://wiki.open.qq.com/wiki/Android_API%E8%B0%83%E7%94%A8%E8%AF%B4%E6%98%8E#1.14_.E5.88.86.E4.BA.AB.E5.88.B0QQ.E7.A9.BA.E9.97.B4.EF.BC.88.E6.97.A0.E9.9C.80QQ.E7.99.BB.E5.BD.95.EF.BC.89"
      *
+     * @see "http://wiki.open.qq.com/wiki/Android_API%E8%B0%83%E7%94%A8%E8%AF%B4%E6%98%8E#1.14_.E5.88.86.E4.BA.AB.E5.88.B0QQ.E7.A9.BA.E9.97.B4.EF.BC.88.E6.97.A0.E9.9C.80QQ.E7.99.BB.E5.BD.95.EF.BC.89"
      * QzoneShare.SHARE_TO_QQ_KEY_TYPE 	    选填      Int 	SHARE_TO_QZONE_TYPE_IMAGE_TEXT（图文）
      * QzoneShare.SHARE_TO_QQ_TITLE 	    必填      Int 	分享的标题，最多200个字符。
      * QzoneShare.SHARE_TO_QQ_SUMMARY 	    选填      String 	分享的摘要，最多600字符。
@@ -102,7 +102,7 @@ public class QQShareManager implements IShareManager {
      * （注：图片最多支持9张图片，多余的图片会被丢弃）。
      *
      * 注意:QZone接口暂不支持发送多张图片的能力，若传入多张图片，则会自动选入第一张图片作为预览图。多图的能力将会在以后支持。
-     * 
+     *
      * 如果分享的图片url是本地的图片地址那么在分享时会显示图片，如果分享的是图片的网址，那么就不会在分享时显示图片
      */
     public void shareToQzone(Activity activity, ShareContent content) {
@@ -111,7 +111,7 @@ public class QQShareManager implements IShareManager {
         params.putString(QzoneShare.SHARE_TO_QQ_SUMMARY, "摘要");//选填
         params.putString(QzoneShare.SHARE_TO_QQ_TARGET_URL, "跳转URL");//必填
         params.putStringArrayList(QzoneShare.SHARE_TO_QQ_IMAGE_URL, "图片链接ArrayList");*/
-        
+
         final Bundle params = new Bundle();
         params.putInt(QzoneShare.SHARE_TO_QZONE_KEY_TYPE, QzoneShare.SHARE_TO_QZONE_TYPE_IMAGE_TEXT);
         params.putString(QzoneShare.SHARE_TO_QQ_TITLE, content.getTitle());
@@ -121,11 +121,11 @@ public class QQShareManager implements IShareManager {
         imageUrls.add(content.getImageUrl());
         params.putStringArrayList(QzoneShare.SHARE_TO_QQ_IMAGE_URL, imageUrls);
 
-        mTencent.shareToQzone(activity, params, shareListener);
+        mTencent.shareToQzone(activity, params, mShareListener);
     }
-    
-    private final IUiListener shareListener = new IUiListener() {
-        
+
+    private final IUiListener mShareListener = new IUiListener() {
+
         @Override
         public void onCancel() {
             mShareStateListener.onCancel();
@@ -147,14 +147,14 @@ public class QQShareManager implements IShareManager {
         mShareStateListener = listener;
         if (shareType == QQ_SHARE_TYPE) {
             shareToQQ(mActivity, shareContent);
-        } else if (shareType == QZONE_SHARE_TYPE){
-            shareToQzone(mActivity,shareContent);
-        } 
+        } else if (shareType == QZONE_SHARE_TYPE) {
+            shareToQzone(mActivity, shareContent);
+        }
     }
 
     public void handlerOnActivityResult(int requestCode, int resultCode, Intent data) {
-        if (mTencent != null) {
-            mTencent.onActivityResult(requestCode, resultCode, data);
+        if (mShareListener != null) {
+            Tencent.handleResultData(data, mShareListener);
         }
     }
 }

@@ -31,15 +31,53 @@ public class QQLoginManager implements ILoginManager {
 
     private Tencent mTencent;
 
+    private LoginUiListener mLoginUiListener;
+
     public QQLoginManager(Activity activity) {
         mActivity = activity;
         String appId = ShareBlock.getInstance().getQQAppId();
         if (!TextUtils.isEmpty(appId)) {
-            mTencent = Tencent.createInstance(appId, activity);
+            mTencent = Tencent.createInstance(appId, activity.getApplicationContext());
         }
     }
 
-    private void initOpenidAndToken(JSONObject jsonObject) {
+    @Override
+    public void login(final @NonNull LoginListener loginListener) {
+        if (!mTencent.isSessionValid()) {
+            mLoginUiListener = new LoginUiListener(loginListener);
+            mTencent.login(mActivity, ShareBlock.getInstance().getQQScope(), mLoginUiListener);
+        } else {
+            mTencent.logout(mActivity);
+        }
+    }
+
+    private class LoginUiListener implements IUiListener {
+
+        final private LoginListener mLoginListener;
+
+        private LoginUiListener(LoginListener loginListener) {
+            mLoginListener = loginListener;
+        }
+
+        @Override
+        public void onComplete(Object object) {
+            JSONObject jsonObject = (JSONObject) object; // qq_json
+            initOpenidAndToken(jsonObject); // 初始化id和access token
+            mLoginListener.onLoginComplete(mTencent.getOpenId(), mTencent.getAccessToken(), mTencent.getExpiresIn(), jsonObject.toString());
+        }
+
+        @Override
+        public void onError(UiError uiError) {
+            mLoginListener.onError(uiError.errorCode + " - " + uiError.errorMessage + " - " + uiError.errorDetail);
+        }
+
+        @Override
+        public void onCancel() {
+            mLoginListener.onCancel();
+        }
+    }
+
+    private void initOpenidAndToken(@NonNull JSONObject jsonObject) {
         try {
             String openId = jsonObject.getString(Constants.PARAM_OPEN_ID);
             String token = jsonObject.getString(Constants.PARAM_ACCESS_TOKEN);
@@ -50,32 +88,6 @@ public class QQLoginManager implements ILoginManager {
             }
         } catch (Exception e) {
             e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void login(final @NonNull LoginListener loginListener) {
-        if (!mTencent.isSessionValid()) {
-            mTencent.login(mActivity, ShareBlock.getInstance().getQQScope(), new IUiListener() {
-                @Override
-                public void onComplete(Object object) {
-                    JSONObject jsonObject = (JSONObject) object; // qq_json
-                    initOpenidAndToken(jsonObject); // 初始化id和access token
-                    loginListener.onLoginComplete(mTencent.getOpenId(), mTencent.getAccessToken(), mTencent.getExpiresIn(), jsonObject.toString());
-                }
-
-                @Override
-                public void onError(UiError uiError) {
-                    loginListener.onError(uiError.errorCode + " - " + uiError.errorMessage + " - " + uiError.errorDetail);
-                }
-
-                @Override
-                public void onCancel() {
-                    loginListener.onCancel();
-                }
-            });
-        } else {
-            mTencent.logout(mActivity);
         }
     }
 
@@ -117,12 +129,13 @@ public class QQLoginManager implements ILoginManager {
      */
     @Override
     public void getUserInfo(final String accessToken, final String uid, final @NonNull GetUserListener listener) {
-        StringBuilder builder = new StringBuilder();
-        builder.append("https://graph.qq.com/user/get_simple_userinfo")
+        StringBuilder builder = new StringBuilder()
+                .append("https://graph.qq.com/user/get_simple_userinfo")
                 .append("?access_token=").append(accessToken)
                 .append("&oauth_consumer_key=").append(ShareBlock.getInstance().getQQAppId())
                 .append("&openid=").append(uid)
                 .append("&format=json");
+        
         HttpUtil.doGetAsyn(builder.toString(), new HttpUtil.CallBack() {
             @Override
             public void onRequestComplete(String result) {
@@ -149,8 +162,8 @@ public class QQLoginManager implements ILoginManager {
     }
 
     public void handlerOnActivityResult(int requestCode, int resultCode, Intent data) {
-        if (mTencent != null) {
-            mTencent.onActivityResult(requestCode, resultCode, data);
+        if (mLoginUiListener != null) {
+            Tencent.onActivityResultData(requestCode, resultCode, data, mLoginUiListener);
         }
     }
 

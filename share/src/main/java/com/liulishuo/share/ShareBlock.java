@@ -5,7 +5,6 @@ import com.liulishuo.share.base.share.IShareManager;
 import com.liulishuo.share.qq.QQLoginManager;
 import com.liulishuo.share.qq.QQShareManager;
 import com.liulishuo.share.weibo.WeiboLoginManager;
-import com.tencent.connect.common.Constants;
 
 import android.content.Intent;
 import android.support.annotation.NonNull;
@@ -83,21 +82,17 @@ public class ShareBlock {
         return this;
     }
 
-    public static void handlerOnActivityResult(ILoginManager loginManager,IShareManager sharemanager,int requestCode, int resultCode, Intent data) {
+    public static void handlerOnActivityResult(ILoginManager loginManager, IShareManager shareManager, int requestCode, int resultCode, Intent data) {
+        // 处理登录后的结果
         if (loginManager != null && loginManager instanceof QQLoginManager) {
-            ((QQLoginManager) loginManager).handlerOnActivityResult(requestCode, resultCode, data);
-            //fix the bug that qq sso failed.
-            if (requestCode == Constants.REQUEST_API) {
-                if (resultCode == Constants.RESULT_LOGIN) {
-                    ((QQLoginManager) loginManager).getTencent().handleLoginData(data, null);
-                }
-            }
+            ((QQLoginManager) loginManager).handlerOnActivityResult(requestCode,resultCode,data);
         } else if (loginManager != null && loginManager instanceof WeiboLoginManager) {
             ((WeiboLoginManager) loginManager).handlerOnActivityResult(requestCode, resultCode, data);
         }
+
         // 进行分享完毕后的回调处理
-        if (sharemanager != null && sharemanager instanceof QQShareManager) {
-            ((QQShareManager) sharemanager).handlerOnActivityResult(requestCode, resultCode, data);
+        if (shareManager != null && shareManager instanceof QQShareManager) {
+            ((QQShareManager) shareManager).handlerOnActivityResult(requestCode, resultCode, data);
         }
     }
 

@@ -16,7 +16,7 @@ import android.os.Bundle;
  * 用来处理微信登录、微信分享的activity。这里真不知道微信非要个activity干嘛，愚蠢的设计。
  * 参考文档:https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=open1419317853&lang=zh_CN
  */
-public class WechatHandlerActivity extends Activity implements IWXAPIEventHandler {
+public abstract class WechatHandlerActivity extends Activity implements IWXAPIEventHandler {
 
     private IWXAPI mIWXAPI;
 
