@@ -4,10 +4,6 @@ ShareLoginLib likes simple sharesdk or umeng in China . It is a tool to help dev
 # Including in your project
 -------------------------
 
-```groovy
-compile 'com.echodjb.shareloginlib:share:0.3'
-```
-
 
 # How to use (参考MainActivity)
 -------------------------
@@ -15,9 +11,20 @@ compile 'com.echodjb.shareloginlib:share:0.3'
 #### 1.添加混淆参数
 ```  
   
+# ————————  微信 start    ————————
 -keep class com.tencent.mm.sdk.** {
    *;
-}  
+}
+# ————————  微信 end    ————————
+
+# ————————  qq start    ————————
+-keep class com.tencent.open.TDialog$*
+-keep class com.tencent.open.TDialog$* {*;}
+-keep class com.tencent.open.PKDialog
+-keep class com.tencent.open.PKDialog {*;}
+-keep class com.tencent.open.PKDialog$*
+-keep class com.tencent.open.PKDialog$* {*;}
+# ————————  qq end    ———————— 
 
 ```  
 
