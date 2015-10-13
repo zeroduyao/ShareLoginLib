@@ -2,13 +2,13 @@
 ShareLoginLib likes simple sharesdk or umeng in China . It is a tool to help developers to share their content (image , text or music ) to WeChat,Weibo and QQ .
 
 # Including in your project
--------------------------
+
 
 
 # How to use (参考MainActivity)
--------------------------
 
-#### 1.添加混淆参数
+
+#### 1. 添加混淆参数
 ```  
   
 # ————————  微信 start    ————————
@@ -28,7 +28,7 @@ ShareLoginLib likes simple sharesdk or umeng in China . It is a tool to help dev
 
 ```  
 
-#### 2.在包名下新建wxapi这个包，然后放入WXEntryActivity  
+#### 2. 在包名下新建wxapi这个包，然后放入WXEntryActivity  
 Activity的写法如下：  
 
 ```JAVA   
@@ -53,7 +53,7 @@ public class WXEntryActivity extends WechatHandlerActivity {}
 
 ```
 
-#### 3.在项目工程的manifest中配置Activity  
+#### 3. 在项目工程的manifest中配置Activity  
 ```XML  
 <!-- 腾讯的认证activity -->
         <activity
@@ -81,7 +81,7 @@ public class WXEntryActivity extends WechatHandlerActivity {}
             />  
 ```
 
-#### 4.在项目中使用第三方SDK功能前进行参数的注册  
+#### 4. 在项目中使用第三方SDK功能前进行参数的注册  
 ```java  
 
    ShareBlock.getInstance()
@@ -91,7 +91,7 @@ public class WXEntryActivity extends WechatHandlerActivity {}
                 .initWeibo(OAuthConstant.WEIBO_APPID, OAuthConstant.WEIBO_REDIRECT_URL, OAuthConstant.WEIBO_SCOPE);
 ```  
 
-#### 5.登录和分享的回调接口  
+#### 5. 登录和分享的回调接口  
 ```java
   private LoginListener mLoginListener = new LoginListener() {
         public static final String TAG = "LoginListener";
@@ -103,7 +103,6 @@ public class WXEntryActivity extends WechatHandlerActivity {}
             Log.d(TAG, "expires_in = " + expiresIn);
             // 如果是微信登录，这个回调是在新线程中的，不是在主线程中。所以请不要进行ui操作！
             Log.d(TAG, "登录成功");
-            Toast.makeText(getBaseContext(), "登录成功", Toast.LENGTH_SHORT).show();
         }
 
         @Override
@@ -114,7 +113,6 @@ public class WXEntryActivity extends WechatHandlerActivity {}
         @Override
         public void onCancel() {
             Log.d(TAG, "取消登录");
-            Toast.makeText(getBaseContext(), "取消登录", Toast.LENGTH_SHORT).show();
         }
     };
 
@@ -122,58 +120,46 @@ public class WXEntryActivity extends WechatHandlerActivity {}
         @Override
         public void onComplete() {
             Log.d(TAG, "分享成功");
-            Toast.makeText(getBaseContext(), "分享成功", Toast.LENGTH_SHORT).show();
         }
 
         @Override
         public void onError(String msg) {
             Log.d(TAG, "分享失败，出错信息：" + msg);
-            Toast.makeText(getBaseContext(), "分享失败，出错信息：" + msg, Toast.LENGTH_SHORT).show();
         }
 
         @Override
         public void onCancel() {
             Log.d(TAG, "取消分享");
-            Toast.makeText(getBaseContext(), "取消分享", Toast.LENGTH_SHORT).show();
         }
     };
  ```
-#### 6.在使用第三方功能的Activity的onActivityForResult中进行如下配置
+#### 6. 在使用第三方功能的Activity的onActivityForResult中进行如下配置
 
 ```java  
   @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
         ShareBlock.handlerOnActivityResult(mCurrentLoginManager, mCurrentShareManager, requestCode, resultCode, data);
+        super.onActivityResult(requestCode, resultCode, data); // 放后面
     }
  ```  
 
-#### 7.如何进行登录和分享  
+#### 7. 如何进行登录和分享  
 ```JAVA  
-        findViewById(R.id.login_weibo_btn).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mCurrentLoginManager = new WeiboLoginManager(MainActivity.this);
+        
+                ILoginManager mCurrentLoginManager = new WeiboLoginManager(MainActivity.this);
                 mCurrentLoginManager.login(mLoginListener);
-            }
-        });
-
-        findViewById(R.id.share_weibo_btn).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mCurrentShareManager = new WeiboShareManager(MainActivity.this);
-//                mCurrentShareManager.share(new ShareContentText("test"), WeiboShareManager.WEIBO_SHARE_TYPE, mShareListener);
+        
+        
+                IShareManager mCurrentShareManager = new WeiboShareManager(MainActivity.this);
+//              mCurrentShareManager.share(new ShareContentText("test"), WeiboShareManager.WEIBO_SHARE_TYPE, mShareListener);
                 mCurrentShareManager.share(
                         new ShareContentWebpage("hello", "lalala", "http://www.liulishuo.com", bitmap)
                         , WeiboShareManager.WEIBO_SHARE_TYPE, mShareListener);
-            }
-        }); 
+        
 ```  
-更多详细的操作请参考demo
+更多详细的操作请参考demo ↓
 
 # Demo
--------------------------
-
 ![screenshot](./screenshot/demo.png)
 
 # LICENCE
