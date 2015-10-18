@@ -5,14 +5,52 @@ import com.liulishuo.share.base.share.IShareManager;
 import com.liulishuo.share.qq.QQLoginManager;
 import com.liulishuo.share.qq.QQShareManager;
 import com.liulishuo.share.weibo.WeiboLoginManager;
+import com.liulishuo.share.weibo.WeiboShareManager;
+import com.tencent.mm.sdk.modelmsg.SendMessageToWX;
 
+import android.app.Application;
 import android.content.Intent;
+import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
+
+import java.io.File;
 
 /**
  * Created by echo on 5/18/15.
  */
 public class ShareBlock {
+
+    /**
+     * 发送给微信好友
+     */
+    public static final int WEIXIN_FRIEND = SendMessageToWX.Req.WXSceneSession;
+
+    /**
+     * 发送到朋友圈
+     */
+    public static final int WEIXIN_FRIEND_ZONE = SendMessageToWX.Req.WXSceneTimeline;
+
+    /**
+     * 发送到QQ空间
+     */
+    public static final int QQ_ZONE = 2;
+
+    /**
+     * 发送给QQ好友
+     */
+    public static final int QQ_FRIEND = 3;
+
+    /**
+     * 微博分享的类型（就一种，微博时间线）
+     */
+    public static final int WEIBO_TIME_LINE = 4;
+
+    @IntDef({WEIXIN_FRIEND, WEIXIN_FRIEND_ZONE, QQ_ZONE, QQ_FRIEND, WEIBO_TIME_LINE})
+    public @interface ShareType {
+
+    }
+
 
     private static ShareBlock mInstance;
 
@@ -26,105 +64,91 @@ public class ShareBlock {
         return mInstance;
     }
 
-    private String mAppName;
-    
+    public String appName;
+
     public ShareBlock initAppName(@NonNull String appName) {
-        mAppName = appName;
+        this.appName = appName;
         return this;
     }
-    
-    private String mWechatAppId;
 
-    private String mWechatSecret;
+    public String pathTemp = null;
 
     /**
-     * init all config
+     * 初始化临时文件地址
      */
-/*    public void initShare(String wechatAppId, String weiboAppId, String qqAppId, String wechatSecret) {
-        mWechatAppId = wechatAppId;
-        mWeiboAppId = weiboAppId;
-        mQQAppId = qqAppId;
-        mWechatSecret = wechatSecret;
-    }*/
+    public ShareBlock initSharePicFile(Application application) {
+        if (TextUtils.isEmpty(pathTemp)) {
+            if (android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)) {
+                pathTemp = application.getExternalCacheDir() + File.separator;
+                File dir = new File(pathTemp);
+                if (!dir.exists()) {
+                    dir.mkdirs();
+                }
+            }
+        }
+        return this;
+    }
+
+    public String wechatAppId;
+
+    public String wechatSecret;
 
     /**
      * init wechat config
      */
     public ShareBlock initWechat(@NonNull String wechatAppId, @NonNull String wechatSecret) {
-        mWechatAppId = wechatAppId;
-        mWechatSecret = wechatSecret;
+        this.wechatAppId = wechatAppId;
+        this.wechatSecret = wechatSecret;
         return this;
     }
-    
+
     /**
      * init weibo config
      */
-    private String mWeiboAppId;
-    private String mWeiboRedirectUrl;
-    private String mWeiboScope;
-    
-    public ShareBlock initWeibo(@NonNull String weiboAppId,@NonNull String redirectUrl,@NonNull String scope) {
-        mWeiboAppId = weiboAppId;
-        mWeiboRedirectUrl = redirectUrl;
-        mWeiboScope = scope;
+    public String weiboAppId;
+
+    public String weiboRedirectUrl;
+
+    public String weiboScope;
+
+    public ShareBlock initWeibo(@NonNull String weiboAppId, @NonNull String redirectUrl, @NonNull String scope) {
+        this.weiboAppId = weiboAppId;
+        weiboRedirectUrl = redirectUrl;
+        weiboScope = scope;
         return this;
     }
 
     /**
      * init QQ config
      */
-    private String mQQAppId;
-    private String mQQScope;
-    
+    public String QQAppId;
+
+    public String QQScope;
+
     public ShareBlock initQQ(@NonNull String qqAppId, @NonNull String scope) {
-        mQQAppId = qqAppId;
-        mQQScope = scope;
+        QQAppId = qqAppId;
+        QQScope = scope;
         return this;
     }
 
     public static void handlerOnActivityResult(ILoginManager loginManager, IShareManager shareManager, int requestCode, int resultCode, Intent data) {
         // 处理登录后的结果
-        if (loginManager != null && loginManager instanceof QQLoginManager) {
-            ((QQLoginManager) loginManager).handlerOnActivityResult(requestCode,resultCode,data);
-        } else if (loginManager != null && loginManager instanceof WeiboLoginManager) {
-            ((WeiboLoginManager) loginManager).handlerOnActivityResult(requestCode, resultCode, data);
+        if (loginManager != null) {
+            if (loginManager instanceof QQLoginManager) {
+                ((QQLoginManager) loginManager).handlerOnActivityResult(requestCode, resultCode, data);
+            } else if (loginManager instanceof WeiboLoginManager) {
+                ((WeiboLoginManager) loginManager).handlerOnActivityResult(requestCode, resultCode, data);
+            }
         }
 
         // 进行分享完毕后的回调处理
-        if (shareManager != null && shareManager instanceof QQShareManager) {
-            ((QQShareManager) shareManager).handlerOnActivityResult(requestCode, resultCode, data);
+        if (shareManager != null) {
+            if (shareManager instanceof QQShareManager) {
+                ((QQShareManager) shareManager).handlerOnActivityResult(requestCode, resultCode, data);
+            } else if (shareManager instanceof WeiboShareManager) {
+                ((WeiboShareManager) shareManager).handlerOnActivityResult(requestCode, resultCode, data);
+            }
         }
     }
 
-    public String getWechatSecret() {
-        return mWechatSecret;
-    }
-
-    public String getWechatAppId() {
-        return mWechatAppId;
-    }
-
-    public String getWeiboAppId() {
-        return mWeiboAppId;
-    }
-
-    public String getQQAppId() {
-        return mQQAppId;
-    }
-
-    public String getWeiboRedirectUrl() {
-        return mWeiboRedirectUrl;
-    }
-
-    public String getWeiboScope() {
-        return mWeiboScope;
-    }
-
-    public String getQQScope() {
-        return mQQScope;
-    }
-
-    public String getAppName() {
-        return mAppName;
-    }
 }

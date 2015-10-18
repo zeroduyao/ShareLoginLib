@@ -16,7 +16,7 @@ import android.os.Bundle;
  * 用来处理微信登录、微信分享的activity。这里真不知道微信非要个activity干嘛，愚蠢的设计。
  * 参考文档:https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=open1419317853&lang=zh_CN
  */
-public abstract class WechatHandlerActivity extends Activity implements IWXAPIEventHandler {
+public abstract class WeiXinHandlerActivity extends Activity implements IWXAPIEventHandler {
 
     private IWXAPI mIWXAPI;
 
@@ -28,7 +28,7 @@ public abstract class WechatHandlerActivity extends Activity implements IWXAPIEv
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mIWXAPI = WechatLoginManager.getIWXAPI();
+        mIWXAPI = WeiXinLoginManager.getIWXAPI();
         if (mIWXAPI != null) {
             mIWXAPI.handleIntent(getIntent(), this);
         }
@@ -54,9 +54,9 @@ public abstract class WechatHandlerActivity extends Activity implements IWXAPIEv
         if (resp != null) {
             if (resp instanceof SendAuth.Resp && resp.getType() == TYPE_LOGIN) {
                 onLoginResp((SendAuth.Resp) resp);
-                WechatLoginManager.parseLoginResp((SendAuth.Resp) resp);
+                WeiXinLoginManager.parseLoginResp(this, (SendAuth.Resp) resp);
             } else {
-                WechatShareManager.parseShare(resp);
+                WeiXinShareManager.parseShare(resp);
             }
         }
         finish();
@@ -66,7 +66,7 @@ public abstract class WechatHandlerActivity extends Activity implements IWXAPIEv
      * 得到最原始的resp，可以得到code
      */
     protected void onLoginResp(SendAuth.Resp resp) {
-        WechatLoginManager.onLoginResp(resp);
+        WeiXinLoginManager.onLoginResp(resp);
     }
 
 }

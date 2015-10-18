@@ -35,7 +35,7 @@ public class QQLoginManager implements ILoginManager {
 
     public QQLoginManager(Activity activity) {
         mActivity = activity;
-        String appId = ShareBlock.getInstance().getQQAppId();
+        String appId = ShareBlock.getInstance().QQAppId;
         if (!TextUtils.isEmpty(appId)) {
             mTencent = Tencent.createInstance(appId, activity.getApplicationContext());
         }
@@ -45,7 +45,7 @@ public class QQLoginManager implements ILoginManager {
     public void login(final @NonNull LoginListener loginListener) {
         if (!mTencent.isSessionValid()) {
             mLoginUiListener = new LoginUiListener(loginListener);
-            mTencent.login(mActivity, ShareBlock.getInstance().getQQScope(), mLoginUiListener);
+            mTencent.login(mActivity, ShareBlock.getInstance().QQScope, mLoginUiListener);
         } else {
             mTencent.logout(mActivity);
         }
@@ -132,7 +132,7 @@ public class QQLoginManager implements ILoginManager {
         StringBuilder builder = new StringBuilder()
                 .append("https://graph.qq.com/user/get_simple_userinfo")
                 .append("?access_token=").append(accessToken)
-                .append("&oauth_consumer_key=").append(ShareBlock.getInstance().getQQAppId())
+                .append("&oauth_consumer_key=").append(ShareBlock.getInstance().QQAppId)
                 .append("&openid=").append(uid)
                 .append("&format=json");
         

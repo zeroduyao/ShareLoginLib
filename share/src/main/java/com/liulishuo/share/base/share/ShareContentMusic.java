@@ -1,70 +1,26 @@
 package com.liulishuo.share.base.share;
 
 import android.graphics.Bitmap;
+import android.os.Parcel;
 
 /**
  * Created by echo on 5/18/15.
  * 音乐模式
  */
-public class ShareContentMusic extends ShareContent{
+class ShareContentMusic extends ShareContentWebpage {
 
-    private String title;
-
-    private String summary;
-
-    private String url;
-
-    private String imageUrl;
-
-    private String musicUrl;
-
-    private Bitmap imageBmp;
+    private final String musicUrl;
 
     /**
-     * 给weibo、wehat使用
+     * @param title    标题
+     * @param summary  副标题（描述）
+     * @param url      击分享的内容后跳转到的网页
+     * @param imageBmp 分享内容中的bitmap对象
+     * @param musicUrl 音乐的url
      */
     public ShareContentMusic(String title, String summary, String url, Bitmap imageBmp, String musicUrl) {
-        this.title = title;
-        this.summary = summary;
-        this.url = url;
-        this.imageBmp = imageBmp;
+        super(title, summary, url, imageBmp);
         this.musicUrl = musicUrl;
-    }
-
-    /**
-     * 给QQ使用
-     */
-    public ShareContentMusic(String title, String summary, String url, String imageUrl, String musicUrl) {
-        this.title = title;
-        this.summary = summary;
-        this.url = url;
-        this.imageUrl = imageUrl;
-        this.musicUrl = musicUrl ;
-    }
-
-    @Override
-    public String getSummary() {
-        return summary;
-    }
-
-    @Override
-    public String getTitle() {
-        return title;
-    }
-
-    @Override
-    public String getURL() {
-        return url;
-    }
-
-    @Override
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    @Override
-    public Bitmap getImageBmp() {
-        return imageBmp;
     }
 
     @Override
@@ -77,4 +33,24 @@ public class ShareContentMusic extends ShareContent{
         return ShareConstants.SHARE_WAY_MUSIC;
     }
 
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        super.writeToParcel(dest, flags);
+        dest.writeString(this.musicUrl);
+    }
+
+    protected ShareContentMusic(Parcel in) {
+        super(in);
+        this.musicUrl = in.readString();
+    }
+
+    public static final Creator<ShareContentMusic> CREATOR = new Creator<ShareContentMusic>() {
+        public ShareContentMusic createFromParcel(Parcel source) {
+            return new ShareContentMusic(source);
+        }
+
+        public ShareContentMusic[] newArray(int size) {
+            return new ShareContentMusic[size];
+        }
+    };
 }

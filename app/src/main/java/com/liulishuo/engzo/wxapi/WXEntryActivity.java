@@ -4,11 +4,11 @@ package com.liulishuo.engzo.wxapi;
  * Created by echo on 10/11/14.
  */
 
-import com.liulishuo.share.wechat.WechatHandlerActivity;
+import com.liulishuo.share.wechat.WeiXinHandlerActivity;
 
 
 /** 微信客户端回调activity */
-public class WXEntryActivity extends WechatHandlerActivity {
+public class WXEntryActivity extends WeiXinHandlerActivity {
 
 
 }

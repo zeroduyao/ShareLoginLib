@@ -16,6 +16,7 @@ import com.tencent.mm.sdk.openapi.WXAPIFactory;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
@@ -26,7 +27,7 @@ import java.util.HashMap;
 /**
  * Created by echo on 5/19/15.
  */
-public class WechatLoginManager implements ILoginManager {
+public class WeiXinLoginManager implements ILoginManager {
 
     private static final String SCOPE = "snsapi_userinfo";
 
@@ -40,30 +41,25 @@ public class WechatLoginManager implements ILoginManager {
 
     private static LoginListener mLoginListener;
 
-//    public static WechatLoginManager getInstance(Context context) {
-//        if (mInstance == null) {
-//            mInstance = new WechatLoginManager(context);
-//        }
-//        return mInstance;
-//    }
 
-    public WechatLoginManager(Context context) {
-        String weChatAppId = ShareBlock.getInstance().getWechatAppId();
-        if (!TextUtils.isEmpty(weChatAppId)) {
-            mIWXAPI = WXAPIFactory.createWXAPI(context, weChatAppId, true);
-            if (!mIWXAPI.isWXAppInstalled()) {
-                Toast.makeText(context, context.getString(R.string.share_install_wechat_tips), Toast.LENGTH_SHORT).show();
-            } else {
-                mIWXAPI.registerApp(weChatAppId);
-            }
+    public WeiXinLoginManager(Context context) {
+        String weChatAppId = ShareBlock.getInstance().wechatAppId;
+        if (TextUtils.isEmpty(weChatAppId)) {
+            throw new NullPointerException("请通过shareBlock初始化WeChatAppId");
+        }
+        mIWXAPI = WXAPIFactory.createWXAPI(context, weChatAppId, true);
+        if (!mIWXAPI.isWXAppInstalled()) {
+            Toast.makeText(context, context.getString(R.string.share_install_wechat_tips), Toast.LENGTH_SHORT).show();
+        } else {
+            mIWXAPI.registerApp(weChatAppId);
         }
     }
-    
+
     /**
      * @return 是否已经安装微信
      */
     public static boolean isWetchatInstalled(Context context) {
-        IWXAPI api = WXAPIFactory.createWXAPI(context, ShareBlock.getInstance().getWechatAppId(), true);
+        IWXAPI api = WXAPIFactory.createWXAPI(context, ShareBlock.getInstance().wechatAppId, true);
         return api.isWXAppInstalled();
     }
 
@@ -89,7 +85,7 @@ public class WechatLoginManager implements ILoginManager {
     /**
      * 解析用户登录的结果
      */
-    protected static void parseLoginResp(SendAuth.Resp resp) {
+    protected static void parseLoginResp(final Activity activity, SendAuth.Resp resp) {
         switch (resp.errCode) {
             case BaseResp.ErrCode.ERR_OK:
                 // 登录成功
@@ -97,26 +93,35 @@ public class WechatLoginManager implements ILoginManager {
                 builder.append("https://api.weixin.qq.com")
                         .append("/sns/oauth2/access_token")
                         .append("?appid=")
-                        .append(ShareBlock.getInstance().getWechatAppId())
+                        .append(ShareBlock.getInstance().wechatAppId)
                         .append("&secret=")
-                        .append(ShareBlock.getInstance().getWechatSecret())
+                        .append(ShareBlock.getInstance().wechatSecret)
                         .append("&code=")
-                        .append(((SendAuth.Resp) resp).code)
+                        .append(resp.code)
                         .append("&grant_type=authorization_code");
                 // 通过code获得access token
                 HttpUtil.doGetAsyn(builder.toString(), new HttpUtil.CallBack() {
                     @Override
                     public void onRequestComplete(String result) {
                         try {
-                            JSONObject jsonObject = new JSONObject(result);
+                            final JSONObject jsonObject = new JSONObject(result);
                             mAccessToken = jsonObject.getString("access_token");
                             mOpenid = jsonObject.getString("openid");
-                            long expires_in = jsonObject.getLong("expires_in");
-                            
-                            mLoginListener.onLoginComplete(mOpenid, mAccessToken, expires_in, jsonObject.toString());
+                            final long expires_in = jsonObject.getLong("expires_in");
+                            activity.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mLoginListener.onLoginComplete(mOpenid, mAccessToken, expires_in, jsonObject.toString());
+                                }
+                            });
                         } catch (JSONException e) {
                             e.printStackTrace();
-                            mLoginListener.onError("get login data parse error");
+                            activity.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mLoginListener.onError("get login data parse error");
+                                }
+                            });
                         }
                     }
 

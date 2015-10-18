@@ -1,5 +1,7 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.liulishuo.share">
+<manifest
+    package="com.liulishuo.share"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    >
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
@@ -8,22 +10,40 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.INTERACT_ACROSS_USERS_FULL" />
 
-    <application android:allowBackup="true"
-                 android:label="@string/app_name"
+    <application
+        android:allowBackup="true"
+        android:label="@string/app_name"
+        >
+
+        <!-- 调用微博分享的activity需要按照下方进行设置intent-filter -->
+        <activity
+            android:name=".weibo.WeiboHandlerActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
             >
-        
-        <!-- 必须注册在微博授权，分享微博时候用到 -->
-        <activity android:name="com.sina.weibo.sdk.component.WeiboSdkBrowser"
-                  android:configChanges="keyboardHidden|orientation"
-                  android:windowSoftInputMode="adjustResize"
-                  android:exported="false" >
+            <intent-filter>
+                <action android:name="com.sina.weibo.sdk.action.ACTION_SDK_REQ_ACTIVITY" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
         </activity>
 
+
+        <!-- 必须注册在微博授权，分享微博时候用到 -->
         <activity
-                android:name="com.tencent.connect.common.AssistActivity"
-                android:configChanges="orientation|keyboardHidden"
-                android:screenOrientation="portrait"
-                android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+            android:name="com.sina.weibo.sdk.component.WeiboSdkBrowser"
+            android:configChanges="keyboardHidden|orientation"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize"
+            />
+
+        <!-- 腾讯sdk中增加的帮助activity对象，可以用来查看日志 -->
+        <activity
+            android:name="com.tencent.connect.common.AssistActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            />
 
     </application>
 

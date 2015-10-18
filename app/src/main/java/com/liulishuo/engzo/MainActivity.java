@@ -9,10 +9,11 @@ import com.liulishuo.share.base.share.ShareContentWebpage;
 import com.liulishuo.share.base.share.ShareStateListener;
 import com.liulishuo.share.qq.QQLoginManager;
 import com.liulishuo.share.qq.QQShareManager;
-import com.liulishuo.share.wechat.WechatLoginManager;
-import com.liulishuo.share.wechat.WechatShareManager;
+import com.liulishuo.share.wechat.WeiXinLoginManager;
+import com.liulishuo.share.wechat.WeiXinShareManager;
 import com.liulishuo.share.weibo.WeiboLoginManager;
 import com.liulishuo.share.weibo.WeiboShareManager;
+import com.sina.weibo.sdk.api.share.IWeiboHandler;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -40,7 +41,7 @@ import java.util.HashMap;
  * 2.weibo支持bitmap和本地图片（但不推荐使用本地图片的url形式）
  * 3.wechat支持bitmap
  */
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements IWeiboHandler {
 
     private ILoginManager mCurrentLoginManager;
 
@@ -55,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Log.d(TAG, "onCreate " + WechatLoginManager.isWetchatInstalled(this));
+        Log.d(TAG, "onCreate " + WeiXinLoginManager.isWetchatInstalled(this));
 
         Drawable drawable = getResources().getDrawable(R.mipmap.ic_launcher);
         bitmap = ((BitmapDrawable) drawable).getBitmap();
@@ -73,10 +74,10 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.share_wechat_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mCurrentShareManager = new WechatShareManager(MainActivity.this);
+                mCurrentShareManager = new WeiXinShareManager(MainActivity.this);
                 mCurrentShareManager.share(
                         new ShareContentWebpage("", "hello", "http://www.liulishuo.com", bitmap),
-                        WechatShareManager.WEIXIN_SHARE_TYPE_TALK
+                        WeiXinShareManager.WEIXIN_SHARE_TYPE_TALK
                         , mShareListener);
             }
         });
@@ -85,10 +86,10 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.share_friends_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mCurrentShareManager = new WechatShareManager(MainActivity.this);
+                mCurrentShareManager = new WeiXinShareManager(MainActivity.this);
                 mCurrentShareManager.share(
                         new ShareContentWebpage("hello", "", "http://www.liulishuo.com", bitmap)
-                        , WechatShareManager.WEIXIN_SHARE_TYPE_FRENDS
+                        , WeiXinShareManager.WEIXIN_SHARE_TYPE_FRENDS
                         , mShareListener);
             }
         });
@@ -97,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.login_wechat_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mCurrentLoginManager = new WechatLoginManager(MainActivity.this);
+                mCurrentLoginManager = new WeiXinLoginManager(MainActivity.this);
                 mCurrentLoginManager.login(mLoginListener);
             }
         });
@@ -116,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 mCurrentShareManager = new WeiboShareManager(MainActivity.this);
-//                mCurrentShareManager.share(new ShareContentText("test"), WeiboShareManager.WEIBO_SHARE_TYPE, mShareListener);
+//                mCurrentShareManager.share(new ShareContentText("test"), WeiboShareManager.WEIBO_TIME_LINE, mShareListener);
                 mCurrentShareManager.share(
                         new ShareContentWebpage("hello", "lalala", "http://www.liulishuo.com", bitmap)
                         , WeiboShareManager.WEIBO_SHARE_TYPE, mShareListener);
@@ -139,7 +140,8 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 mCurrentShareManager = new QQShareManager(MainActivity.this);
                 mCurrentShareManager.share(
-                        new ShareContentWebpage("title", "test", "http://www.baidu.com", "https://ss0.bdstatic.com/5aV1bjqh_Q23odCf/static/superplus/img/logo_white_ee663702.png")
+                        new ShareContentWebpage("title", "test", "http://www.baidu.com",
+                                "https://ss0.bdstatic.com/5aV1bjqh_Q23odCf/static/superplus/img/logo_white_ee663702.png")
                         , QQShareManager.QQ_SHARE_TYPE, mShareListener);
             }
         });
@@ -158,8 +160,8 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
         ShareBlock.handlerOnActivityResult(mCurrentLoginManager, mCurrentShareManager, requestCode, resultCode, data);
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
 
@@ -167,7 +169,7 @@ public class MainActivity extends AppCompatActivity {
         public static final String TAG = "LoginListener";
 
         @Override
-        public void onLoginComplete(String uId, String accessToken, long expiresIn,String data) {
+        public void onLoginComplete(String uId, String accessToken, long expiresIn, String data) {
             Log.d(TAG, "uid = " + uId);
             Log.d(TAG, "accessToken = " + accessToken);
             Log.d(TAG, "expires_in = " + expiresIn);

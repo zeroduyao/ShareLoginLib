@@ -1,29 +1,24 @@
 package com.liulishuo.share.base.share;
 
+import com.liulishuo.share.util.PicFileUtil;
+
 import android.graphics.Bitmap;
+import android.os.Parcel;
+import android.support.annotation.NonNull;
 
 /**
  * Created by echo on 5/18/15.
  * 分享图片模式
  */
-public class ShareContentPic extends ShareContent {
+class ShareContentPic implements ShareContent {
 
-    private String imageUrl;
-
-    private Bitmap imageBmp;
+    protected byte[] bitmapBytes;
 
     /**
-     * 给weibo、wechat使用
+     * @param bitmap 分享的bitmap
      */
-    public ShareContentPic(Bitmap bitmap) {
-        imageBmp = bitmap;
-    }
-
-    /**
-     * 给QQ使用
-     */
-    public ShareContentPic(String imageUrl) {
-        this.imageUrl = imageUrl;
+    public ShareContentPic(@NonNull Bitmap bitmap) {
+        this.bitmapBytes = PicFileUtil.getThumbImageByteArr(bitmap);
     }
 
     @Override
@@ -42,14 +37,10 @@ public class ShareContentPic extends ShareContent {
     }
 
     @Override
-    public String getImageUrl() {
-        return imageUrl;
+    public byte[] getImageBmpBytes() {
+        return bitmapBytes;
     }
 
-    @Override
-    public Bitmap getImageBmp() {
-        return imageBmp;
-    }
 
     @Override
     public String getMusicUrl() {
@@ -60,4 +51,28 @@ public class ShareContentPic extends ShareContent {
     public int getShareWay() {
         return ShareConstants.SHARE_WAY_PIC;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeByteArray(this.bitmapBytes);
+    }
+
+    protected ShareContentPic(Parcel in) {
+        this.bitmapBytes = in.createByteArray();
+    }
+
+    public static final Creator<ShareContentPic> CREATOR = new Creator<ShareContentPic>() {
+        public ShareContentPic createFromParcel(Parcel source) {
+            return new ShareContentPic(source);
+        }
+
+        public ShareContentPic[] newArray(int size) {
+            return new ShareContentPic[size];
+        }
+    };
 }

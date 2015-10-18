@@ -9,6 +9,8 @@ import com.liulishuo.share.util.HttpUtil;
 import com.liulishuo.share.weibo.model.AbsOpenAPI;
 import com.liulishuo.share.weibo.model.User;
 import com.liulishuo.share.weibo.model.UsersAPI;
+import com.sina.weibo.sdk.api.share.IWeiboShareAPI;
+import com.sina.weibo.sdk.api.share.WeiboShareSDK;
 import com.sina.weibo.sdk.auth.AuthInfo;
 import com.sina.weibo.sdk.auth.Oauth2AccessToken;
 import com.sina.weibo.sdk.auth.WeiboAuthListener;
@@ -22,15 +24,11 @@ import org.json.JSONObject;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
 
 /**
  * Created by echo on 5/19/15.
@@ -52,22 +50,12 @@ public class WeiboLoginManager implements ILoginManager {
 
     public WeiboLoginManager(Context context) {
         mContext = context;
-        mSinaAppKey = ShareBlock.getInstance().getWeiboAppId();
+        mSinaAppKey = ShareBlock.getInstance().weiboAppId;
     }
 
     public static boolean isWeiboInstalled(@NonNull Context context) {
-        PackageManager pm;
-        if ((pm = context.getApplicationContext().getPackageManager()) == null) {
-            return false;
-        }
-        List<PackageInfo> packages = pm.getInstalledPackages(0);
-        for (PackageInfo info : packages) {
-            String name = info.packageName.toLowerCase(Locale.ENGLISH);
-            if ("com.sina.weibo".equals(name)) {
-                return true;
-            }
-        }
-        return false;
+        IWeiboShareAPI shareAPI = WeiboShareSDK.createWeiboAPI(context, ShareBlock.getInstance().weiboAppId);
+        return shareAPI.isWeiboAppInstalled();
     }
 
     @Override
@@ -75,8 +63,8 @@ public class WeiboLoginManager implements ILoginManager {
         mLoginListener = loginListener;
         AccessTokenKeeper.clear(mContext);
         AuthInfo authInfo = new AuthInfo(mContext, mSinaAppKey,
-                ShareBlock.getInstance().getWeiboRedirectUrl(),
-                ShareBlock.getInstance().getWeiboScope());
+                ShareBlock.getInstance().weiboRedirectUrl,
+                ShareBlock.getInstance().weiboScope);
         mSsoHandler = new SsoHandler((Activity) mContext, authInfo);
         mSsoHandler.authorize(new AuthLoginListener());
     }

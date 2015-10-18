@@ -1,52 +1,41 @@
 package com.liulishuo.share.base.share;
 
-import android.graphics.Bitmap;
+import android.os.Parcelable;
 
 /**
  * Created by echo on 5/18/15.
  */
 
-public abstract class ShareContent {
+public interface ShareContent extends Parcelable {
 
     /**
-     * 分享的方式
-     * @return
+     * @return 分享的方式
      */
-    public abstract int getShareWay();
+    int getShareWay();
 
     /**
      * 分享的描述信息(摘要)
-     * @return
      */
-    public abstract String getSummary();
+    String getSummary();
 
     /**
      * 分享的标题
-     * @return
      */
-    public abstract String getTitle();
+    String getTitle();
 
     /**
      * 获取跳转的链接
-     * @return
      */
-    public abstract String getURL();
+    String getURL();
 
     /**
-     * 分享的本地图片路径或图片网络url
-     * @return
+     * 分享的图片
      */
-    public abstract String getImageUrl();
-
-    /**
-     * 分享的图片url
-     * @return
-     */
-    public abstract Bitmap getImageBmp();
+    byte[] getImageBmpBytes();
 
     /**
      * 音频url
      */
-    public abstract String getMusicUrl();
+    String getMusicUrl();
 
 }
