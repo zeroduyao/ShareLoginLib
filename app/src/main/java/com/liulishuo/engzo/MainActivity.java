@@ -13,7 +13,6 @@ import com.liulishuo.share.wechat.WeiXinLoginManager;
 import com.liulishuo.share.wechat.WeiXinShareManager;
 import com.liulishuo.share.weibo.WeiboLoginManager;
 import com.liulishuo.share.weibo.WeiboShareManager;
-import com.sina.weibo.sdk.api.share.IWeiboHandler;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -41,7 +40,7 @@ import java.util.HashMap;
  * 2.weibo支持bitmap和本地图片（但不推荐使用本地图片的url形式）
  * 3.wechat支持bitmap
  */
-public class MainActivity extends AppCompatActivity implements IWeiboHandler {
+public class MainActivity extends AppCompatActivity {
 
     private ILoginManager mCurrentLoginManager;
 
@@ -77,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements IWeiboHandler {
                 mCurrentShareManager = new WeiXinShareManager(MainActivity.this);
                 mCurrentShareManager.share(
                         new ShareContentWebpage("", "hello", "http://www.liulishuo.com", bitmap),
-                        WeiXinShareManager.WEIXIN_SHARE_TYPE_TALK
+                        ShareBlock.WEIXIN_FRIEND
                         , mShareListener);
             }
         });
@@ -89,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements IWeiboHandler {
                 mCurrentShareManager = new WeiXinShareManager(MainActivity.this);
                 mCurrentShareManager.share(
                         new ShareContentWebpage("hello", "", "http://www.liulishuo.com", bitmap)
-                        , WeiXinShareManager.WEIXIN_SHARE_TYPE_FRENDS
+                        , ShareBlock.WEIXIN_FRIEND_ZONE
                         , mShareListener);
             }
         });
@@ -120,7 +119,7 @@ public class MainActivity extends AppCompatActivity implements IWeiboHandler {
 //                mCurrentShareManager.share(new ShareContentText("test"), WeiboShareManager.WEIBO_TIME_LINE, mShareListener);
                 mCurrentShareManager.share(
                         new ShareContentWebpage("hello", "lalala", "http://www.liulishuo.com", bitmap)
-                        , WeiboShareManager.WEIBO_SHARE_TYPE, mShareListener);
+                        , ShareBlock.WEIBO_TIME_LINE, mShareListener);
             }
         });
 
@@ -140,9 +139,8 @@ public class MainActivity extends AppCompatActivity implements IWeiboHandler {
             public void onClick(View view) {
                 mCurrentShareManager = new QQShareManager(MainActivity.this);
                 mCurrentShareManager.share(
-                        new ShareContentWebpage("title", "test", "http://www.baidu.com",
-                                "https://ss0.bdstatic.com/5aV1bjqh_Q23odCf/static/superplus/img/logo_white_ee663702.png")
-                        , QQShareManager.QQ_SHARE_TYPE, mShareListener);
+                        new ShareContentWebpage("title", "test", "http://www.baidu.com", bitmap)
+                        , ShareBlock.QQ_FRIEND, mShareListener);
             }
         });
 
@@ -151,8 +149,8 @@ public class MainActivity extends AppCompatActivity implements IWeiboHandler {
             public void onClick(View v) {
                 mCurrentShareManager = new QQShareManager(MainActivity.this);
 //                ShareContentWebpage content = new ShareContentWebpage("title", "test", "http://www.baidu.com", getImagePath(rooView));
-                ShareContentWebpage content = new ShareContentWebpage("title", "test", "http://www.baidu.com", getImagePath(rooView));
-                mCurrentShareManager.share(content, QQShareManager.QZONE_SHARE_TYPE, mShareListener);
+                ShareContentWebpage content = new ShareContentWebpage("title", "test", "http://www.baidu.com", bitmap);
+                mCurrentShareManager.share(content, ShareBlock.QQ_ZONE, mShareListener);
             }
         });
 
