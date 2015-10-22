@@ -117,15 +117,15 @@ public class WXEntryActivity extends WechatHandlerActivity {}
 #### 4. 如何进行登录、分享  
 ```JAVA  
         
-                ILoginManager mCurrentLoginManager = new 【WeiBo,WeiXin,QQ】LoginManager(MainActivity.this);
-                mCurrentLoginManager.login(mLoginListener);
-        
-        
-        	mCurrentShareManager = new 【WeiBo,WeiXin,QQ】ShareManager(MainActivity.this);
-                mCurrentShareManager.share(
-                        new ShareContentWebpage("title", "hello world!", "http://www.baidu.com", mBitmap)
-                        , ShareBlock.WEIXIN_FRIEND
-                        , mShareListener);
+	ILoginManager mCurrentLoginManager = new 【WeiBo,WeiXin,QQ】LoginManager(MainActivity.this);
+	mCurrentLoginManager.login(mLoginListener);
+	
+	
+	mCurrentShareManager = new 【WeiBo,WeiXin,QQ】ShareManager(MainActivity.this);
+	mCurrentShareManager.share(
+	        new ShareContentWebpage("title", "hello world!", "http://www.baidu.com", mBitmap)
+	        , ShareBlock.WEIXIN_FRIEND
+	        , mShareListener);
         
 ```   
 
