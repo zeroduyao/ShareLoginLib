@@ -66,7 +66,7 @@ public class WeiBoShareManager implements IShareManager {
         }
     }
 
-    public static boolean isWeiboInstalled(@NonNull Context context) {
+    public static boolean isWeiBoInstalled(@NonNull Context context) {
         IWeiboShareAPI shareAPI = WeiboShareSDK.createWeiboAPI(context, ShareBlock.getInstance().weiboAppId);
         return shareAPI.isWeiboAppInstalled();
     }

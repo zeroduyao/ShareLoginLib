@@ -58,7 +58,7 @@ public class WeiXinLoginManager implements ILoginManager {
     /**
      * @return 是否已经安装微信
      */
-    public static boolean isWetchatInstalled(Context context) {
+    public static boolean isWeiXinInstalled(Context context) {
         IWXAPI api = WXAPIFactory.createWXAPI(context, ShareBlock.getInstance().wechatAppId, true);
         return api.isWXAppInstalled();
     }

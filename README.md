@@ -127,7 +127,16 @@ public class WXEntryActivity extends WechatHandlerActivity {}
                         , ShareBlock.WEIXIN_FRIEND
                         , mShareListener);
         
-```  
+```   
+
+#### 5. 判断本机是否安装微博、微信  
+```JAVA
+        WeiBoLoginManager.isWeiBoInstalled(this);
+        WeiBoShareManager.isWeiBoInstalled(this);
+        
+        WeiXinLoginManager.isWeiXinInstalled(this);
+        WeiXinShareManager.isWeiXinInstalled(this);
+```
 更多详细的操作请参考项目源码。
 
 # Demo

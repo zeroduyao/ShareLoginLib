@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Log.d(TAG, "onCreate " + WeiXinLoginManager.isWetchatInstalled(this));
+        Log.d(TAG, "onCreate " + WeiXinLoginManager.isWeiXinInstalled(this));
 
         Drawable drawable = getResources().getDrawable(R.mipmap.ic_launcher);
         bitmap = ((BitmapDrawable) drawable).getBitmap();
