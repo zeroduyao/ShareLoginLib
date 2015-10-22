@@ -63,7 +63,7 @@ public class QQLoginManager implements ILoginManager {
         public void onComplete(Object object) {
             JSONObject jsonObject = (JSONObject) object; // qq_json
             initOpenidAndToken(jsonObject); // 初始化id和access token
-            mLoginListener.onLoginComplete(mTencent.getOpenId(), mTencent.getAccessToken(), mTencent.getExpiresIn(), jsonObject.toString());
+            mLoginListener.onSuccess(mTencent.getOpenId(), mTencent.getAccessToken(), mTencent.getExpiresIn(), jsonObject.toString());
         }
 
         @Override

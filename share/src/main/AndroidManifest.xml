@@ -17,7 +17,7 @@
 
         <!-- 调用微博分享的activity需要按照下方进行设置intent-filter -->
         <activity
-            android:name=".weibo.WeiboHandlerActivity"
+            android:name=".weibo.WeiBoHandlerActivity"
             android:configChanges="keyboardHidden|orientation"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Translucent.NoTitleBar"

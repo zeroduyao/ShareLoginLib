@@ -173,7 +173,7 @@ public class QQShareManager implements IShareManager {
 
         @Override
         public void onComplete(Object response) {
-            mShareStateListener.onComplete();
+            mShareStateListener.onSuccess();
         }
 
         @Override

@@ -8,6 +8,6 @@ import com.liulishuo.share.base.BaseListener;
  */
 public interface LoginListener extends BaseListener {
 
-    void onLoginComplete(String uId, String accessToken, long expiresIn, String wholeData);
+    void onSuccess(String uId, String accessToken, long expiresIn, String wholeData);
 
 }

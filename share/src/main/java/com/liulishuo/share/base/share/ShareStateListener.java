@@ -10,6 +10,6 @@ public interface ShareStateListener extends BaseListener {
     /**
      * 分享成功
      */
-    void onComplete();
+    void onSuccess();
 
 }

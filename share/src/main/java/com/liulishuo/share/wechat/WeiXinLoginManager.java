@@ -111,7 +111,7 @@ public class WeiXinLoginManager implements ILoginManager {
                             activity.runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    mLoginListener.onLoginComplete(mOpenid, mAccessToken, expires_in, jsonObject.toString());
+                                    mLoginListener.onSuccess(mOpenid, mAccessToken, expires_in, jsonObject.toString());
                                 }
                             });
                         } catch (JSONException e) {

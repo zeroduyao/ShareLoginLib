@@ -141,7 +141,7 @@ public class WeiXinShareManager implements IShareManager {
         switch (resp.errCode) {
             case BaseResp.ErrCode.ERR_OK:
                 // 分享成功
-                mShareStateListener.onComplete();
+                mShareStateListener.onSuccess();
                 break;
             case BaseResp.ErrCode.ERR_USER_CANCEL:
                 // 用户取消

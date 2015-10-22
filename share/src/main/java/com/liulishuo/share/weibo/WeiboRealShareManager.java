@@ -22,7 +22,7 @@ import android.text.TextUtils;
 /**
  * Created by echo on 5/18/15.
  */
-class WeiboRealShareManager {
+class WeiBoRealShareManager {
 
     private String mRedirectUrl;
 
@@ -31,7 +31,7 @@ class WeiboRealShareManager {
      */
     private IWeiboShareAPI mSinaAPI;
 
-    public WeiboRealShareManager(Activity activity) {
+    public WeiBoRealShareManager(Activity activity) {
         String sinaAppKey = ShareBlock.getInstance().weiboAppId;
         mRedirectUrl = ShareBlock.getInstance().weiboRedirectUrl;
 

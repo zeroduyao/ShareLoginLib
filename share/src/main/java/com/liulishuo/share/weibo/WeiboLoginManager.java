@@ -33,7 +33,7 @@ import java.util.HashMap;
 /**
  * Created by echo on 5/19/15.
  */
-public class WeiboLoginManager implements ILoginManager {
+public class WeiBoLoginManager implements ILoginManager {
 
     private Context mContext;
 
@@ -48,7 +48,7 @@ public class WeiboLoginManager implements ILoginManager {
      */
     private static SsoHandler mSsoHandler;
 
-    public WeiboLoginManager(Context context) {
+    public WeiBoLoginManager(Context context) {
         mContext = context;
         mSinaAppKey = ShareBlock.getInstance().weiboAppId;
     }
@@ -82,7 +82,7 @@ public class WeiboLoginManager implements ILoginManager {
             if (accessToken != null && accessToken.isSessionValid()) {
                 mAccessToken = accessToken;
                 AccessTokenKeeper.writeAccessToken(mContext, mAccessToken);
-                mLoginListener.onLoginComplete(accessToken.getUid(), accessToken.getToken(), accessToken.getExpiresTime() / 1000000,
+                mLoginListener.onSuccess(accessToken.getUid(), accessToken.getToken(), accessToken.getExpiresTime() / 1000000,
                         oAuthData2Json(mAccessToken));
             }
         }

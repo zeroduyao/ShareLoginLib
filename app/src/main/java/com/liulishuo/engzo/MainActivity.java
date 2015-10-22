@@ -11,8 +11,8 @@ import com.liulishuo.share.qq.QQLoginManager;
 import com.liulishuo.share.qq.QQShareManager;
 import com.liulishuo.share.wechat.WeiXinLoginManager;
 import com.liulishuo.share.wechat.WeiXinShareManager;
-import com.liulishuo.share.weibo.WeiboLoginManager;
-import com.liulishuo.share.weibo.WeiboShareManager;
+import com.liulishuo.share.weibo.WeiBoLoginManager;
+import com.liulishuo.share.weibo.WeiBoShareManager;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -107,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.login_weibo_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mCurrentLoginManager = new WeiboLoginManager(MainActivity.this);
+                mCurrentLoginManager = new WeiBoLoginManager(MainActivity.this);
                 mCurrentLoginManager.login(mLoginListener);
             }
         });
@@ -115,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.share_weibo_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mCurrentShareManager = new WeiboShareManager(MainActivity.this);
+                mCurrentShareManager = new WeiBoShareManager(MainActivity.this);
 //                mCurrentShareManager.share(new ShareContentText("test"), WeiboShareManager.WEIBO_TIME_LINE, mShareListener);
                 mCurrentShareManager.share(
                         new ShareContentWebpage("hello", "lalala", "http://www.liulishuo.com", bitmap)
@@ -167,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
         public static final String TAG = "LoginListener";
 
         @Override
-        public void onLoginComplete(String uId, String accessToken, long expiresIn, String data) {
+        public void onSuccess(String uId, String accessToken, long expiresIn, String data) {
             Log.d(TAG, "uid = " + uId);
             Log.d(TAG, "accessToken = " + accessToken);
             Log.d(TAG, "expires_in = " + expiresIn);
@@ -225,7 +225,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ShareStateListener mShareListener = new ShareStateListener() {
         @Override
-        public void onComplete() {
+        public void onSuccess() {
             Log.d(TAG, "分享成功");
             Toast.makeText(getBaseContext(), "分享成功", Toast.LENGTH_SHORT).show();
         }
