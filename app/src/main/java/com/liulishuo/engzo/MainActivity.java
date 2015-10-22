@@ -35,13 +35,13 @@ import java.io.FileOutputStream;
  */
 public class MainActivity extends AppCompatActivity {
 
+    public static final String TAG = "MainActivity";
+
     private ILoginManager mCurrentLoginManager;
 
     private IShareManager mCurrentShareManager;
 
     private LoginListener mLoginListener = new MyLoginListener(this);
-
-    public static final String TAG = "MainActivity";
 
     private Bitmap mBitmap;
 
