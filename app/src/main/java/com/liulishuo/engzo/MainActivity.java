@@ -1,7 +1,6 @@
 package com.liulishuo.engzo;
 
 import com.liulishuo.share.ShareBlock;
-import com.liulishuo.share.base.login.GetUserListener;
 import com.liulishuo.share.base.login.ILoginManager;
 import com.liulishuo.share.base.login.LoginListener;
 import com.liulishuo.share.base.share.IShareManager;
@@ -27,18 +26,12 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.util.HashMap;
 
 /**
  * 步骤：
  * 1.添加混淆参数
  * 2.在包中放入微信必须的activity
  * 3.配置manifest中的activity
- *
- * 分享：
- * 1.qq支持本地图片地址+图片url
- * 2.weibo支持bitmap和本地图片（但不推荐使用本地图片的url形式）
- * 3.wechat支持bitmap
  */
 public class MainActivity extends AppCompatActivity {
 
@@ -46,37 +39,45 @@ public class MainActivity extends AppCompatActivity {
 
     private IShareManager mCurrentShareManager;
 
+    private LoginListener mLoginListener = new MyLoginListener(this);
+
     public static final String TAG = "MainActivity";
 
-    Bitmap bitmap;
+    private Bitmap mBitmap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Log.d(TAG, "onCreate " + WeiXinLoginManager.isWeiXinInstalled(this));
+        Drawable drawable = getResources().getDrawable(R.drawable.kale);
+        mBitmap = ((BitmapDrawable) drawable).getBitmap();
 
-        Drawable drawable = getResources().getDrawable(R.mipmap.ic_launcher);
-        bitmap = ((BitmapDrawable) drawable).getBitmap();
-
-        final View rooView = findViewById(R.id.view);
-
-        // 初始化字段，这里可以放在application中配置
-       /* ShareBlock.getInstance()
+        WeiBoLoginManager.isWeiBoInstalled(this);
+        WeiBoShareManager.isWeiBoInstalled(this);
+        
+        WeiXinLoginManager.isWeiXinInstalled(this);
+        WeiXinShareManager.isWeiXinInstalled(this);
+        
+        ShareBlock.getInstance()
                 .initAppName("TestAppName")
+                .initSharePicFile(getApplication())
                 .initQQ(OAuthConstant.QQ_APPID, OAuthConstant.QQ_SCOPE)
                 .initWechat(OAuthConstant.WECHAT_APPID, OAuthConstant.WECHAT_SECRET)
-                .initWeibo(OAuthConstant.WEIBO_APPID, OAuthConstant.WEIBO_REDIRECT_URL, OAuthConstant.WEIBO_SCOPE);*/
+                .initWeibo(OAuthConstant.WEIBO_APPID, OAuthConstant.WEIBO_REDIRECT_URL, OAuthConstant.WEIBO_SCOPE);
 
         // 微信分享到回话
         findViewById(R.id.share_wechat_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 mCurrentShareManager = new WeiXinShareManager(MainActivity.this);
+                /*mCurrentShareManager.share(
+                        new ShareContentPic(mBitmap),
+                        WechatShareManager.WEIXIN_FRIEND
+                        , mShareListener);*/
                 mCurrentShareManager.share(
-                        new ShareContentWebpage("", "hello", "http://www.liulishuo.com", bitmap),
-                        ShareBlock.WEIXIN_FRIEND
+                        new ShareContentWebpage("title", "hello world!", "http://www.baidu.com", mBitmap)
+                        , ShareBlock.WEIXIN_FRIEND
                         , mShareListener);
             }
         });
@@ -87,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 mCurrentShareManager = new WeiXinShareManager(MainActivity.this);
                 mCurrentShareManager.share(
-                        new ShareContentWebpage("hello", "", "http://www.liulishuo.com", bitmap)
+                        new ShareContentWebpage("title", "hello world!", "http://www.baidu.com", mBitmap)
                         , ShareBlock.WEIXIN_FRIEND_ZONE
                         , mShareListener);
             }
@@ -116,10 +117,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 mCurrentShareManager = new WeiBoShareManager(MainActivity.this);
-//                mCurrentShareManager.share(new ShareContentText("test"), WeiboShareManager.WEIBO_TIME_LINE, mShareListener);
+                //mCurrentShareManager.share(new ShareContentText("test"), WeiboShareManager.WEIBO_TIME_LINE, mShareListener);
                 mCurrentShareManager.share(
-                        new ShareContentWebpage("hello", "lalala", "http://www.liulishuo.com", bitmap)
+                        new ShareContentWebpage("from weibo", "share content web page", "http://www.baidu.com", mBitmap)
                         , ShareBlock.WEIBO_TIME_LINE, mShareListener);
+
+                //mCurrentShareManager.share(new ShareContentPic(picFile), WeiboShareManager.WEIBO_TIME_LINE, mShareListener);
             }
         });
 
@@ -138,8 +141,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 mCurrentShareManager = new QQShareManager(MainActivity.this);
+                /*mCurrentShareManager.share(
+                        new ShareContentWebpage("title", "test", "http://www.baidu.com",
+                                "https://ss0.bdstatic.com/5aV1bjqh_Q23odCf/static/superplus/img/logo_white_ee663702.png")
+                        , QQShareManager.QQ_FRIEND, mShareListener);*/
+                
                 mCurrentShareManager.share(
-                        new ShareContentWebpage("title", "test", "http://www.baidu.com", bitmap)
+                        new ShareContentWebpage("share to qq friend", "hello world!", "http://www.baidu.com",
+                                mBitmap)
                         , ShareBlock.QQ_FRIEND, mShareListener);
             }
         });
@@ -149,79 +158,19 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 mCurrentShareManager = new QQShareManager(MainActivity.this);
 //                ShareContentWebpage content = new ShareContentWebpage("title", "test", "http://www.baidu.com", getImagePath(rooView));
-                ShareContentWebpage content = new ShareContentWebpage("title", "test", "http://www.baidu.com", bitmap);
+                ShareContentWebpage content = new ShareContentWebpage("title", "test", "http://www.baidu.com", mBitmap);
                 mCurrentShareManager.share(content, ShareBlock.QQ_ZONE, mShareListener);
             }
         });
 
     }
 
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        ShareBlock.handlerOnActivityResult(mCurrentLoginManager, mCurrentShareManager, requestCode, resultCode, data);
         super.onActivityResult(requestCode, resultCode, data);
+        ShareBlock.handlerOnActivityResult(mCurrentLoginManager, mCurrentShareManager, requestCode, resultCode, data);
     }
-
-
-    private LoginListener mLoginListener = new LoginListener() {
-        public static final String TAG = "LoginListener";
-
-        @Override
-        public void onSuccess(String uId, String accessToken, long expiresIn, String data) {
-            Log.d(TAG, "uid = " + uId);
-            Log.d(TAG, "accessToken = " + accessToken);
-            Log.d(TAG, "expires_in = " + expiresIn);
-            // 如果是微信登录，这个回调是在新线程中的，不是在主线程中。所以请不要进行ui操作！
-            Log.d(TAG, "登录成功");
-            Toast.makeText(getBaseContext(), "登录成功", Toast.LENGTH_SHORT).show();
-
-            // 在认证成功后直接获取用户信息（简单）
-            mCurrentLoginManager.getUserInfo(new GetUserListener() {
-                @Override
-                public void onComplete(HashMap<String, String> userInfo) {
-
-                }
-
-                @Override
-                public void onError(String msg) {
-
-                }
-
-                @Override
-                public void onCancel() {
-
-                }
-            });
-            // 通过参数来获得用户信息，可以在任何地方调用（灵活）
-            mCurrentLoginManager.getUserInfo(accessToken, uId, new GetUserListener() {
-                @Override
-                public void onComplete(HashMap<String, String> userInfo) {
-
-                }
-
-                @Override
-                public void onError(String msg) {
-
-                }
-
-                @Override
-                public void onCancel() {
-
-                }
-            });
-        }
-
-        @Override
-        public void onError(String msg) {
-            Toast.makeText(getBaseContext(), "登录失败,失败信息：" + msg, Toast.LENGTH_SHORT).show();
-        }
-
-        @Override
-        public void onCancel() {
-            Log.d(TAG, "取消登录");
-            Toast.makeText(getBaseContext(), "取消登录", Toast.LENGTH_SHORT).show();
-        }
-    };
 
     private ShareStateListener mShareListener = new ShareStateListener() {
         @Override
@@ -248,7 +197,6 @@ public class MainActivity extends AppCompatActivity {
      * 截取对象是普通view，得到这个view在本地存放的地址
      */
     private String getImagePath(View view) {
-
         String imagePath = getPathTemp() + File.separator + System.currentTimeMillis() + ".png";
         try {
             view.setDrawingCacheEnabled(true);
@@ -258,7 +206,7 @@ public class MainActivity extends AppCompatActivity {
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
                 out.close();
             }
-        } catch (OutOfMemoryError ex) {
+        } catch (OutOfMemoryError ignored) {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -281,6 +229,5 @@ public class MainActivity extends AppCompatActivity {
         }
         return mPathTemp;
     }
-
 
 }
