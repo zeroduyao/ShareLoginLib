@@ -19,7 +19,7 @@ import android.support.annotation.NonNull;
  * @author Jack Tony
  * @date 2015/10/14
  */
-public class WeiBoShareManager implements IShareManager {
+public class WeiboShareManager implements IShareManager {
 
     protected static final String ACTION_WEIBO_SHARE = "ACTION_WEIBO_SHARE";
 
@@ -29,7 +29,7 @@ public class WeiBoShareManager implements IShareManager {
 
     private ShareStateListener mShareStateListener;
 
-    public WeiBoShareManager(Activity activity) {
+    public WeiboShareManager(Activity activity) {
         mActivity = activity;
     }
 
@@ -37,16 +37,16 @@ public class WeiBoShareManager implements IShareManager {
     public void share(ShareContent shareContent, @ShareBlock.ShareType int shareType, @NonNull ShareStateListener listener) {
         mShareStateListener = listener;
         mActivity.startActivityForResult(
-                new Intent(mActivity, WeiBoHandlerActivity.class)
+                new Intent(mActivity, WeiboHandlerActivity.class)
                         .setAction(ACTION_WEIBO_SHARE)
-                        .putExtras(WeiBoHandlerActivity.sendShareContent(shareContent))
+                        .putExtras(WeiboHandlerActivity.sendShareContent(shareContent))
                 , REQUEST_CODE);
     }
 
     public void handlerOnActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_CODE && resultCode == WeiBoHandlerActivity.RESULT_CODE) {
+        if (requestCode == REQUEST_CODE && resultCode == WeiboHandlerActivity.RESULT_CODE) {
             BaseResponse response = new SendMessageToWeiboResponse();
-            response.fromBundle(data.getBundleExtra(WeiBoHandlerActivity.KEY_RESULT_BUNDLE));
+            response.fromBundle(data.getBundleExtra(WeiboHandlerActivity.KEY_RESULT_BUNDLE));
 
             if (mShareStateListener != null) {
                 switch (response.errCode) {

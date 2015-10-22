@@ -15,7 +15,7 @@ import android.text.TextUtils;
  * @author Jack Tony
  * @date 2015/10/14
  */
-public class WeiBoHandlerActivity extends Activity implements IWeiboHandler.Response {
+public class WeiboHandlerActivity extends Activity implements IWeiboHandler.Response {
 
     protected static final int RESULT_CODE = 0X31;
 
@@ -25,7 +25,7 @@ public class WeiBoHandlerActivity extends Activity implements IWeiboHandler.Resp
 
     private boolean mIsFirstTime = true;
 
-    private WeiBoRealShareManager mSM;
+    private WeiboRealShareManager mSM;
 
     public static Bundle sendShareContent(ShareContent content) {
         Bundle bundle = new Bundle();
@@ -37,7 +37,7 @@ public class WeiBoHandlerActivity extends Activity implements IWeiboHandler.Resp
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mSM = new WeiBoRealShareManager(this);
+        mSM = new WeiboRealShareManager(this);
         // 当 Activity 被重新初始化时（该 Activity 处于后台时，可能会由于内存不足被杀掉了），
         // 需要调用 {@link IWeiboShareAPI#handleWeiboResponse} 来接收微博客户端返回的数据。
         // 执行成功，返回 true，并调用 {@link IWeiboHandler.Response#onResponse}；
@@ -47,7 +47,7 @@ public class WeiBoHandlerActivity extends Activity implements IWeiboHandler.Resp
         }
         Intent intent;
         if ((intent = getIntent()) != null) {
-            if (TextUtils.equals(intent.getAction(), WeiBoShareManager.ACTION_WEIBO_SHARE)) {
+            if (TextUtils.equals(intent.getAction(), WeiboShareManager.ACTION_WEIBO_SHARE)) {
                 ShareContent shareContent = intent.getParcelableExtra(KEY_SHARE_CONTENT);
                 mSM.share(this, shareContent);
             }

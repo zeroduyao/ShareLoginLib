@@ -10,8 +10,8 @@ import com.liulishuo.share.qq.QQLoginManager;
 import com.liulishuo.share.qq.QQShareManager;
 import com.liulishuo.share.wechat.WeiXinLoginManager;
 import com.liulishuo.share.wechat.WeiXinShareManager;
-import com.liulishuo.share.weibo.WeiBoLoginManager;
-import com.liulishuo.share.weibo.WeiBoShareManager;
+import com.liulishuo.share.weibo.WeiboLoginManager;
+import com.liulishuo.share.weibo.WeiboShareManager;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -53,8 +53,8 @@ public class MainActivity extends AppCompatActivity {
         Drawable drawable = getResources().getDrawable(R.drawable.kale);
         mBitmap = ((BitmapDrawable) drawable).getBitmap();
 
-        WeiBoLoginManager.isWeiBoInstalled(this);
-        WeiBoShareManager.isWeiBoInstalled(this);
+        WeiboLoginManager.isWeiBoInstalled(this);
+        WeiboShareManager.isWeiBoInstalled(this);
         
         WeiXinLoginManager.isWeiXinInstalled(this);
         WeiXinShareManager.isWeiXinInstalled(this);
@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.login_weibo_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mCurrentLoginManager = new WeiBoLoginManager(MainActivity.this);
+                mCurrentLoginManager = new WeiboLoginManager(MainActivity.this);
                 mCurrentLoginManager.login(mLoginListener);
             }
         });
@@ -116,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.share_weibo_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mCurrentShareManager = new WeiBoShareManager(MainActivity.this);
+                mCurrentShareManager = new WeiboShareManager(MainActivity.this);
                 //mCurrentShareManager.share(new ShareContentText("test"), WeiboShareManager.WEIBO_TIME_LINE, mShareListener);
                 mCurrentShareManager.share(
                         new ShareContentWebpage("from weibo", "share content web page", "http://www.baidu.com", mBitmap)

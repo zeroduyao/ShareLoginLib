@@ -4,8 +4,8 @@ import com.liulishuo.share.base.login.ILoginManager;
 import com.liulishuo.share.base.share.IShareManager;
 import com.liulishuo.share.qq.QQLoginManager;
 import com.liulishuo.share.qq.QQShareManager;
-import com.liulishuo.share.weibo.WeiBoLoginManager;
-import com.liulishuo.share.weibo.WeiBoShareManager;
+import com.liulishuo.share.weibo.WeiboLoginManager;
+import com.liulishuo.share.weibo.WeiboShareManager;
 import com.tencent.mm.sdk.modelmsg.SendMessageToWX;
 
 import android.app.Application;
@@ -136,8 +136,8 @@ public class ShareBlock {
         if (loginManager != null) {
             if (loginManager instanceof QQLoginManager) {
                 ((QQLoginManager) loginManager).handlerOnActivityResult(requestCode, resultCode, data);
-            } else if (loginManager instanceof WeiBoLoginManager) {
-                ((WeiBoLoginManager) loginManager).handlerOnActivityResult(requestCode, resultCode, data);
+            } else if (loginManager instanceof WeiboLoginManager) {
+                ((WeiboLoginManager) loginManager).handlerOnActivityResult(requestCode, resultCode, data);
             }
         }
 
@@ -145,8 +145,8 @@ public class ShareBlock {
         if (shareManager != null) {
             if (shareManager instanceof QQShareManager) {
                 ((QQShareManager) shareManager).handlerOnActivityResult(requestCode, resultCode, data);
-            } else if (shareManager instanceof WeiBoShareManager) {
-                ((WeiBoShareManager) shareManager).handlerOnActivityResult(requestCode, resultCode, data);
+            } else if (shareManager instanceof WeiboShareManager) {
+                ((WeiboShareManager) shareManager).handlerOnActivityResult(requestCode, resultCode, data);
             }
         }
     }
