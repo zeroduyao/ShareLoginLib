@@ -1,4 +1,6 @@
-package com.liulishuo.share.base.share;
+package com.liulishuo.share.base.shareContent;
+
+import com.liulishuo.share.base.Constants;
 
 import android.graphics.Bitmap;
 import android.os.Parcel;
@@ -47,8 +49,8 @@ public class ShareContentWebpage extends ShareContentPic {
     }
 
     @Override
-    public int getShareWay() {
-        return ShareConstants.SHARE_WAY_WEBPAGE;
+    public int getType() {
+        return Constants.SHARE_TYPE_WEBPAGE;
     }
 
     @Override
@@ -77,13 +79,4 @@ public class ShareContentWebpage extends ShareContentPic {
         this.url = in.readString();
     }
 
-    public static final Creator<ShareContentWebpage> CREATOR = new Creator<ShareContentWebpage>() {
-        public ShareContentWebpage createFromParcel(Parcel source) {
-            return new ShareContentWebpage(source);
-        }
-
-        public ShareContentWebpage[] newArray(int size) {
-            return new ShareContentWebpage[size];
-        }
-    };
 }

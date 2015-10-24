@@ -1,6 +1,7 @@
 package com.liulishuo.share.util;
 
 import android.graphics.Bitmap;
+import android.support.annotation.NonNull;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -35,7 +36,7 @@ public class PicFileUtil {
         return imagePath;
     }
 
-    public static String saveByteArr(byte[] bytes) {
+    public static String saveByteArr(@NonNull byte[] bytes) {
         String imagePath = getInstance().pathTemp + File.separator  + "sharePic_temp.png";
         try {
             FileOutputStream fos = new FileOutputStream(imagePath);

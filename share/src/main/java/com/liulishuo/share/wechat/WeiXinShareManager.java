@@ -2,13 +2,14 @@ package com.liulishuo.share.wechat;
 
 import com.liulishuo.share.R;
 import com.liulishuo.share.ShareBlock;
+import com.liulishuo.share.base.Constants;
 import com.liulishuo.share.base.share.IShareManager;
-import com.liulishuo.share.base.share.ShareConstants;
-import com.liulishuo.share.base.share.ShareContent;
 import com.liulishuo.share.base.share.ShareStateListener;
+import com.liulishuo.share.base.shareContent.ShareContent;
 import com.liulishuo.share.util.ShareUtil;
 import com.tencent.mm.sdk.modelbase.BaseResp;
 import com.tencent.mm.sdk.modelmsg.SendMessageToWX;
+import com.tencent.mm.sdk.modelmsg.WXAppExtendObject;
 import com.tencent.mm.sdk.modelmsg.WXImageObject;
 import com.tencent.mm.sdk.modelmsg.WXMediaMessage;
 import com.tencent.mm.sdk.modelmsg.WXMusicObject;
@@ -34,7 +35,7 @@ public class WeiXinShareManager implements IShareManager {
     private static ShareStateListener mShareStateListener;
 
     public WeiXinShareManager(Context context) {
-        String weChatAppId = ShareBlock.getInstance().wechatAppId;
+        String weChatAppId = ShareBlock.getInstance().weiXinAppId;
         if (TextUtils.isEmpty(weChatAppId)) {
             throw new NullPointerException("请通过shareBlock初始化WeChatAppId");
         }
@@ -50,20 +51,20 @@ public class WeiXinShareManager implements IShareManager {
     public void share(ShareContent shareContent, @ShareBlock.ShareType int shareType, @NonNull ShareStateListener listener) {
         mShareStateListener = listener;
         IMediaObject mediaObject;
-        switch (shareContent.getShareWay()) {
-            case ShareConstants.SHARE_WAY_TEXT:
+        switch (shareContent.getType()) {
+            case Constants.SHARE_TYPE_TEXT:
                 // 纯文字
                 mediaObject = getTextObj(shareContent);
                 break;
-            case ShareConstants.SHARE_WAY_PIC:
+            case Constants.SHARE_TYPE_PIC:
                 // 纯图片
                 mediaObject = getImageObj(shareContent);
                 break;
-            case ShareConstants.SHARE_WAY_WEBPAGE:
+            case Constants.SHARE_TYPE_WEBPAGE:
                 // 网页
                 mediaObject = getWebPageObj(shareContent);
                 break;
-            case ShareConstants.SHARE_WAY_MUSIC:
+            case Constants.SHARE_TYPE_MUSIC:
                 // 音乐
                 mediaObject = getMusicObj(shareContent);
                 break;
@@ -114,25 +115,12 @@ public class WeiXinShareManager implements IShareManager {
         return music;
     }
 
-/*    private IMediaObject getAppObj(ShareContent shareContent) {
-        final WXAppExtendObject app = new WXAppExtendObject();
-        app.extInfo = "";
-
-        final WXMediaMessage msg = new WXMediaMessage();
-        msg.title = shareContent.getTitle();
-        msg.description = shareContent.getSummary();
-        Bitmap thumb = shareContent.getImageBmp();
-
-        if (thumb != null) {
-            msg.setThumbImage(thumb);
-        }
-        msg.mediaObject = app;
-        SendMessageToWX.Req req = new SendMessageToWX.Req();
-        req.transaction = ShareUtil.buildTransaction("app"); // transaction字段用于唯一标识一个请求
-        req.message = msg;
-        req.scene = shareType;
-        return mIWXAPI.sendReq(req);
-    }*/
+    private IMediaObject getAppObj(ShareContent shareContent) {
+        WXAppExtendObject app = new WXAppExtendObject();
+       /* Log.d("ddd", "exinfo = " + ((ShareContentApp) shareContent).getAppInfo());
+        app.extInfo = ((ShareContentApp) shareContent).getAppInfo();*/
+        return app;
+    }
 
     /**
      * 解析分享到微信的结果
@@ -168,7 +156,7 @@ public class WeiXinShareManager implements IShareManager {
      * @return 是否已经安装微信
      */
     public static boolean isWeiXinInstalled(Context context) {
-        IWXAPI api = WXAPIFactory.createWXAPI(context, ShareBlock.getInstance().wechatAppId, true);
+        IWXAPI api = WXAPIFactory.createWXAPI(context, ShareBlock.getInstance().weiXinAppId, true);
         return api.isWXAppInstalled();
     }
 

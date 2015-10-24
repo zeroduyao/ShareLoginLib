@@ -4,7 +4,7 @@ import com.liulishuo.share.ShareBlock;
 import com.liulishuo.share.base.login.ILoginManager;
 import com.liulishuo.share.base.login.LoginListener;
 import com.liulishuo.share.base.share.IShareManager;
-import com.liulishuo.share.base.share.ShareContentWebpage;
+import com.liulishuo.share.base.shareContent.ShareContentWebpage;
 import com.liulishuo.share.base.share.ShareStateListener;
 import com.liulishuo.share.qq.QQLoginManager;
 import com.liulishuo.share.qq.QQShareManager;
@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
                 .initAppName("TestAppName")
                 .initSharePicFile(getApplication())
                 .initQQ(OAuthConstant.QQ_APPID, OAuthConstant.QQ_SCOPE)
-                .initWechat(OAuthConstant.WECHAT_APPID, OAuthConstant.WECHAT_SECRET)
+                .initWeiXin(OAuthConstant.WECHAT_APPID, OAuthConstant.WECHAT_SECRET)
                 .initWeibo(OAuthConstant.WEIBO_APPID, OAuthConstant.WEIBO_REDIRECT_URL, OAuthConstant.WEIBO_SCOPE);
 
         // 微信分享到回话

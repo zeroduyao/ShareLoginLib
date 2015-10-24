@@ -2,7 +2,7 @@ package com.liulishuo.share.weibo;
 
 import com.liulishuo.share.ShareBlock;
 import com.liulishuo.share.base.share.IShareManager;
-import com.liulishuo.share.base.share.ShareContent;
+import com.liulishuo.share.base.shareContent.ShareContent;
 import com.liulishuo.share.base.share.ShareStateListener;
 import com.sina.weibo.sdk.api.share.BaseResponse;
 import com.sina.weibo.sdk.api.share.IWeiboShareAPI;

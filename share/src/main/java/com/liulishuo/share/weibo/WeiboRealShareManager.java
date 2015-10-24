@@ -1,8 +1,8 @@
 package com.liulishuo.share.weibo;
 
 import com.liulishuo.share.ShareBlock;
-import com.liulishuo.share.base.share.ShareConstants;
-import com.liulishuo.share.base.share.ShareContent;
+import com.liulishuo.share.base.Constants;
+import com.liulishuo.share.base.shareContent.ShareContent;
 import com.liulishuo.share.util.ShareUtil;
 import com.sina.weibo.sdk.api.ImageObject;
 import com.sina.weibo.sdk.api.MusicObject;
@@ -46,16 +46,16 @@ class WeiboRealShareManager {
 
     public boolean share(Activity activity, @NonNull ShareContent shareContent) {
         WeiboMultiMessage weiboMultiMessage = new WeiboMultiMessage();
-        switch (shareContent.getShareWay()) {
-            case ShareConstants.SHARE_WAY_TEXT:
+        switch (shareContent.getType()) {
+            case Constants.SHARE_TYPE_TEXT:
                 // 纯文字
                 weiboMultiMessage.textObject = getTextObj(shareContent.getSummary());
                 break;
-            case ShareConstants.SHARE_WAY_PIC:
+            case Constants.SHARE_TYPE_PIC:
                 // 纯图片
                 weiboMultiMessage.imageObject = getImageObj(shareContent);
                 break;
-            case ShareConstants.SHARE_WAY_WEBPAGE:
+            case Constants.SHARE_TYPE_WEBPAGE:
                 // 网页
                 if (shareContent.getURL() == null) {
                     weiboMultiMessage.imageObject = getImageObj(shareContent);
@@ -64,7 +64,7 @@ class WeiboRealShareManager {
                     weiboMultiMessage.mediaObject = getWebPageObj(shareContent);
                 }
                 break;
-            case ShareConstants.SHARE_WAY_MUSIC:
+            case Constants.SHARE_TYPE_MUSIC:
                 // 音乐
                 weiboMultiMessage.mediaObject = getMusicObj(shareContent);
                 break;
@@ -174,5 +174,6 @@ class WeiboRealShareManager {
         videoObject.defaultText = shareContent.getSummary(); // 默认文案
         return videoObject;
     }
+    
 
 }

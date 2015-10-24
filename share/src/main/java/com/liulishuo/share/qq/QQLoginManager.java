@@ -4,10 +4,9 @@ import com.liulishuo.share.ShareBlock;
 import com.liulishuo.share.base.login.GetUserListener;
 import com.liulishuo.share.base.login.ILoginManager;
 import com.liulishuo.share.base.login.LoginListener;
-import com.liulishuo.share.base.share.ShareConstants;
+import com.liulishuo.share.base.Constants;
 import com.liulishuo.share.util.HttpUtil;
 import com.tencent.connect.UserInfo;
-import com.tencent.connect.common.Constants;
 import com.tencent.tauth.IUiListener;
 import com.tencent.tauth.Tencent;
 import com.tencent.tauth.UiError;
@@ -79,9 +78,9 @@ public class QQLoginManager implements ILoginManager {
 
     private void initOpenidAndToken(@NonNull JSONObject jsonObject) {
         try {
-            String openId = jsonObject.getString(Constants.PARAM_OPEN_ID);
-            String token = jsonObject.getString(Constants.PARAM_ACCESS_TOKEN);
-            String expires = jsonObject.getString(Constants.PARAM_EXPIRES_IN);
+            String openId = jsonObject.getString(com.tencent.connect.common.Constants.PARAM_OPEN_ID);
+            String token = jsonObject.getString(com.tencent.connect.common.Constants.PARAM_ACCESS_TOKEN);
+            String expires = jsonObject.getString(com.tencent.connect.common.Constants.PARAM_EXPIRES_IN);
             if (!TextUtils.isEmpty(token) && !TextUtils.isEmpty(expires) && !TextUtils.isEmpty(openId)) {
                 mTencent.setAccessToken(token, expires);
                 mTencent.setOpenId(openId);
@@ -101,10 +100,10 @@ public class QQLoginManager implements ILoginManager {
                 try {
                     JSONObject jsonObject = (JSONObject) object;
                     HashMap<String, String> userInfoHashMap = new HashMap<>();
-                    userInfoHashMap.put(ShareConstants.PARAMS_NICK_NAME, jsonObject.getString("nickname"));
-                    userInfoHashMap.put(ShareConstants.PARAMS_SEX, jsonObject.getString("gender"));
-                    userInfoHashMap.put(ShareConstants.PARAMS_IMAGEURL, jsonObject.getString("figureurl_qq_2"));
-                    userInfoHashMap.put(ShareConstants.PARAMS_USERID, mTencent.getOpenId());
+                    userInfoHashMap.put(Constants.PARAMS_NICK_NAME, jsonObject.getString("nickname"));
+                    userInfoHashMap.put(Constants.PARAMS_SEX, jsonObject.getString("gender"));
+                    userInfoHashMap.put(Constants.PARAMS_IMAGEURL, jsonObject.getString("figureurl_qq_2"));
+                    userInfoHashMap.put(Constants.PARAMS_USERID, mTencent.getOpenId());
                     listener.onComplete(userInfoHashMap);
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -142,10 +141,10 @@ public class QQLoginManager implements ILoginManager {
                 try {
                     JSONObject jsonObject = new JSONObject(result);
                     HashMap<String, String> userInfoHashMap = new HashMap<>();
-                    userInfoHashMap.put(ShareConstants.PARAMS_NICK_NAME, jsonObject.getString("nickname"));
-                    userInfoHashMap.put(ShareConstants.PARAMS_SEX, jsonObject.getString("gender"));
-                    userInfoHashMap.put(ShareConstants.PARAMS_IMAGEURL, jsonObject.getString("figureurl_qq_1"));
-                    userInfoHashMap.put(ShareConstants.PARAMS_USERID, uid);
+                    userInfoHashMap.put(Constants.PARAMS_NICK_NAME, jsonObject.getString("nickname"));
+                    userInfoHashMap.put(Constants.PARAMS_SEX, jsonObject.getString("gender"));
+                    userInfoHashMap.put(Constants.PARAMS_IMAGEURL, jsonObject.getString("figureurl_qq_1"));
+                    userInfoHashMap.put(Constants.PARAMS_USERID, uid);
 
                     listener.onComplete(userInfoHashMap);
                 } catch (Exception e) {

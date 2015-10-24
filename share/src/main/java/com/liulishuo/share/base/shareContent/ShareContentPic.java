@@ -1,5 +1,6 @@
-package com.liulishuo.share.base.share;
+package com.liulishuo.share.base.shareContent;
 
+import com.liulishuo.share.base.Constants;
 import com.liulishuo.share.util.PicFileUtil;
 
 import android.graphics.Bitmap;
@@ -10,7 +11,7 @@ import android.support.annotation.NonNull;
  * Created by echo on 5/18/15.
  * 分享图片模式
  */
-class ShareContentPic implements ShareContent {
+public class ShareContentPic implements ShareContent {
 
     protected byte[] bitmapBytes;
 
@@ -48,8 +49,8 @@ class ShareContentPic implements ShareContent {
     }
 
     @Override
-    public int getShareWay() {
-        return ShareConstants.SHARE_WAY_PIC;
+    public int getType() {
+        return Constants.SHARE_TYPE_PIC;
     }
 
     @Override
@@ -66,13 +67,4 @@ class ShareContentPic implements ShareContent {
         this.bitmapBytes = in.createByteArray();
     }
 
-    public static final Creator<ShareContentPic> CREATOR = new Creator<ShareContentPic>() {
-        public ShareContentPic createFromParcel(Parcel source) {
-            return new ShareContentPic(source);
-        }
-
-        public ShareContentPic[] newArray(int size) {
-            return new ShareContentPic[size];
-        }
-    };
 }

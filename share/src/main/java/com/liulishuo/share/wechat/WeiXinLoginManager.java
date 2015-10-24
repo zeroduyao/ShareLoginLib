@@ -6,7 +6,7 @@ import com.liulishuo.share.ShareBlock;
 import com.liulishuo.share.base.login.GetUserListener;
 import com.liulishuo.share.base.login.ILoginManager;
 import com.liulishuo.share.base.login.LoginListener;
-import com.liulishuo.share.base.share.ShareConstants;
+import com.liulishuo.share.base.Constants;
 import com.liulishuo.share.util.HttpUtil;
 import com.tencent.mm.sdk.modelbase.BaseResp;
 import com.tencent.mm.sdk.modelmsg.SendAuth;
@@ -43,7 +43,7 @@ public class WeiXinLoginManager implements ILoginManager {
 
 
     public WeiXinLoginManager(Context context) {
-        String weChatAppId = ShareBlock.getInstance().wechatAppId;
+        String weChatAppId = ShareBlock.getInstance().weiXinAppId;
         if (TextUtils.isEmpty(weChatAppId)) {
             throw new NullPointerException("请通过shareBlock初始化WeChatAppId");
         }
@@ -59,7 +59,7 @@ public class WeiXinLoginManager implements ILoginManager {
      * @return 是否已经安装微信
      */
     public static boolean isWeiXinInstalled(Context context) {
-        IWXAPI api = WXAPIFactory.createWXAPI(context, ShareBlock.getInstance().wechatAppId, true);
+        IWXAPI api = WXAPIFactory.createWXAPI(context, ShareBlock.getInstance().weiXinAppId, true);
         return api.isWXAppInstalled();
     }
 
@@ -93,9 +93,9 @@ public class WeiXinLoginManager implements ILoginManager {
                 builder.append("https://api.weixin.qq.com")
                         .append("/sns/oauth2/access_token")
                         .append("?appid=")
-                        .append(ShareBlock.getInstance().wechatAppId)
+                        .append(ShareBlock.getInstance().weiXinAppId)
                         .append("&secret=")
-                        .append(ShareBlock.getInstance().wechatSecret)
+                        .append(ShareBlock.getInstance().weiXinSecret)
                         .append("&code=")
                         .append(resp.code)
                         .append("&grant_type=authorization_code");
@@ -168,10 +168,10 @@ public class WeiXinLoginManager implements ILoginManager {
                 try {
                     JSONObject jsonObject = new JSONObject(result);
                     HashMap<String, String> userInfoHashMap = new HashMap<>();
-                    userInfoHashMap.put(ShareConstants.PARAMS_NICK_NAME, jsonObject.getString("nickname"));
-                    userInfoHashMap.put(ShareConstants.PARAMS_SEX, jsonObject.getString("sex"));
-                    userInfoHashMap.put(ShareConstants.PARAMS_IMAGEURL, jsonObject.getString("headimgurl"));
-                    userInfoHashMap.put(ShareConstants.PARAMS_USERID, jsonObject.getString("unionid"));
+                    userInfoHashMap.put(Constants.PARAMS_NICK_NAME, jsonObject.getString("nickname"));
+                    userInfoHashMap.put(Constants.PARAMS_SEX, jsonObject.getString("sex"));
+                    userInfoHashMap.put(Constants.PARAMS_IMAGEURL, jsonObject.getString("headimgurl"));
+                    userInfoHashMap.put(Constants.PARAMS_USERID, jsonObject.getString("unionid"));
 
                     listener.onComplete(userInfoHashMap);
                 } catch (Exception e) {

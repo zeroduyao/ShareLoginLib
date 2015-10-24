@@ -1,6 +1,7 @@
 package com.liulishuo.share.base.share;
 
 import com.liulishuo.share.ShareBlock;
+import com.liulishuo.share.base.shareContent.ShareContent;
 
 /**
  * Created by echo on 5/21/15.

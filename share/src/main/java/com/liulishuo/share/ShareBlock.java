@@ -89,16 +89,16 @@ public class ShareBlock {
         return this;
     }
 
-    public String wechatAppId;
+    public String weiXinAppId;
 
-    public String wechatSecret;
+    public String weiXinSecret;
 
     /**
      * init wechat config
      */
-    public ShareBlock initWechat(@NonNull String wechatAppId, @NonNull String wechatSecret) {
-        this.wechatAppId = wechatAppId;
-        this.wechatSecret = wechatSecret;
+    public ShareBlock initWeiXin(@NonNull String weiXinAppId, @NonNull String weiXinSecret) {
+        this.weiXinAppId = weiXinAppId;
+        this.weiXinSecret = weiXinSecret;
         return this;
     }
 

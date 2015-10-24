@@ -2,8 +2,8 @@ package com.liulishuo.share.qq;
 
 import com.liulishuo.share.ShareBlock;
 import com.liulishuo.share.base.share.IShareManager;
-import com.liulishuo.share.base.share.ShareConstants;
-import com.liulishuo.share.base.share.ShareContent;
+import com.liulishuo.share.base.Constants;
+import com.liulishuo.share.base.shareContent.ShareContent;
 import com.liulishuo.share.base.share.ShareStateListener;
 import com.liulishuo.share.util.PicFileUtil;
 import com.tencent.connect.share.QQShare;
@@ -17,6 +17,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -35,7 +36,7 @@ public class QQShareManager implements IShareManager {
         String appId = ShareBlock.getInstance().QQAppId;
         mActivity = activity;
         if (!TextUtils.isEmpty(appId)) {
-            mTencent = Tencent.createInstance(appId, activity);
+            mTencent = Tencent.createInstance(appId, activity.getApplicationContext());
         } else {
             throw new NullPointerException("请通过shareBlock初始化QQAppId");
         }
@@ -54,20 +55,22 @@ public class QQShareManager implements IShareManager {
 
     private void shareToQQ(ShareContent shareContent) {
         Bundle bundle;
-        switch (shareContent.getShareWay()) {
-            case ShareConstants.SHARE_WAY_TEXT:
+        switch (shareContent.getType()) {
+            case Constants.SHARE_TYPE_TEXT:
                 // 纯文字
+                // FIXME: 2015/10/23 文档中说： "本接口支持3种模式，每种模式的参数设置不同"，这三种模式中不包含纯文本
+                Toast.makeText(mActivity.getApplicationContext(), "QQ目前不支持分享纯文本信息", Toast.LENGTH_SHORT).show();
                 bundle = getTextObj();
                 break;
-            case ShareConstants.SHARE_WAY_PIC:
+            case Constants.SHARE_TYPE_PIC:
                 // 纯图片
                 bundle = getImageObj(shareContent);
                 break;
-            case ShareConstants.SHARE_WAY_WEBPAGE:
+            case Constants.SHARE_TYPE_WEBPAGE:
                 // 网页
                 bundle = getWebPageObj();
                 break;
-            case ShareConstants.SHARE_WAY_MUSIC:
+            case Constants.SHARE_TYPE_MUSIC:
                 // 音乐
                 bundle = getMusicObj(shareContent);
                 break;
@@ -78,8 +81,7 @@ public class QQShareManager implements IShareManager {
     }
 
     /**
-     * @see "http://wiki.open.qq.com/wiki/mobile/API%E8%B0%83%E7%94%A8%E8%AF%B4%E6%98%8E#1.13_.E5.88.86.E4.BA.AB.E6.B6.88.E6.81.AF.E5.88.B0QQ.EF.BC.88
-     * .E6.97.A0.E9.9C.80QQ.E7.99.BB.E5.BD.95.EF.BC.89"
+     * @see "http://wiki.open.qq.com/wiki/mobile/API%E8%B0%83%E7%94%A8%E8%AF%B4%E6%98%8E#1.13_.E5.88.86.E4.BA.AB.E6.B6.88.E6.81.AF.E5.88.B0QQ.EF.BC.88.E6.97.A0.E9.9C.80QQ.E7.99.BB.E5.BD.95.EF.BC.89"
      *
      * QQShare.PARAM_TITLE 	        必填 	String 	分享的标题, 最长30个字符。
      * QQShare.SHARE_TO_QQ_KEY_TYPE 	必填 	Int 	分享的类型。图文分享(普通分享)填Tencent.SHARE_TO_QQ_TYPE_DEFAULT
@@ -99,7 +101,9 @@ public class QQShareManager implements IShareManager {
         params.putString(QQShare.SHARE_TO_QQ_TITLE, shareContent.getTitle()); // 标题
         params.putString(QQShare.SHARE_TO_QQ_SUMMARY, shareContent.getSummary()); // 描述
         params.putString(QQShare.SHARE_TO_QQ_TARGET_URL, shareContent.getURL()); // 这条分享消息被好友点击后的跳转URL
-        params.putString(QQShare.SHARE_TO_QQ_IMAGE_URL, PicFileUtil.saveByteArr(shareContent.getImageBmpBytes())); // 分享图片的URL或者本地路径 (可选)
+        if (shareContent.getImageBmpBytes() != null) {
+            params.putString(QQShare.SHARE_TO_QQ_IMAGE_URL, PicFileUtil.saveByteArr(shareContent.getImageBmpBytes())); // 分享图片的URL或者本地路径 (可选)
+        }
         params.putString(QQShare.SHARE_TO_QQ_APP_NAME, ShareBlock.getInstance().appName); // 手Q客户端顶部，替换“返回”按钮文字，如果为空，用返回代替 (可选)
         mTencent.shareToQQ(mActivity, params, mShareListener);
     }
@@ -153,13 +157,21 @@ public class QQShareManager implements IShareManager {
         params.putStringArrayList(QzoneShare.SHARE_TO_QQ_IMAGE_URL, "图片链接ArrayList");*/
 
         params.putInt(QzoneShare.SHARE_TO_QZONE_KEY_TYPE, QzoneShare.SHARE_TO_QZONE_TYPE_IMAGE_TEXT);
-        params.putString(QzoneShare.SHARE_TO_QQ_TITLE, shareContent.getTitle()); // 标题
+        String title = shareContent.getTitle();
+        if (title == null) {
+            // 如果没title，说明就是分享的纯文字、纯图片
+            Toast.makeText(mActivity.getApplicationContext(), "QQ空间目前只支持分享图文信息", Toast.LENGTH_SHORT).show();
+        }
+        params.putString(QzoneShare.SHARE_TO_QQ_TITLE, title); // 标题
         params.putString(QzoneShare.SHARE_TO_QQ_SUMMARY, shareContent.getSummary()); // 描述
         params.putString(QzoneShare.SHARE_TO_QQ_TARGET_URL, shareContent.getURL()); // 点击后跳转的url
+        
         // 分享的图片, 以ArrayList<String>的类型传入，以便支持多张图片 （注：图片最多支持9张图片，多余的图片会被丢弃）。
-        ArrayList<String> imageUrls = new ArrayList<>(); // 图片的ArrayList
-        imageUrls.add(PicFileUtil.saveByteArr(shareContent.getImageBmpBytes()));
-        params.putStringArrayList(QzoneShare.SHARE_TO_QQ_IMAGE_URL, imageUrls);
+        if (shareContent.getImageBmpBytes() != null) {
+            ArrayList<String> imageUrls = new ArrayList<>(); // 图片的ArrayList
+            imageUrls.add(PicFileUtil.saveByteArr(shareContent.getImageBmpBytes()));
+            params.putStringArrayList(QzoneShare.SHARE_TO_QQ_IMAGE_URL, imageUrls);
+        }
         mTencent.shareToQzone(mActivity, params, mShareListener);
     }
 

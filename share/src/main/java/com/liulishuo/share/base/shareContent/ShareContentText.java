@@ -1,4 +1,6 @@
-package com.liulishuo.share.base.share;
+package com.liulishuo.share.base.shareContent;
+
+import com.liulishuo.share.base.Constants;
 
 import android.os.Parcel;
 import android.support.annotation.NonNull;
@@ -7,7 +9,7 @@ import android.support.annotation.NonNull;
  * Created by echo on 5/18/15.
  * 分享文本内容
  */
-class ShareContentText implements ShareContent {
+public class ShareContentText implements ShareContent {
 
     private final String summary;
 
@@ -45,8 +47,8 @@ class ShareContentText implements ShareContent {
     }
 
     @Override
-    public int getShareWay() {
-        return ShareConstants.SHARE_WAY_TEXT;
+    public int getType() {
+        return Constants.SHARE_TYPE_TEXT;
     }
 
     @Override

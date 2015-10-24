@@ -4,7 +4,7 @@ import com.liulishuo.share.ShareBlock;
 import com.liulishuo.share.base.login.GetUserListener;
 import com.liulishuo.share.base.login.ILoginManager;
 import com.liulishuo.share.base.login.LoginListener;
-import com.liulishuo.share.base.share.ShareConstants;
+import com.liulishuo.share.base.Constants;
 import com.liulishuo.share.util.HttpUtil;
 import com.liulishuo.share.weibo.model.AbsOpenAPI;
 import com.liulishuo.share.weibo.model.User;
@@ -112,10 +112,10 @@ public class WeiboLoginManager implements ILoginManager {
                     User user = User.parse(response);
                     if (user != null) {
                         HashMap<String, String> userInfoHashMap = new HashMap<>();
-                        userInfoHashMap.put(ShareConstants.PARAMS_NICK_NAME, user.name);
-                        userInfoHashMap.put(ShareConstants.PARAMS_SEX, user.gender);
-                        userInfoHashMap.put(ShareConstants.PARAMS_IMAGEURL, user.avatar_large);
-                        userInfoHashMap.put(ShareConstants.PARAMS_USERID, user.id);
+                        userInfoHashMap.put(Constants.PARAMS_NICK_NAME, user.name);
+                        userInfoHashMap.put(Constants.PARAMS_SEX, user.gender);
+                        userInfoHashMap.put(Constants.PARAMS_IMAGEURL, user.avatar_large);
+                        userInfoHashMap.put(Constants.PARAMS_USERID, user.id);
                         listener.onComplete(userInfoHashMap);
                     }
                 }
@@ -144,10 +144,10 @@ public class WeiboLoginManager implements ILoginManager {
                 try {
                     JSONObject jsonObject = new JSONObject(result);
                     HashMap<String, String> userInfoHashMap = new HashMap<>();
-                    userInfoHashMap.put(ShareConstants.PARAMS_NICK_NAME, jsonObject.getString("screen_name"));
-                    userInfoHashMap.put(ShareConstants.PARAMS_SEX, jsonObject.getString("gender"));
-                    userInfoHashMap.put(ShareConstants.PARAMS_IMAGEURL, jsonObject.getString("avatar_large"));
-                    userInfoHashMap.put(ShareConstants.PARAMS_USERID, jsonObject.getString("id"));
+                    userInfoHashMap.put(Constants.PARAMS_NICK_NAME, jsonObject.getString("screen_name"));
+                    userInfoHashMap.put(Constants.PARAMS_SEX, jsonObject.getString("gender"));
+                    userInfoHashMap.put(Constants.PARAMS_IMAGEURL, jsonObject.getString("avatar_large"));
+                    userInfoHashMap.put(Constants.PARAMS_USERID, jsonObject.getString("id"));
 
                     listener.onComplete(userInfoHashMap);
                 } catch (Exception e) {

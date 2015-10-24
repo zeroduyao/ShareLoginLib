@@ -1,33 +1,33 @@
-package com.liulishuo.share.base.share;
+package com.liulishuo.share.base;
 
 /**
  * Created by echo on 5/18/15.
  */
-public class ShareConstants {
+public class Constants {
     /**
      * text
      */
-    public static final int SHARE_WAY_TEXT = 1;
+    public static final int SHARE_TYPE_TEXT = 1;
 
     /**
      * picture
      */
-    public static final int SHARE_WAY_PIC = 2;
+    public static final int SHARE_TYPE_PIC = 2;
 
     /**
      * webPage
      */
-    public static final int SHARE_WAY_WEBPAGE = 3;
+    public static final int SHARE_TYPE_WEBPAGE = 3;
 
     /**
      * music
      */
-    public static final int SHARE_WAY_MUSIC = 4;
+    public static final int SHARE_TYPE_MUSIC = 4;
 
     /**
      * app
      */
-    public static final int SHARE_WEY_APP = 5;
+    public static final int SHARE_TYPE_APP = 5;
 
 
     /**

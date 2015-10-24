@@ -1,4 +1,6 @@
-package com.liulishuo.share.base.share;
+package com.liulishuo.share.base.shareContent;
+
+import com.liulishuo.share.base.Constants;
 
 import android.graphics.Bitmap;
 import android.os.Parcel;
@@ -29,8 +31,8 @@ class ShareContentMusic extends ShareContentWebpage {
     }
 
     @Override
-    public int getShareWay() {
-        return ShareConstants.SHARE_WAY_MUSIC;
+    public int getType() {
+        return Constants.SHARE_TYPE_MUSIC;
     }
 
     @Override
