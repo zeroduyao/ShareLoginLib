@@ -15,9 +15,16 @@
         android:label="@string/app_name"
         >
 
+        <!-- ============================= weibo ============================= -->
+        
+        <activity android:name=".weibo.WeiBoLoginActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
+        
         <!-- 调用微博分享的activity需要按照下方进行设置intent-filter -->
         <activity
-            android:name=".weibo.WeiboHandlerActivity"
+            android:name=".weibo.WeiBoShareActivity"
             android:configChanges="keyboardHidden|orientation"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Translucent.NoTitleBar"
@@ -28,7 +35,6 @@
             </intent-filter>
         </activity>
 
-
         <!-- 必须注册在微博授权，分享微博时候用到 -->
         <activity
             android:name="com.sina.weibo.sdk.component.WeiboSdkBrowser"
@@ -37,10 +43,23 @@
             android:windowSoftInputMode="adjustResize"
             />
 
+        <!-- ============================= qq ============================= -->
+        
+        <activity android:name=".qq.QQLoginActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
+
+        <activity android:name=".qq.QQShareActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
+        
+
         <!-- 腾讯sdk中增加的帮助activity对象，可以用来查看日志 -->
         <activity
             android:name="com.tencent.connect.common.AssistActivity"
-            android:configChanges="orientation|keyboardHidden"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Translucent.NoTitleBar"
             />

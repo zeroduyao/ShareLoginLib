@@ -1,4 +1,4 @@
-package com.liulishuo.share.wechat;
+package com.liulishuo.share.weixin;
 
 import com.liulishuo.share.R;
 import com.liulishuo.share.ShareBlock;
@@ -48,7 +48,7 @@ public class WeiXinShareManager implements IShareManager {
     }
 
     @Override
-    public void share(ShareContent shareContent, @ShareBlock.ShareType int shareType, @NonNull ShareStateListener listener) {
+    public void share(@NonNull ShareContent shareContent, @ShareBlock.ShareType int shareType, @NonNull ShareStateListener listener) {
         mShareStateListener = listener;
         IMediaObject mediaObject;
         switch (shareContent.getType()) {

@@ -1,10 +1,10 @@
 package com.liulishuo.share.qq;
 
 import com.liulishuo.share.ShareBlock;
+import com.liulishuo.share.base.Constants;
 import com.liulishuo.share.base.login.GetUserListener;
 import com.liulishuo.share.base.login.ILoginManager;
 import com.liulishuo.share.base.login.LoginListener;
-import com.liulishuo.share.base.Constants;
 import com.liulishuo.share.util.HttpUtil;
 import com.tencent.connect.UserInfo;
 import com.tencent.tauth.IUiListener;
@@ -15,6 +15,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
@@ -26,30 +27,35 @@ import java.util.HashMap;
  */
 public class QQLoginManager implements ILoginManager {
 
-    private Activity mActivity;
+    private Context mContext;
 
-    private Tencent mTencent;
+    private static Tencent mTencent;
 
-    private LoginUiListener mLoginUiListener;
+    private static LoginUiListener mLoginUiListener;
 
-    public QQLoginManager(Activity activity) {
-        mActivity = activity;
+    public QQLoginManager(Context context) {
+        mContext = context;
         String appId = ShareBlock.getInstance().QQAppId;
         if (!TextUtils.isEmpty(appId)) {
-            mTencent = Tencent.createInstance(appId, activity.getApplicationContext());
+            mTencent = Tencent.createInstance(appId, context.getApplicationContext());
         }
     }
 
     @Override
     public void login(final @NonNull LoginListener loginListener) {
-        if (!mTencent.isSessionValid()) {
-            mLoginUiListener = new LoginUiListener(loginListener);
-            mTencent.login(mActivity, ShareBlock.getInstance().QQScope, mLoginUiListener);
-        } else {
-            mTencent.logout(mActivity);
-        }
+        mLoginUiListener = new LoginUiListener(loginListener);
+        // 启动activity后，应该立刻调用{sendLoginMsg}方法
+        mContext.startActivity(new Intent(mContext, QQLoginActivity.class));
     }
 
+    public static void sendLoginMsg(Activity activity) {
+        if (!mTencent.isSessionValid()) {
+            mTencent.login(activity, ShareBlock.getInstance().QQScope, mLoginUiListener);
+        } else {
+            mTencent.logout(activity);
+        }
+    }
+    
     private class LoginUiListener implements IUiListener {
 
         final private LoginListener mLoginListener;
@@ -92,7 +98,7 @@ public class QQLoginManager implements ILoginManager {
 
     @Override
     public void getUserInfo(final @NonNull GetUserListener listener) {
-        UserInfo info = new UserInfo(mActivity, mTencent.getQQToken());
+        UserInfo info = new UserInfo(mContext.getApplicationContext(), mTencent.getQQToken());
         // 执行获取用户信息的操作
         info.getUserInfo(new IUiListener() {
             @Override
@@ -160,9 +166,14 @@ public class QQLoginManager implements ILoginManager {
         });
     }
 
-    public void handlerOnActivityResult(int requestCode, int resultCode, Intent data) {
+    public static void handlerOnActivityResult(int requestCode, int resultCode, Intent data) {
         if (mLoginUiListener != null) {
             Tencent.onActivityResultData(requestCode, resultCode, data, mLoginUiListener);
+            if(requestCode == com.tencent.connect.common.Constants.REQUEST_API) {
+                if(resultCode == com.tencent.connect.common.Constants.RESULT_LOGIN) {
+                    Tencent.handleResultData(data, mLoginUiListener);
+                }
+            }
         }
     }
 

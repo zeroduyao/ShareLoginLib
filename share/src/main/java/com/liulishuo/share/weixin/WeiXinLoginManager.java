@@ -1,4 +1,4 @@
-package com.liulishuo.share.wechat;
+package com.liulishuo.share.weixin;
 
 
 import com.liulishuo.share.R;

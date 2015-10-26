@@ -1,15 +1,8 @@
 package com.liulishuo.share;
 
-import com.liulishuo.share.base.login.ILoginManager;
-import com.liulishuo.share.base.share.IShareManager;
-import com.liulishuo.share.qq.QQLoginManager;
-import com.liulishuo.share.qq.QQShareManager;
-import com.liulishuo.share.weibo.WeiboLoginManager;
-import com.liulishuo.share.weibo.WeiboShareManager;
 import com.tencent.mm.sdk.modelmsg.SendMessageToWX;
 
 import android.app.Application;
-import android.content.Intent;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
@@ -129,26 +122,6 @@ public class ShareBlock {
         QQAppId = qqAppId;
         QQScope = scope;
         return this;
-    }
-
-    public static void handlerOnActivityResult(ILoginManager loginManager, IShareManager shareManager, int requestCode, int resultCode, Intent data) {
-        // 处理登录后的结果
-        if (loginManager != null) {
-            if (loginManager instanceof QQLoginManager) {
-                ((QQLoginManager) loginManager).handlerOnActivityResult(requestCode, resultCode, data);
-            } else if (loginManager instanceof WeiboLoginManager) {
-                ((WeiboLoginManager) loginManager).handlerOnActivityResult(requestCode, resultCode, data);
-            }
-        }
-
-        // 进行分享完毕后的回调处理
-        if (shareManager != null) {
-            if (shareManager instanceof QQShareManager) {
-                ((QQShareManager) shareManager).handlerOnActivityResult(requestCode, resultCode, data);
-            } else if (shareManager instanceof WeiboShareManager) {
-                ((WeiboShareManager) shareManager).handlerOnActivityResult(requestCode, resultCode, data);
-            }
-        }
     }
 
 }

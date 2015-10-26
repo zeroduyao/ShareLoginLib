@@ -1,10 +1,10 @@
 package com.liulishuo.share.qq;
 
 import com.liulishuo.share.ShareBlock;
-import com.liulishuo.share.base.share.IShareManager;
 import com.liulishuo.share.base.Constants;
-import com.liulishuo.share.base.shareContent.ShareContent;
+import com.liulishuo.share.base.share.IShareManager;
 import com.liulishuo.share.base.share.ShareStateListener;
+import com.liulishuo.share.base.shareContent.ShareContent;
 import com.liulishuo.share.util.PicFileUtil;
 import com.tencent.connect.share.QQShare;
 import com.tencent.connect.share.QzoneShare;
@@ -13,9 +13,9 @@ import com.tencent.tauth.Tencent;
 import com.tencent.tauth.UiError;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.widget.Toast;
 
@@ -24,26 +24,27 @@ import java.util.ArrayList;
 /**
  * Created by echo on 5/18/15.
  */
-public class QQShareManager implements IShareManager {
+public class QQShareManager implements IShareManager{
 
-    private Tencent mTencent;
+    private static String KEY_SHARE_TO_FRIEND = "key_share_to_friend";
+    
+    private static Tencent mTencent;
 
-    private Activity mActivity;
+    private Context mContext;
 
-    private ShareStateListener mShareStateListener;
-
-    public QQShareManager(Activity activity) {
+    private static ShareStateListener mShareStateListener;
+    
+    public QQShareManager(Context context) {
         String appId = ShareBlock.getInstance().QQAppId;
-        mActivity = activity;
+        mContext = context;
         if (!TextUtils.isEmpty(appId)) {
-            mTencent = Tencent.createInstance(appId, activity.getApplicationContext());
+            mTencent = Tencent.createInstance(appId, mContext.getApplicationContext());
         } else {
             throw new NullPointerException("请通过shareBlock初始化QQAppId");
         }
     }
 
-    @Override
-    public void share(ShareContent shareContent, @ShareBlock.ShareType int shareType, @NonNull ShareStateListener listener) {
+    public void share(ShareContent shareContent, @ShareBlock.ShareType int shareType, ShareStateListener listener) {
         mShareStateListener = listener;
         Bundle bundle = new Bundle();
         if (shareType == ShareBlock.QQ_FRIEND) {
@@ -59,9 +60,9 @@ public class QQShareManager implements IShareManager {
             case Constants.SHARE_TYPE_TEXT:
                 // 纯文字
                 // FIXME: 2015/10/23 文档中说： "本接口支持3种模式，每种模式的参数设置不同"，这三种模式中不包含纯文本
-                Toast.makeText(mActivity.getApplicationContext(), "QQ目前不支持分享纯文本信息", Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext.getApplicationContext(), "QQ目前不支持分享纯文本信息", Toast.LENGTH_SHORT).show();
                 bundle = getTextObj();
-                break;
+                return;
             case Constants.SHARE_TYPE_PIC:
                 // 纯图片
                 bundle = getImageObj(shareContent);
@@ -98,6 +99,7 @@ public class QQShareManager implements IShareManager {
      * 发送给QQ好友
      */
     private void shareMsgToQQFriend(Bundle params, ShareContent shareContent) {
+        params.putBoolean(KEY_SHARE_TO_FRIEND, true);
         params.putString(QQShare.SHARE_TO_QQ_TITLE, shareContent.getTitle()); // 标题
         params.putString(QQShare.SHARE_TO_QQ_SUMMARY, shareContent.getSummary()); // 描述
         params.putString(QQShare.SHARE_TO_QQ_TARGET_URL, shareContent.getURL()); // 这条分享消息被好友点击后的跳转URL
@@ -105,7 +107,15 @@ public class QQShareManager implements IShareManager {
             params.putString(QQShare.SHARE_TO_QQ_IMAGE_URL, PicFileUtil.saveByteArr(shareContent.getImageBmpBytes())); // 分享图片的URL或者本地路径 (可选)
         }
         params.putString(QQShare.SHARE_TO_QQ_APP_NAME, ShareBlock.getInstance().appName); // 手Q客户端顶部，替换“返回”按钮文字，如果为空，用返回代替 (可选)
-        mTencent.shareToQQ(mActivity, params, mShareListener);
+        mContext.startActivity(new Intent(mContext, QQShareActivity.class).putExtras(params));
+    }
+
+    public static void sendShareMsg(Activity activity, Bundle params) {
+        if (params.getBoolean(KEY_SHARE_TO_FRIEND)) {
+            mTencent.shareToQQ(activity, params, mShareListener);
+        } else {
+            mTencent.shareToQzone(activity, params, mShareListener);
+        }
     }
 
     private Bundle getTextObj() {
@@ -155,37 +165,37 @@ public class QQShareManager implements IShareManager {
         params.putString(QzoneShare.SHARE_TO_QQ_SUMMARY, "摘要");//选填
         params.putString(QzoneShare.SHARE_TO_QQ_TARGET_URL, "跳转URL");//必填
         params.putStringArrayList(QzoneShare.SHARE_TO_QQ_IMAGE_URL, "图片链接ArrayList");*/
-
+        params.putBoolean(KEY_SHARE_TO_FRIEND, false);
         params.putInt(QzoneShare.SHARE_TO_QZONE_KEY_TYPE, QzoneShare.SHARE_TO_QZONE_TYPE_IMAGE_TEXT);
         String title = shareContent.getTitle();
         if (title == null) {
             // 如果没title，说明就是分享的纯文字、纯图片
-            Toast.makeText(mActivity.getApplicationContext(), "QQ空间目前只支持分享图文信息", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext.getApplicationContext(), "QQ空间目前只支持分享图文信息", Toast.LENGTH_SHORT).show();
+            return;
         }
         params.putString(QzoneShare.SHARE_TO_QQ_TITLE, title); // 标题
         params.putString(QzoneShare.SHARE_TO_QQ_SUMMARY, shareContent.getSummary()); // 描述
         params.putString(QzoneShare.SHARE_TO_QQ_TARGET_URL, shareContent.getURL()); // 点击后跳转的url
-        
+
         // 分享的图片, 以ArrayList<String>的类型传入，以便支持多张图片 （注：图片最多支持9张图片，多余的图片会被丢弃）。
         if (shareContent.getImageBmpBytes() != null) {
             ArrayList<String> imageUrls = new ArrayList<>(); // 图片的ArrayList
             imageUrls.add(PicFileUtil.saveByteArr(shareContent.getImageBmpBytes()));
             params.putStringArrayList(QzoneShare.SHARE_TO_QQ_IMAGE_URL, imageUrls);
         }
-        mTencent.shareToQzone(mActivity, params, mShareListener);
+        mContext.startActivity(new Intent(mContext, QQShareActivity.class).putExtras(params));
     }
 
-    
-    private final IUiListener mShareListener = new IUiListener() {
-
-        @Override
-        public void onCancel() {
-            mShareStateListener.onCancel();
-        }
+    private static final IUiListener mShareListener = new IUiListener() {
 
         @Override
         public void onComplete(Object response) {
             mShareStateListener.onSuccess();
+        }
+
+        @Override
+        public void onCancel() {
+            mShareStateListener.onCancel();
         }
 
         @Override
@@ -194,9 +204,10 @@ public class QQShareManager implements IShareManager {
         }
     };
 
-    public void handlerOnActivityResult(int requestCode, int resultCode, Intent data) {
+    public static void handlerOnActivityResult(Intent data) {
         if (mShareListener != null) {
             Tencent.handleResultData(data, mShareListener);
         }
     }
+
 }

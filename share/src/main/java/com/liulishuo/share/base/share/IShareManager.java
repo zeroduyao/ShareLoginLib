@@ -9,4 +9,5 @@ import com.liulishuo.share.base.shareContent.ShareContent;
 public interface IShareManager {
 
     void share(ShareContent shareContent, @ShareBlock.ShareType int shareType, ShareStateListener listener);
+
 }

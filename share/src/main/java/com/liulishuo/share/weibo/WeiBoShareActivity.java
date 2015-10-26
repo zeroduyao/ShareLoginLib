@@ -1,56 +1,38 @@
 package com.liulishuo.share.weibo;
 
-import com.liulishuo.share.base.shareContent.ShareContent;
+import com.liulishuo.share.ShareBlock;
 import com.sina.weibo.sdk.api.share.BaseResponse;
 import com.sina.weibo.sdk.api.share.IWeiboHandler;
+import com.sina.weibo.sdk.api.share.IWeiboShareAPI;
+import com.sina.weibo.sdk.api.share.WeiboShareSDK;
 import com.sina.weibo.sdk.constant.WBConstants;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
-import android.text.TextUtils;
 
 /**
  * @author Jack Tony
  * @date 2015/10/14
  */
-public class WeiboHandlerActivity extends Activity implements IWeiboHandler.Response {
-
-    protected static final int RESULT_CODE = 0X31;
-
-    private static final String KEY_SHARE_CONTENT = "KEY_SHARE_CONTENT";
-
-    protected static final String KEY_RESULT_BUNDLE = "KEY_RESULT_BUNDLE";
+public class WeiBoShareActivity extends Activity implements IWeiboHandler.Response {
 
     private boolean mIsFirstTime = true;
-
-    private WeiboRealShareManager mSM;
-
-    public static Bundle sendShareContent(ShareContent content) {
-        Bundle bundle = new Bundle();
-        bundle.putParcelable(KEY_SHARE_CONTENT, content);
-        return bundle;
-    }
 
     @CallSuper
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mSM = new WeiboRealShareManager(this);
+        WeiBoShareManager.sendShareMsg(this);
+        
         // 当 Activity 被重新初始化时（该 Activity 处于后台时，可能会由于内存不足被杀掉了），
         // 需要调用 {@link IWeiboShareAPI#handleWeiboResponse} 来接收微博客户端返回的数据。
         // 执行成功，返回 true，并调用 {@link IWeiboHandler.Response#onResponse}；
         // 失败返回 false，不调用上述回调
         if (savedInstanceState != null) {
-            mSM.getSinaAPI().handleWeiboResponse(getIntent(), this);
-        }
-        Intent intent;
-        if ((intent = getIntent()) != null) {
-            if (TextUtils.equals(intent.getAction(), WeiboShareManager.ACTION_WEIBO_SHARE)) {
-                ShareContent shareContent = intent.getParcelableExtra(KEY_SHARE_CONTENT);
-                mSM.share(this, shareContent);
-            }
+            IWeiboShareAPI API = WeiboShareSDK.createWeiboAPI(getApplicationContext(), ShareBlock.getInstance().weiboAppId);
+            API.handleWeiboResponse(getIntent(), this);
         }
     }
 
@@ -66,10 +48,7 @@ public class WeiboHandlerActivity extends Activity implements IWeiboHandler.Resp
             mIsFirstTime = false;
         } else {
             // 这里处理保存到草稿箱的逻辑
-            Bundle bundle = new Bundle();
-            // 这里的key参考自：BaseResponse
-            bundle.putInt("_weibo_resp_errcode", WBConstants.ErrorCode.ERR_CANCEL);
-            setResult(RESULT_CODE, new Intent().putExtra(KEY_RESULT_BUNDLE, bundle));
+            WeiBoShareManager.onShareResp(WBConstants.ErrorCode.ERR_CANCEL, "weibo cancel");
             finish();
         }
     }
@@ -81,15 +60,14 @@ public class WeiboHandlerActivity extends Activity implements IWeiboHandler.Resp
         // 从当前应用唤起微博并进行分享后，返回到当前应用时，需要在此处调用该函数
         // 来接收微博客户端返回的数据；执行成功，返回 true，并调用
         // {@link IWeiboHandler.Response#onResponse}；失败返回 false，不调用上述回调
-        mSM.getSinaAPI().handleWeiboResponse(intent, this);  // 当前应用唤起微博分享后，返回当前应用
+        IWeiboShareAPI API = WeiboShareSDK.createWeiboAPI(getApplicationContext(), ShareBlock.getInstance().weiboAppId);
+        API.handleWeiboResponse(intent, this); // 当前应用唤起微博分享后，返回当前应用
     }
 
     @CallSuper
     @Override
     public void onResponse(BaseResponse baseResponse) {
-        Bundle bundle = new Bundle();
-        baseResponse.toBundle(bundle);
-        setResult(RESULT_CODE, new Intent().putExtra(KEY_RESULT_BUNDLE, bundle));
+        WeiBoShareManager.onShareResp(baseResponse.errCode, baseResponse.errMsg);
         finish();
     }
 

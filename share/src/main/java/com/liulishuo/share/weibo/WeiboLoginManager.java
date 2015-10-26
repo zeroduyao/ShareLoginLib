@@ -1,10 +1,10 @@
 package com.liulishuo.share.weibo;
 
 import com.liulishuo.share.ShareBlock;
+import com.liulishuo.share.base.Constants;
 import com.liulishuo.share.base.login.GetUserListener;
 import com.liulishuo.share.base.login.ILoginManager;
 import com.liulishuo.share.base.login.LoginListener;
-import com.liulishuo.share.base.Constants;
 import com.liulishuo.share.util.HttpUtil;
 import com.liulishuo.share.weibo.model.AbsOpenAPI;
 import com.liulishuo.share.weibo.model.User;
@@ -33,48 +33,50 @@ import java.util.HashMap;
 /**
  * Created by echo on 5/19/15.
  */
-public class WeiboLoginManager implements ILoginManager {
+public class WeiBoLoginManager implements ILoginManager {
 
-    private Context mContext;
+    private static Context mContext;
 
     private String mSinaAppKey;
 
-    private LoginListener mLoginListener;
+    private static LoginListener mLoginListener;
 
-    private Oauth2AccessToken mAccessToken;
+    private static Oauth2AccessToken mAccessToken;
 
     /**
      * 注意：SsoHandler 仅当 SDK 支持 SSO 时有效
      */
     private static SsoHandler mSsoHandler;
+    
+    private static AuthInfo mAuthInfo;
 
-    public WeiboLoginManager(Context context) {
+    public WeiBoLoginManager(Context context) {
         mContext = context;
         mSinaAppKey = ShareBlock.getInstance().weiboAppId;
-    }
-
-    public static boolean isWeiBoInstalled(@NonNull Context context) {
-        IWeiboShareAPI shareAPI = WeiboShareSDK.createWeiboAPI(context, ShareBlock.getInstance().weiboAppId);
-        return shareAPI.isWeiboAppInstalled();
     }
 
     @Override
     public void login(@NonNull LoginListener loginListener) {
         mLoginListener = loginListener;
         AccessTokenKeeper.clear(mContext);
-        AuthInfo authInfo = new AuthInfo(mContext, mSinaAppKey,
+        mAuthInfo = new AuthInfo(mContext, mSinaAppKey,
                 ShareBlock.getInstance().weiboRedirectUrl,
                 ShareBlock.getInstance().weiboScope);
-        mSsoHandler = new SsoHandler((Activity) mContext, authInfo);
-        mSsoHandler.authorize(new AuthLoginListener());
+        // 启动activity后，应该立刻调用{sendLoginMsg}方法
+        mContext.startActivity(new Intent(mContext, WeiBoLoginActivity.class));
     }
 
+    public static void sendLoginMsg(Activity activity) {
+        mSsoHandler = new SsoHandler(activity, mAuthInfo);
+        mSsoHandler.authorize(new AuthLoginListener());
+    }
+    
     /**
      * * 1. SSO 授权时，需要在 onActivityResult 中调用 {@link SsoHandler#authorizeCallBack} 后，
      * 该回调才会被执行。
      * 2. 非SSO 授权时，当授权结束后，该回调就会被执行
      */
-    private class AuthLoginListener implements WeiboAuthListener {
+    private static class AuthLoginListener implements WeiboAuthListener {
 
         @Override
         public void onComplete(Bundle values) {
@@ -163,7 +165,7 @@ public class WeiboLoginManager implements ILoginManager {
         });
     }
 
-    public void handlerOnActivityResult(int requestCode, int resultCode, Intent data) {
+    public static void handlerOnActivityResult(int requestCode, int resultCode, Intent data) {
         // SSO 授权回调
         // 重要：发起 SSO 登陆的 Activity 必须重写 onActivityResult
         if (mSsoHandler != null) {
@@ -171,18 +173,23 @@ public class WeiboLoginManager implements ILoginManager {
         }
     }
 
-    private String oAuthData2Json(@NonNull Oauth2AccessToken data) {
-        JSONObject sina_json = new JSONObject();
+    private static String oAuthData2Json(@NonNull Oauth2AccessToken data) {
+        JSONObject sinaJson = new JSONObject();
         try {
-            sina_json.put("uid", data.getUid());
-            sina_json.put("refresh_token", data.getRefreshToken());
-            sina_json.put("access_token", data.getToken());
-            sina_json.put("expires_in", String.valueOf(data.getExpiresTime() / 1000000));
-            return sina_json.toString();
+            sinaJson.put("uid", data.getUid());
+            sinaJson.put("refresh_token", data.getRefreshToken());
+            sinaJson.put("access_token", data.getToken());
+            sinaJson.put("expires_in", String.valueOf(data.getExpiresTime() / 1000000));
+            return sinaJson.toString();
         } catch (JSONException e) {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static boolean isWeiBoInstalled(@NonNull Context context) {
+        IWeiboShareAPI shareAPI = WeiboShareSDK.createWeiboAPI(context, ShareBlock.getInstance().weiboAppId);
+        return shareAPI.isWeiboAppInstalled();
     }
 
 }

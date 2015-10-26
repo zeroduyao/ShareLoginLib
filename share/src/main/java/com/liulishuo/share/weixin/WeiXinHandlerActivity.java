@@ -1,4 +1,4 @@
-package com.liulishuo.share.wechat;
+package com.liulishuo.share.weixin;
 
 import com.tencent.mm.sdk.modelbase.BaseReq;
 import com.tencent.mm.sdk.modelbase.BaseResp;

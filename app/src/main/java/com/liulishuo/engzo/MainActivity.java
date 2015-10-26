@@ -8,10 +8,9 @@ import com.liulishuo.share.base.shareContent.ShareContentWebpage;
 import com.liulishuo.share.base.share.ShareStateListener;
 import com.liulishuo.share.qq.QQLoginManager;
 import com.liulishuo.share.qq.QQShareManager;
-import com.liulishuo.share.wechat.WeiXinLoginManager;
-import com.liulishuo.share.wechat.WeiXinShareManager;
-import com.liulishuo.share.weibo.WeiboLoginManager;
-import com.liulishuo.share.weibo.WeiboShareManager;
+import com.liulishuo.share.weixin.WeiXinLoginManager;
+import com.liulishuo.share.weixin.WeiXinShareManager;
+import com.liulishuo.share.weibo.WeiBoLoginManager;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -53,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
         Drawable drawable = getResources().getDrawable(R.drawable.kale);
         mBitmap = ((BitmapDrawable) drawable).getBitmap();
 
-        WeiboLoginManager.isWeiBoInstalled(this);
+        WeiBoLoginManager.isWeiBoInstalled(this);
         WeiboShareManager.isWeiBoInstalled(this);
         
         WeiXinLoginManager.isWeiXinInstalled(this);
@@ -108,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.login_weibo_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mCurrentLoginManager = new WeiboLoginManager(MainActivity.this);
+                mCurrentLoginManager = new WeiBoLoginManager(MainActivity.this);
                 mCurrentLoginManager.login(mLoginListener);
             }
         });
