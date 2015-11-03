@@ -27,7 +27,8 @@ ShareLoginLib likes simple sharesdk or umeng in China . It is a tool to help dev
 Activity的写法如下：  
 
 ```JAVA   
-package com.kale.share.wxapi;
+package 你自己的包名.wxapi;
+import com.liulishuo.share.weixin.WeiXinHandlerActivity;
 
 /** 
  * -----------------------------------------------------------------------
@@ -38,46 +39,46 @@ package com.kale.share.wxapi;
  * WTF：真是微信蠢到家的设计，太愚蠢了
  * -----------------------------------------------------------------------
  * */
-public class WXEntryActivity extends WechatHandlerActivity {}  
+public class WXEntryActivity extends WeiXinHandlerActivity {} 
 
 ```
 
 #### 3. 在项目工程的manifest中配置Activity  
 ```XML  
 <!-- 腾讯的认证activity -->
-        <activity
-            android:name="com.tencent.tauth.AuthActivity"
-            android:launchMode="singleTask"
-            android:noHistory="true"
-            >
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
+<activity
+    android:name="com.tencent.tauth.AuthActivity"
+    android:launchMode="singleTask"
+    android:noHistory="true"
+    >
+    <intent-filter>
+        <action android:name="android.intent.action.VIEW" />
 
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
 
-                <!-- 这里需要换成:tencent+你的AppId -->
-                <data android:scheme="tencent123456" />
-            </intent-filter>
-        </activity>
+        <!-- 这里需要换成:tencent+你的AppId -->
+        <data android:scheme="tencent123456" />
+    </intent-filter>
+</activity>
 
-		<!-- 处理微信回调的Activity -->
-        <activity
-            android:name=".wxapi.WXEntryActivity"
-            android:exported="true"
-            android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.NoDisplay"
-            />  
+<!-- 处理微信回调的Activity -->
+<activity
+    android:name=".wxapi.WXEntryActivity"
+    android:exported="true"
+    android:screenOrientation="portrait"
+    android:theme="@android:style/Theme.NoDisplay"
+    />  
 ```
 
 # 如何使用
 #### 1. 在项目中使用第三方SDK功能前进行参数的注册  
 ```java  
-
-   ShareBlock.getInstance()
+ShareBlock.getInstance()
                 .initAppName("TestAppName")
+                .initSharePicFile(getApplication())
                 .initQQ(OAuthConstant.QQ_APPID, OAuthConstant.QQ_SCOPE)
-                .initWechat(OAuthConstant.WECHAT_APPID, OAuthConstant.WECHAT_SECRET)
+                .initWeiXin(OAuthConstant.WEIXIN_APPID, OAuthConstant.WEIXIN_SECRET)
                 .initWeibo(OAuthConstant.WEIBO_APPID, OAuthConstant.WEIBO_REDIRECT_URL, OAuthConstant.WEIBO_SCOPE);
 ```  
 
@@ -85,7 +86,7 @@ public class WXEntryActivity extends WechatHandlerActivity {}
 ```java
   private LoginListener mLoginListener = new LoginListener() {
         @Override
-        public void onSuccess(String uId, String accessToken, long expiresIn) { }
+        public void onSuccess(String accessToken, String uId , long expiresIn, String wholeData) { }
 
         @Override
         public void onError(String msg) { }
@@ -105,16 +106,8 @@ public class WXEntryActivity extends WechatHandlerActivity {}
         public void onCancel() { }
     };
  ```
-#### 3. 在使用第三方功能的Activity的onActivityForResult中进行如下配置
-```java  
-  @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-	super.onActivityResult(requestCode, resultCode, data);
-        ShareBlock.handlerOnActivityResult(mCurrentLoginManager, mCurrentShareManager, requestCode, resultCode, data);
-    }
- ```  
 
-#### 4. 如何进行登录、分享  
+#### 3. 如何进行登录、分享  
 ```JAVA  
         
 	ILoginManager mCurrentLoginManager = new 【WeiBo,WeiXin,QQ】LoginManager(MainActivity.this);
