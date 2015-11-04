@@ -16,6 +16,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.widget.Toast;
 
@@ -26,26 +27,52 @@ import java.util.ArrayList;
  */
 public class QQShareManager implements IShareManager{
 
-    private static String KEY_SHARE_TO_FRIEND = "key_share_to_friend";
+    private static final String KEY_SHARE_TO_FRIEND = "key_share_to_friend";
     
     private static Tencent mTencent;
 
     private Context mContext;
 
-    private static ShareStateListener mShareStateListener;
+    private static MyUiListener mUiListener;
+
+    private class MyUiListener implements IUiListener {
+
+        private ShareStateListener mShareStateListener;
+
+        public MyUiListener(ShareStateListener shareStateListener) {
+            mShareStateListener = shareStateListener;
+        }
+
+        @Override
+        public void onComplete(Object response) {
+            mShareStateListener.onSuccess();
+        }
+
+        @Override
+        public void onCancel() {
+            mShareStateListener.onCancel();
+        }
+
+        @Override
+        public void onError(UiError e) {
+            mShareStateListener.onError(e.errorCode + " - " + e.errorMessage + " - " + e.errorDetail);
+        }
+    }
     
     public QQShareManager(Context context) {
-        String appId = ShareBlock.getInstance().QQAppId;
         mContext = context;
+    }
+
+    @Override
+    public void share(@NonNull ShareContent shareContent, @ShareBlock.ShareType int shareType, ShareStateListener listener) {
+        String appId = ShareBlock.getInstance().QQAppId;
         if (!TextUtils.isEmpty(appId)) {
             mTencent = Tencent.createInstance(appId, mContext.getApplicationContext());
         } else {
             throw new NullPointerException("请通过shareBlock初始化QQAppId");
         }
-    }
-
-    public void share(ShareContent shareContent, @ShareBlock.ShareType int shareType, ShareStateListener listener) {
-        mShareStateListener = listener;
+        mUiListener = new MyUiListener(listener);
+        
         Bundle bundle = new Bundle();
         if (shareType == ShareBlock.QQ_FRIEND) {
             shareToQQ(shareContent);
@@ -110,11 +137,11 @@ public class QQShareManager implements IShareManager{
         mContext.startActivity(new Intent(mContext, QQShareActivity.class).putExtras(params));
     }
 
-    public static void sendShareMsg(Activity activity, Bundle params) {
+    protected static void sendShareMsg(Activity activity, Bundle params) {
         if (params.getBoolean(KEY_SHARE_TO_FRIEND)) {
-            mTencent.shareToQQ(activity, params, mShareListener);
+            mTencent.shareToQQ(activity, params, mUiListener);
         } else {
-            mTencent.shareToQzone(activity, params, mShareListener);
+            mTencent.shareToQzone(activity, params, mUiListener);
         }
     }
 
@@ -186,27 +213,9 @@ public class QQShareManager implements IShareManager{
         mContext.startActivity(new Intent(mContext, QQShareActivity.class).putExtras(params));
     }
 
-    private static final IUiListener mShareListener = new IUiListener() {
-
-        @Override
-        public void onComplete(Object response) {
-            mShareStateListener.onSuccess();
-        }
-
-        @Override
-        public void onCancel() {
-            mShareStateListener.onCancel();
-        }
-
-        @Override
-        public void onError(UiError e) {
-            mShareStateListener.onError(e.errorCode + " - " + e.errorMessage + " - " + e.errorDetail);
-        }
-    };
-
-    public static void handlerOnActivityResult(Intent data) {
-        if (mShareListener != null) {
-            Tencent.handleResultData(data, mShareListener);
+    protected static void handlerOnActivityResult(Intent data) {
+        if (mUiListener != null) {
+            Tencent.handleResultData(data, mUiListener);
         }
     }
 

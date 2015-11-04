@@ -10,7 +10,6 @@
     tools:context=".MainActivity"
     >
 
-
     <Button
         android:id="@+id/login_wechat_btn"
         android:layout_width="180dp"
@@ -80,15 +79,41 @@
         />
 
 
-    <TextView
-        android:id="@+id/view"
+    <RadioGroup
+        android:id="@+id/share_type_rg"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Test"
-        android:textSize="60sp"
-        android:textColor="#ffffff"
-        android:gravity="center"
-        android:background="@color/background_material_dark"
-        />
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal"
+        >
 
+        <RadioButton
+            android:id="@+id/rich_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="图文"
+            />
+
+        <RadioButton
+            android:id="@+id/only_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="仅文字"
+            />
+
+        <RadioButton
+            android:id="@+id/only_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="仅图片"
+            />
+    </RadioGroup>
+
+    <TextView
+        android:id="@+id/userinfo_tv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:text="name = jack"
+        />
+    
 </LinearLayout>

@@ -13,13 +13,13 @@ public class WeiBoLoginActivity extends Activity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        WeiBoLoginManager.sendLoginMsg(this);
+        WeiboLoginManager.sendLoginMsg(this);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        WeiBoLoginManager.handlerOnActivityResult(requestCode, resultCode, data);
+        WeiboLoginManager.handlerOnActivityResult(requestCode, resultCode, data);
         finish();
     }
 }

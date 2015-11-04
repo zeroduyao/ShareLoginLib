@@ -16,12 +16,14 @@
         >
 
         <!-- ============================= weibo ============================= -->
-        
-        <activity android:name=".weibo.WeiBoLoginActivity"
+
+        <activity
+            android:name=".weibo.WeiBoLoginActivity"
             android:configChanges="keyboardHidden|orientation"
             android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
-        
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            />
+
         <!-- 调用微博分享的activity需要按照下方进行设置intent-filter -->
         <activity
             android:name=".weibo.WeiBoShareActivity"
@@ -44,17 +46,21 @@
             />
 
         <!-- ============================= qq ============================= -->
-        
-        <activity android:name=".qq.QQLoginActivity"
-            android:configChanges="keyboardHidden|orientation"
-            android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
 
-        <activity android:name=".qq.QQShareActivity"
+        <activity
+            android:name=".qq.QQLoginActivity"
             android:configChanges="keyboardHidden|orientation"
             android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
-        
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            />
+
+        <activity
+            android:name=".qq.QQShareActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.NoDisplay"
+            />
+
 
         <!-- 腾讯sdk中增加的帮助activity对象，可以用来查看日志 -->
         <activity

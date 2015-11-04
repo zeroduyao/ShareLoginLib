@@ -31,19 +31,14 @@ public class HttpUtil {
     public static void doGetAsyn(final String urlStr, final CallBack callBack) {
         new Thread() {
             public void run() {
-                try {
-                    String result = doGet(urlStr);
-                    if (callBack != null) {
-                        if (result != null) {
-                            callBack.onRequestComplete(result);
-                        } else {
-                            callBack.onError();
-                        }
+                String result = doGet(urlStr);
+                if (callBack != null) {
+                    if (result != null) {
+                        callBack.onRequestComplete(result);
+                    } else {
+                        callBack.onError();
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
-
             }
         }.start();
     }
@@ -92,7 +87,7 @@ public class HttpUtil {
             if (conn.getResponseCode() == 200) {
                 is = conn.getInputStream();
                 baos = new ByteArrayOutputStream();
-                int len = -1;
+                int len;
                 byte[] buf = new byte[128];
 
                 while ((len = is.read(buf)) != -1) {

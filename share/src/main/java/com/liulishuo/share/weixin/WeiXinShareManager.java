@@ -31,24 +31,27 @@ import static com.tencent.mm.sdk.modelmsg.WXMediaMessage.IMediaObject;
 public class WeiXinShareManager implements IShareManager {
 
     private IWXAPI mIWXAPI;
+    private Context mContext;
 
     private static ShareStateListener mShareStateListener;
 
     public WeiXinShareManager(Context context) {
-        String weChatAppId = ShareBlock.getInstance().weiXinAppId;
-        if (TextUtils.isEmpty(weChatAppId)) {
-            throw new NullPointerException("请通过shareBlock初始化WeChatAppId");
-        }
-        mIWXAPI = WXAPIFactory.createWXAPI(context, weChatAppId, true);
-        if (!mIWXAPI.isWXAppInstalled()) {
-            Toast.makeText(context, context.getString(R.string.share_install_wechat_tips), Toast.LENGTH_SHORT).show();
-        } else {
-            mIWXAPI.registerApp(weChatAppId);
-        }
+        mContext = context;
     }
 
     @Override
     public void share(@NonNull ShareContent shareContent, @ShareBlock.ShareType int shareType, @NonNull ShareStateListener listener) {
+        String weChatAppId = ShareBlock.getInstance().weiXinAppId;
+        if (TextUtils.isEmpty(weChatAppId)) {
+            throw new NullPointerException("请通过shareBlock初始化WeChatAppId");
+        }
+        mIWXAPI = WXAPIFactory.createWXAPI(mContext, weChatAppId, true);
+        if (!mIWXAPI.isWXAppInstalled()) {
+            Toast.makeText(mContext, mContext.getString(R.string.share_install_wechat_tips), Toast.LENGTH_SHORT).show();
+        } else {
+            mIWXAPI.registerApp(weChatAppId);
+        }
+        
         mShareStateListener = listener;
         IMediaObject mediaObject;
         switch (shareContent.getType()) {
@@ -125,7 +128,7 @@ public class WeiXinShareManager implements IShareManager {
     /**
      * 解析分享到微信的结果
      */
-    public static void parseShare(BaseResp resp) {
+    protected static void parseShare(BaseResp resp) {
         switch (resp.errCode) {
             case BaseResp.ErrCode.ERR_OK:
                 // 分享成功

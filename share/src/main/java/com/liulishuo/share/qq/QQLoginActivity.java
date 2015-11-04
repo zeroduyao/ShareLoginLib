@@ -18,8 +18,8 @@ public class QQLoginActivity extends Activity{
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        QQLoginManager.handlerOnActivityResult(requestCode, resultCode, data);
         super.onActivityResult(requestCode, resultCode, data);
+        QQLoginManager.handlerOnActivityResult(requestCode, resultCode, data);
         finish();
     }
 }

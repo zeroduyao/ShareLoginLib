@@ -27,7 +27,7 @@ import android.text.TextUtils;
 /**
  * Created by echo on 5/18/15.
  */
-public class WeiBoShareManager implements IShareManager{
+public class WeiboShareManager implements IShareManager{
 
     private String mRedirectUrl;
     
@@ -42,11 +42,13 @@ public class WeiBoShareManager implements IShareManager{
      */
     private static IWeiboShareAPI mSinaAPI;
     
-    
-    public WeiBoShareManager(Context context) {
+    public WeiboShareManager(Context context) {
+        mContext = context;
+    }
+
+    public void share(@NonNull ShareContent shareContent, @ShareBlock.ShareType int shareType, ShareStateListener listener) {
         String appId = ShareBlock.getInstance().weiboAppId;
         mRedirectUrl = ShareBlock.getInstance().weiboRedirectUrl;
-        mContext = context;
         if (!TextUtils.isEmpty(appId)) {
             // 创建微博 SDK 接口实例
             mSinaAPI = WeiboShareSDK.createWeiboAPI(mContext.getApplicationContext(), appId);
@@ -54,9 +56,7 @@ public class WeiBoShareManager implements IShareManager{
         } else {
             throw new NullPointerException("请通过shareBlock初始化SinaAppKey");
         }
-    }
-
-    public void share(@NonNull ShareContent shareContent, @ShareBlock.ShareType int shareType, ShareStateListener listener) {
+        
         mShareStateListener = listener;
         weiboMultiMessage = new WeiboMultiMessage();
         switch (shareContent.getType()) {
@@ -91,7 +91,7 @@ public class WeiBoShareManager implements IShareManager{
         mContext.startActivity(new Intent(mContext, WeiBoShareActivity.class));
     }
 
-    public static void sendShareMsg(Activity activity) {
+    protected static void sendShareMsg(Activity activity) {
         // 初始化从第三方到微博的消息请求
         SendMultiMessageToWeiboRequest request = new SendMultiMessageToWeiboRequest();
         // 用transaction唯一标识一个请求
@@ -192,7 +192,7 @@ public class WeiBoShareManager implements IShareManager{
         return videoObject;
     }
 
-    public static void onShareResp(int respCode, String errorMsg) {
+    protected static void onShareResp(int respCode, String errorMsg) {
         if (mShareStateListener != null) {
             switch (respCode) {
                 case WBConstants.ErrorCode.ERR_OK:

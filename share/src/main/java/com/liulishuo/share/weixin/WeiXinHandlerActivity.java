@@ -28,7 +28,7 @@ public abstract class WeiXinHandlerActivity extends Activity implements IWXAPIEv
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mIWXAPI = WeiXinLoginManager.getIWXAPI();
+        mIWXAPI = WeiXinLoginManager.getApi();
         if (mIWXAPI != null) {
             mIWXAPI.handleIntent(getIntent(), this);
         }
@@ -53,20 +53,13 @@ public abstract class WeiXinHandlerActivity extends Activity implements IWXAPIEv
     public void onResp(BaseResp resp) {
         if (resp != null) {
             if (resp instanceof SendAuth.Resp && resp.getType() == TYPE_LOGIN) {
-                onLoginResp((SendAuth.Resp) resp);
+                WeiXinLoginManager.onLoginResp((SendAuth.Resp) resp); // 可以得到code
                 WeiXinLoginManager.parseLoginResp(this, (SendAuth.Resp) resp);
             } else {
                 WeiXinShareManager.parseShare(resp);
             }
         }
         finish();
-    }
-
-    /**
-     * 得到最原始的resp，可以得到code
-     */
-    protected void onLoginResp(SendAuth.Resp resp) {
-        WeiXinLoginManager.onLoginResp(resp);
     }
 
 }

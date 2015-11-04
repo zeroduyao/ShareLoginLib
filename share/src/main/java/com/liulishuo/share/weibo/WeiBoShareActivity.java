@@ -24,7 +24,7 @@ public class WeiBoShareActivity extends Activity implements IWeiboHandler.Respon
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        WeiBoShareManager.sendShareMsg(this);
+        WeiboShareManager.sendShareMsg(this);
         
         // 当 Activity 被重新初始化时（该 Activity 处于后台时，可能会由于内存不足被杀掉了），
         // 需要调用 {@link IWeiboShareAPI#handleWeiboResponse} 来接收微博客户端返回的数据。
@@ -48,7 +48,7 @@ public class WeiBoShareActivity extends Activity implements IWeiboHandler.Respon
             mIsFirstTime = false;
         } else {
             // 这里处理保存到草稿箱的逻辑
-            WeiBoShareManager.onShareResp(WBConstants.ErrorCode.ERR_CANCEL, "weibo cancel");
+            WeiboShareManager.onShareResp(WBConstants.ErrorCode.ERR_CANCEL, "weibo cancel");
             finish();
         }
     }
@@ -67,7 +67,7 @@ public class WeiBoShareActivity extends Activity implements IWeiboHandler.Respon
     @CallSuper
     @Override
     public void onResponse(BaseResponse baseResponse) {
-        WeiBoShareManager.onShareResp(baseResponse.errCode, baseResponse.errMsg);
+        WeiboShareManager.onShareResp(baseResponse.errCode, baseResponse.errMsg);
         finish();
     }
 

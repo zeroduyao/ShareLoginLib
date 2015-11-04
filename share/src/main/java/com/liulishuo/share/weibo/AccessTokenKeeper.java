@@ -42,7 +42,7 @@ public class AccessTokenKeeper {
      * @param context 应用程序上下文环境
      * @param token   Token 对象
      */
-    public static void writeAccessToken(Context context, Oauth2AccessToken token) {
+    protected static void writeAccessToken(Context context, Oauth2AccessToken token) {
         if (null == context || null == token) {
             return;
         }
@@ -62,7 +62,7 @@ public class AccessTokenKeeper {
      * 
      * @return 返回 Token 对象
      */
-    public static Oauth2AccessToken readAccessToken(Context context) {
+    protected static Oauth2AccessToken readAccessToken(Context context) {
         if (null == context) {
             return null;
         }
@@ -80,7 +80,7 @@ public class AccessTokenKeeper {
      * 
      * @param context 应用程序上下文环境
      */
-    public static void clear(Context context) {
+    protected static void clear(Context context) {
         if (null == context) {
             return;
         }

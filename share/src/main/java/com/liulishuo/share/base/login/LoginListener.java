@@ -1,13 +1,14 @@
 package com.liulishuo.share.base.login;
 
-import com.liulishuo.share.base.BaseListener;
-
 /**
  * @author Jack Tony
  * @date 2015/7/22
  */
-public interface LoginListener extends BaseListener {
+public interface LoginListener {
 
-    void onSuccess(String uId, String accessToken, long expiresIn, String wholeData);
+    void onSuccess(String accessToken, String uId , long expiresIn, String wholeData);
 
+    void onError(String msg);
+
+    void onCancel();
 }

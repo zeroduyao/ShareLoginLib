@@ -1,27 +1,29 @@
 package com.liulishuo.engzo;
 
 import com.liulishuo.share.ShareBlock;
-import com.liulishuo.share.base.login.ILoginManager;
-import com.liulishuo.share.base.login.LoginListener;
-import com.liulishuo.share.base.share.IShareManager;
-import com.liulishuo.share.base.shareContent.ShareContentWebpage;
 import com.liulishuo.share.base.share.ShareStateListener;
+import com.liulishuo.share.base.shareContent.ShareContent;
+import com.liulishuo.share.base.shareContent.ShareContentPic;
+import com.liulishuo.share.base.shareContent.ShareContentText;
+import com.liulishuo.share.base.shareContent.ShareContentWebpage;
 import com.liulishuo.share.qq.QQLoginManager;
 import com.liulishuo.share.qq.QQShareManager;
+import com.liulishuo.share.weibo.WeiboLoginManager;
+import com.liulishuo.share.weibo.WeiboShareManager;
 import com.liulishuo.share.weixin.WeiXinLoginManager;
 import com.liulishuo.share.weixin.WeiXinShareManager;
-import com.liulishuo.share.weibo.WeiBoLoginManager;
 
-import android.content.Intent;
+import android.app.ActivityManager;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
+import android.widget.RadioGroup;
+import android.widget.TextView;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -36,13 +38,13 @@ public class MainActivity extends AppCompatActivity {
 
     public static final String TAG = "MainActivity";
 
-    private ILoginManager mCurrentLoginManager;
+    private MyLoginListener mLoginListener;
 
-    private IShareManager mCurrentShareManager;
-
-    private LoginListener mLoginListener = new MyLoginListener(this);
+    private ShareStateListener mShareListener = new MyShareListener(this);
 
     private Bitmap mBitmap;
+
+    private ShareContent mShareContent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,12 +54,12 @@ public class MainActivity extends AppCompatActivity {
         Drawable drawable = getResources().getDrawable(R.drawable.kale);
         mBitmap = ((BitmapDrawable) drawable).getBitmap();
 
-        WeiBoLoginManager.isWeiBoInstalled(this);
+        WeiboLoginManager.isWeiBoInstalled(this);
         WeiboShareManager.isWeiBoInstalled(this);
-        
+
         WeiXinLoginManager.isWeiXinInstalled(this);
         WeiXinShareManager.isWeiXinInstalled(this);
-        
+
         ShareBlock.getInstance()
                 .initAppName("TestAppName")
                 .initSharePicFile(getApplication())
@@ -65,19 +67,71 @@ public class MainActivity extends AppCompatActivity {
                 .initWeiXin(OAuthConstant.WECHAT_APPID, OAuthConstant.WECHAT_SECRET)
                 .initWeibo(OAuthConstant.WEIBO_APPID, OAuthConstant.WEIBO_REDIRECT_URL, OAuthConstant.WEIBO_SCOPE);
 
+        RadioGroup shareType = (RadioGroup) findViewById(R.id.share_type_rg);
+        shareType.check(R.id.rich_text);
+
+        mShareContent = new ShareContentWebpage("title", "hello world!，进入：http://www.baidu.com", "http://www.baidu.com", mBitmap);
+
+        shareType.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId) {
+                    case R.id.rich_text:
+                        mShareContent = new ShareContentWebpage("title", "hello world!", "http://www.baidu.com", mBitmap);
+                        break;
+                    case R.id.only_image:
+                        mShareContent = new ShareContentPic(mBitmap);
+                        break;
+                    case R.id.only_text:
+                        mShareContent = new ShareContentText("share text");
+                        break;
+                }
+            }
+        });
+
+        mLoginListener = new MyLoginListener(this, 0, ((TextView) findViewById(R.id.userinfo_tv)));
+
+        ///////////////////////////// QQ ///////////////////////////////
+
+        // QQ登录
+        findViewById(R.id.login_qq_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mLoginListener.setType(MyLoginListener.QQ);
+                new QQLoginManager().login(MainActivity.this, mLoginListener);
+            }
+        });
+
+        findViewById(R.id.share_qq_friend_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new QQShareManager(MainActivity.this).share(mShareContent, ShareBlock.QQ_FRIEND, mShareListener);
+            }
+        });
+
+        findViewById(R.id.share_qZone_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new QQShareManager(MainActivity.this).share(mShareContent, ShareBlock.QQ_ZONE, mShareListener);
+            }
+        });
+
+        ///////////////////////////// weixin ///////////////////////////////
+
+        // 微信登录
+        findViewById(R.id.login_wechat_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mLoginListener.setType(MyLoginListener.WEIXIN);
+                new WeiXinLoginManager().login(MainActivity.this, mLoginListener);
+            }
+        });
+
         // 微信分享到回话
         findViewById(R.id.share_wechat_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mCurrentShareManager = new WeiXinShareManager(MainActivity.this);
-                /*mCurrentShareManager.share(
-                        new ShareContentPic(mBitmap),
-                        WechatShareManager.WEIXIN_FRIEND
-                        , mShareListener);*/
-                mCurrentShareManager.share(
-                        new ShareContentWebpage("title", "hello world!", "http://www.baidu.com", mBitmap)
-                        , ShareBlock.WEIXIN_FRIEND
-                        , mShareListener);
+                new WeiXinShareManager(MainActivity.this).share(mShareContent, ShareBlock.WEIXIN_FRIEND, mShareListener);
             }
         });
 
@@ -85,20 +139,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.share_friends_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mCurrentShareManager = new WeiXinShareManager(MainActivity.this);
-                mCurrentShareManager.share(
-                        new ShareContentWebpage("title", "hello world!", "http://www.baidu.com", mBitmap)
-                        , ShareBlock.WEIXIN_FRIEND_ZONE
-                        , mShareListener);
-            }
-        });
-
-        // 微信登录
-        findViewById(R.id.login_wechat_btn).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mCurrentLoginManager = new WeiXinLoginManager(MainActivity.this);
-                mCurrentLoginManager.login(mLoginListener);
+                new WeiXinShareManager(MainActivity.this).share(mShareContent, ShareBlock.WEIXIN_FRIEND_ZONE, mShareListener);
             }
         });
 
@@ -107,89 +148,28 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.login_weibo_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mCurrentLoginManager = new WeiBoLoginManager(MainActivity.this);
-                mCurrentLoginManager.login(mLoginListener);
+                mLoginListener.setType(MyLoginListener.WEIBO);
+                new WeiboLoginManager().login(MainActivity.this, mLoginListener);
             }
         });
 
         findViewById(R.id.share_weibo_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mCurrentShareManager = new WeiboShareManager(MainActivity.this);
-                //mCurrentShareManager.share(new ShareContentText("test"), WeiboShareManager.WEIBO_TIME_LINE, mShareListener);
-                mCurrentShareManager.share(
-                        new ShareContentWebpage("from weibo", "share content web page", "http://www.baidu.com", mBitmap)
-                        , ShareBlock.WEIBO_TIME_LINE, mShareListener);
-
-                //mCurrentShareManager.share(new ShareContentPic(picFile), WeiboShareManager.WEIBO_TIME_LINE, mShareListener);
-            }
-        });
-
-        ///////////////////////////// QQ ///////////////////////////////
-
-        // QQ登录
-        findViewById(R.id.login_qq_btn).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mCurrentLoginManager = new QQLoginManager(MainActivity.this);
-                mCurrentLoginManager.login(mLoginListener);
-            }
-        });
-
-        findViewById(R.id.share_qq_friend_btn).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mCurrentShareManager = new QQShareManager(MainActivity.this);
-                /*mCurrentShareManager.share(
-                        new ShareContentWebpage("title", "test", "http://www.baidu.com",
-                                "https://ss0.bdstatic.com/5aV1bjqh_Q23odCf/static/superplus/img/logo_white_ee663702.png")
-                        , QQShareManager.QQ_FRIEND, mShareListener);*/
-                
-                mCurrentShareManager.share(
-                        new ShareContentWebpage("share to qq friend", "hello world!", "http://www.baidu.com",
-                                mBitmap)
-                        , ShareBlock.QQ_FRIEND, mShareListener);
-            }
-        });
-
-        findViewById(R.id.share_qZone_btn).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mCurrentShareManager = new QQShareManager(MainActivity.this);
-//                ShareContentWebpage content = new ShareContentWebpage("title", "test", "http://www.baidu.com", getImagePath(rooView));
-                ShareContentWebpage content = new ShareContentWebpage("title", "test", "http://www.baidu.com", mBitmap);
-                mCurrentShareManager.share(content, ShareBlock.QQ_ZONE, mShareListener);
+                new WeiboShareManager(MainActivity.this).share(mShareContent, ShareBlock.WEIBO_TIME_LINE, mShareListener);
             }
         });
 
     }
 
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        ShareBlock.handlerOnActivityResult(mCurrentLoginManager, mCurrentShareManager, requestCode, resultCode, data);
+    /**
+     * @return 手机当前的activity
+     */
+    String getRunningActivityName() {
+        ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        return activityManager.getRunningTasks(1).get(0).topActivity.getClassName();
     }
-
-    private ShareStateListener mShareListener = new ShareStateListener() {
-        @Override
-        public void onSuccess() {
-            Log.d(TAG, "分享成功");
-            Toast.makeText(getBaseContext(), "分享成功", Toast.LENGTH_SHORT).show();
-        }
-
-        @Override
-        public void onError(String msg) {
-            Log.d(TAG, "分享失败，出错信息：" + msg);
-            Toast.makeText(getBaseContext(), "分享失败，出错信息：" + msg, Toast.LENGTH_SHORT).show();
-        }
-
-        @Override
-        public void onCancel() {
-            Log.d(TAG, "取消分享");
-            Toast.makeText(getBaseContext(), "取消分享", Toast.LENGTH_SHORT).show();
-        }
-    };
 
 
     /**
@@ -230,3 +210,4 @@ public class MainActivity extends AppCompatActivity {
     }
 
 }
+
