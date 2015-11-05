@@ -79,4 +79,13 @@ public class ShareContentWebpage extends ShareContentPic {
         this.url = in.readString();
     }
 
+    public static final Creator<ShareContentWebpage> CREATOR = new Creator<ShareContentWebpage>() {
+        public ShareContentWebpage createFromParcel(Parcel source) {
+            return new ShareContentWebpage(source);
+        }
+
+        public ShareContentWebpage[] newArray(int size) {
+            return new ShareContentWebpage[size];
+        }
+    };
 }

@@ -1,6 +1,7 @@
 package com.liulishuo.share.weibo;
 
 import com.liulishuo.share.ShareBlock;
+import com.liulishuo.share.weibo.WeiboShareManager;
 import com.sina.weibo.sdk.api.share.BaseResponse;
 import com.sina.weibo.sdk.api.share.IWeiboHandler;
 import com.sina.weibo.sdk.api.share.IWeiboShareAPI;
@@ -16,7 +17,7 @@ import android.support.annotation.CallSuper;
  * @author Jack Tony
  * @date 2015/10/14
  */
-public class WeiBoShareActivity extends Activity implements IWeiboHandler.Response {
+public class SL_WeiBoShareActivity extends Activity implements IWeiboHandler.Response {
 
     private boolean mIsFirstTime = true;
 

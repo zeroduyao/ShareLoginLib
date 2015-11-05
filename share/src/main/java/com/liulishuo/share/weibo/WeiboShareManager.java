@@ -22,6 +22,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 /**
@@ -29,35 +30,26 @@ import android.text.TextUtils;
  */
 public class WeiboShareManager implements IShareManager{
 
-    private String mRedirectUrl;
-    
-    private Context mContext;
-
-    private static ShareStateListener mShareStateListener;
-
-    private static WeiboMultiMessage weiboMultiMessage;
-
     /**
      * 微博分享的接口实例
      */
     private static IWeiboShareAPI mSinaAPI;
-    
-    public WeiboShareManager(Context context) {
-        mContext = context;
-    }
 
-    public void share(@NonNull ShareContent shareContent, @ShareBlock.ShareType int shareType, ShareStateListener listener) {
+    private static ShareStateListener mShareStateListener;
+
+    private static WeiboMultiMessage weiboMultiMessage;
+    
+    public void share(@NonNull Activity activity, @NonNull ShareContent shareContent, @ShareBlock.ShareType int shareType, 
+            @Nullable ShareStateListener listener) {
         String appId = ShareBlock.getInstance().weiboAppId;
-        mRedirectUrl = ShareBlock.getInstance().weiboRedirectUrl;
         if (!TextUtils.isEmpty(appId)) {
             // 创建微博 SDK 接口实例
-            mSinaAPI = WeiboShareSDK.createWeiboAPI(mContext.getApplicationContext(), appId);
+            mSinaAPI = WeiboShareSDK.createWeiboAPI(activity, appId);
             mSinaAPI.registerApp();  // 将应用注册到微博客户端
         } else {
             throw new NullPointerException("请通过shareBlock初始化SinaAppKey");
         }
         
-        mShareStateListener = listener;
         weiboMultiMessage = new WeiboMultiMessage();
         switch (shareContent.getType()) {
             case Constants.SHARE_TYPE_TEXT:
@@ -88,7 +80,9 @@ public class WeiboShareManager implements IShareManager{
         if (!weiboMultiMessage.checkArgs()) {
             throw new IllegalArgumentException("分享信息的参数类型不正确");
         }
-        mContext.startActivity(new Intent(mContext, WeiBoShareActivity.class));
+        
+        mShareStateListener = listener;
+        activity.startActivity(new Intent(activity, SL_WeiBoShareActivity.class));
     }
 
     protected static void sendShareMsg(Activity activity) {
@@ -164,8 +158,8 @@ public class WeiboShareManager implements IShareManager{
         // 设置缩略图。 注意：最终压缩过的缩略图大小不得超过 32kb。
         musicObject.thumbData = shareContent.getImageBmpBytes();
         musicObject.actionUrl = shareContent.getMusicUrl();
-        musicObject.dataUrl = mRedirectUrl;
-        musicObject.dataHdUrl = mRedirectUrl;
+        musicObject.dataUrl = ShareBlock.getInstance().weiboRedirectUrl;
+        musicObject.dataHdUrl = ShareBlock.getInstance().weiboRedirectUrl;
         musicObject.duration = 10;
         musicObject.defaultText = shareContent.getSummary();
         return musicObject;
@@ -185,8 +179,8 @@ public class WeiboShareManager implements IShareManager{
         // 设置缩略图。 注意：最终压缩过的缩略图大小不得超过 32kb。
         videoObject.thumbData = shareContent.getImageBmpBytes();
         videoObject.actionUrl = shareContent.getURL();
-        videoObject.dataUrl = mRedirectUrl;
-        videoObject.dataHdUrl = mRedirectUrl;
+        videoObject.dataUrl = ShareBlock.getInstance().weiboRedirectUrl;
+        videoObject.dataHdUrl = ShareBlock.getInstance().weiboRedirectUrl;
         videoObject.duration = 10;
         videoObject.defaultText = shareContent.getSummary(); // 默认文案
         return videoObject;
@@ -214,4 +208,5 @@ public class WeiboShareManager implements IShareManager{
         IWeiboShareAPI shareAPI = WeiboShareSDK.createWeiboAPI(context, ShareBlock.getInstance().weiboAppId);
         return shareAPI.isWeiboAppInstalled();
     }
+
 }

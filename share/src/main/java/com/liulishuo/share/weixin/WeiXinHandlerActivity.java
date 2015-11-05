@@ -1,5 +1,7 @@
 package com.liulishuo.share.weixin;
 
+import com.liulishuo.share.weixin.WeiXinLoginManager;
+import com.liulishuo.share.weixin.WeiXinShareManager;
 import com.tencent.mm.sdk.modelbase.BaseReq;
 import com.tencent.mm.sdk.modelbase.BaseResp;
 import com.tencent.mm.sdk.modelmsg.SendAuth;

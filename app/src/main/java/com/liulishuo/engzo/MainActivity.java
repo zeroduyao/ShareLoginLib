@@ -105,14 +105,14 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.share_qq_friend_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                new QQShareManager(MainActivity.this).share(mShareContent, ShareBlock.QQ_FRIEND, mShareListener);
+                new QQShareManager().share(MainActivity.this, mShareContent, ShareBlock.QQ_FRIEND, mShareListener);
             }
         });
 
         findViewById(R.id.share_qZone_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new QQShareManager(MainActivity.this).share(mShareContent, ShareBlock.QQ_ZONE, mShareListener);
+                new QQShareManager().share(MainActivity.this, mShareContent, ShareBlock.QQ_ZONE, mShareListener);
             }
         });
 
@@ -131,7 +131,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.share_wechat_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                new WeiXinShareManager(MainActivity.this).share(mShareContent, ShareBlock.WEIXIN_FRIEND, mShareListener);
+                new WeiXinShareManager().share(MainActivity.this, mShareContent, ShareBlock.WEIXIN_FRIEND, mShareListener);
             }
         });
 
@@ -139,7 +139,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.share_friends_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                new WeiXinShareManager(MainActivity.this).share(mShareContent, ShareBlock.WEIXIN_FRIEND_ZONE, mShareListener);
+                new WeiXinShareManager().share(MainActivity.this, mShareContent, ShareBlock.WEIXIN_FRIEND_ZONE, mShareListener);
             }
         });
 
@@ -156,7 +156,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.share_weibo_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                new WeiboShareManager(MainActivity.this).share(mShareContent, ShareBlock.WEIBO_TIME_LINE, mShareListener);
+                new WeiboShareManager().share(MainActivity.this, mShareContent, ShareBlock.WEIBO_TIME_LINE, mShareListener);
             }
         });
 

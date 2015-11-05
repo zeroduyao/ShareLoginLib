@@ -18,8 +18,10 @@ import com.tencent.mm.sdk.modelmsg.WXWebpageObject;
 import com.tencent.mm.sdk.openapi.IWXAPI;
 import com.tencent.mm.sdk.openapi.WXAPIFactory;
 
+import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.widget.Toast;
 
@@ -30,29 +32,25 @@ import static com.tencent.mm.sdk.modelmsg.WXMediaMessage.IMediaObject;
  */
 public class WeiXinShareManager implements IShareManager {
 
-    private IWXAPI mIWXAPI;
-    private Context mContext;
-
     private static ShareStateListener mShareStateListener;
 
-    public WeiXinShareManager(Context context) {
-        mContext = context;
-    }
-
     @Override
-    public void share(@NonNull ShareContent shareContent, @ShareBlock.ShareType int shareType, @NonNull ShareStateListener listener) {
+    public void share(@NonNull Activity activity, @NonNull ShareContent shareContent, @ShareBlock.ShareType int shareType, 
+            @Nullable ShareStateListener listener) {
+        
         String weChatAppId = ShareBlock.getInstance().weiXinAppId;
         if (TextUtils.isEmpty(weChatAppId)) {
             throw new NullPointerException("请通过shareBlock初始化WeChatAppId");
         }
-        mIWXAPI = WXAPIFactory.createWXAPI(mContext, weChatAppId, true);
-        if (!mIWXAPI.isWXAppInstalled()) {
-            Toast.makeText(mContext, mContext.getString(R.string.share_install_wechat_tips), Toast.LENGTH_SHORT).show();
+        IWXAPI IWXAPI = WXAPIFactory.createWXAPI(activity, weChatAppId, true);
+        if (!IWXAPI.isWXAppInstalled()) {
+            Toast.makeText(activity, activity.getString(R.string.share_install_wechat_tips), Toast.LENGTH_SHORT).show();
         } else {
-            mIWXAPI.registerApp(weChatAppId);
+            IWXAPI.registerApp(weChatAppId);
         }
         
         mShareStateListener = listener;
+        
         IMediaObject mediaObject;
         switch (shareContent.getType()) {
             case Constants.SHARE_TYPE_TEXT:
@@ -90,7 +88,7 @@ public class WeiXinShareManager implements IShareManager {
         req.transaction = ShareUtil.buildTransaction("tag");
         req.message = msg;
         req.scene = shareType;
-        mIWXAPI.sendReq(req);
+        IWXAPI.sendReq(req);
     }
 
     private IMediaObject getTextObj(ShareContent shareContent) {
@@ -129,29 +127,31 @@ public class WeiXinShareManager implements IShareManager {
      * 解析分享到微信的结果
      */
     protected static void parseShare(BaseResp resp) {
-        switch (resp.errCode) {
-            case BaseResp.ErrCode.ERR_OK:
-                // 分享成功
-                mShareStateListener.onSuccess();
-                break;
-            case BaseResp.ErrCode.ERR_USER_CANCEL:
-                // 用户取消
-                mShareStateListener.onCancel();
-                break;
-            case BaseResp.ErrCode.ERR_AUTH_DENIED:
-                // 用户拒绝授权
-                mShareStateListener.onError("用户拒绝授权");
-                break;
-            case BaseResp.ErrCode.ERR_SENT_FAILED:
-                // 发送失败
-                mShareStateListener.onError("发送失败");
-                break;
-            case BaseResp.ErrCode.ERR_COMM:
-                // 一般错误
-                mShareStateListener.onError("一般错误");
-                break;
-            default:
-                mShareStateListener.onError("未知错误");
+        if (mShareStateListener != null) {
+            switch (resp.errCode) {
+                case BaseResp.ErrCode.ERR_OK:
+                    // 分享成功
+                    mShareStateListener.onSuccess();
+                    break;
+                case BaseResp.ErrCode.ERR_USER_CANCEL:
+                    // 用户取消
+                    mShareStateListener.onCancel();
+                    break;
+                case BaseResp.ErrCode.ERR_AUTH_DENIED:
+                    // 用户拒绝授权
+                    mShareStateListener.onError("用户拒绝授权");
+                    break;
+                case BaseResp.ErrCode.ERR_SENT_FAILED:
+                    // 发送失败
+                    mShareStateListener.onError("发送失败");
+                    break;
+                case BaseResp.ErrCode.ERR_COMM:
+                    // 一般错误
+                    mShareStateListener.onError("一般错误");
+                    break;
+                default:
+                    mShareStateListener.onError("未知错误");
+            }
         }
     }
 

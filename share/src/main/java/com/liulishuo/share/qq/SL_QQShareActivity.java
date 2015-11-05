@@ -1,5 +1,7 @@
 package com.liulishuo.share.qq;
 
+import com.liulishuo.share.qq.QQShareManager;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,12 +10,12 @@ import android.os.Bundle;
  * @author Jack Tony
  * @date 2015/10/26
  */
-public class QQShareActivity extends Activity{
+public class SL_QQShareActivity extends Activity{
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        QQShareManager.sendShareMsg(this,getIntent().getExtras());
+        QQShareManager.sendShareMsg(this, getIntent().getExtras());
     }
 
     @Override

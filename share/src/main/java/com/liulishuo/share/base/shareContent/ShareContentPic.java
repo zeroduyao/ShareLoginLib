@@ -1,11 +1,12 @@
 package com.liulishuo.share.base.shareContent;
 
 import com.liulishuo.share.base.Constants;
-import com.liulishuo.share.util.PicFileUtil;
 
 import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.support.annotation.NonNull;
+
+import java.io.ByteArrayOutputStream;
 
 /**
  * Created by echo on 5/18/15.
@@ -19,9 +20,22 @@ public class ShareContentPic implements ShareContent {
      * @param bitmap 分享的bitmap
      */
     public ShareContentPic(@NonNull Bitmap bitmap) {
-        this.bitmapBytes = PicFileUtil.getThumbImageByteArr(bitmap);
+        this.bitmapBytes = getThumbImageByteArr(bitmap);
     }
 
+    private byte[] getThumbImageByteArr(Bitmap bitmap) {
+        byte[] thumbData = null;
+        try {
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 85, outputStream);
+            thumbData = outputStream.toByteArray();
+            outputStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return thumbData;
+    }
+    
     @Override
     public String getSummary() {
         return null;
@@ -67,4 +81,13 @@ public class ShareContentPic implements ShareContent {
         this.bitmapBytes = in.createByteArray();
     }
 
+    public static final Creator<ShareContentPic> CREATOR = new Creator<ShareContentPic>() {
+        public ShareContentPic createFromParcel(Parcel source) {
+            return new ShareContentPic(source);
+        }
+
+        public ShareContentPic[] newArray(int size) {
+            return new ShareContentPic[size];
+        }
+    };
 }

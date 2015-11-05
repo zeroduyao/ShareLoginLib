@@ -24,6 +24,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 /**
@@ -36,57 +37,46 @@ public class WeiboLoginManager implements ILoginManager {
      */
     private static SsoHandler mSsoHandler;
 
-    private static AuthLoginListener mAuthLoginListener;
-
-    /**
-     * * 1. SSO 授权时，需要在 onActivityResult 中调用 {@link SsoHandler#authorizeCallBack} 后，
-     * 该回调才会被执行。
-     * 2. 非SSO 授权时，当授权结束后，该回调就会被执行
-     */
-    private class AuthLoginListener implements WeiboAuthListener {
-
-        private LoginListener mLoginListener;
-
-        private Context mContext;
-
-        public AuthLoginListener(Context context, LoginListener loginListener) {
-            mContext = context;
-            mLoginListener = loginListener;
-        }
-
-        @Override
-        public void onComplete(Bundle values) {
-            final Oauth2AccessToken accessToken = Oauth2AccessToken.parseAccessToken(values);
-            if (accessToken != null && accessToken.isSessionValid()) {
-                AccessTokenKeeper.writeAccessToken(mContext, accessToken);
-                
-                mLoginListener.onSuccess(accessToken.getToken(), accessToken.getUid(),
-                        accessToken.getExpiresTime() / 1000000,
-                        oAuthData2Json(accessToken));
-            }
-        }
-
-        @Override
-        public void onWeiboException(WeiboException e) {
-            mLoginListener.onError(e.getMessage());
-        }
-
-        @Override
-        public void onCancel() {
-            mLoginListener.onCancel();
-        }
-    }
+    private static WeiboAuthListener mAuthLoginListener;
 
     @Override
-    public void login(Context context, @NonNull LoginListener loginListener) {
-        mAuthLoginListener = new AuthLoginListener(context, loginListener);
+    public void login(@NonNull final Activity activity, @NonNull final LoginListener loginListener) {
         String appId = ShareBlock.getInstance().weiboAppId;
         if (TextUtils.isEmpty(appId)) {
             throw new NullPointerException("请通过shareBlock初始化weiboAppId");
         }
-        AccessTokenKeeper.clear(context);
+        AccessTokenKeeper.clear(activity);
+        /**
+         * * 1. SSO 授权时，需要在 onActivityResult 中调用 {@link SsoHandler#authorizeCallBack} 后，
+         * 该回调才会被执行。
+         * 2. 非SSO 授权时，当授权结束后，该回调就会被执行
+         */
+        mAuthLoginListener = new WeiboAuthListener() {
+            @Override
+            public void onComplete(Bundle values) {
+                final Oauth2AccessToken accessToken = Oauth2AccessToken.parseAccessToken(values);
+                if (accessToken != null && accessToken.isSessionValid()) {
+                    AccessTokenKeeper.writeAccessToken(activity, accessToken);
+
+                    loginListener.onSuccess(accessToken.getToken(), accessToken.getUid(),
+                            accessToken.getExpiresTime() / 1000000,
+                            oAuthData2Json(accessToken));
+                }
+            }
+
+            @Override
+            public void onWeiboException(WeiboException e) {
+                loginListener.onError(e.getMessage());
+            }
+
+            @Override
+            public void onCancel() {
+                loginListener.onCancel();
+            }
+        };
+        
         // 启动activity后，应该立刻调用{sendLoginMsg}方法
-        context.startActivity(new Intent(context, WeiBoLoginActivity.class));
+        activity.startActivity(new Intent(activity, SL_WeiBoLoginActivity.class));
     }
 
     protected static void sendLoginMsg(Activity activity) {
@@ -123,12 +113,20 @@ public class WeiboLoginManager implements ILoginManager {
 
     // ---------------------------------- 得到用户信息 -------------------------------------
 
+    @Override
+    public void getUserInformation(@NonNull String accessToken, @NonNull String userId, @Nullable UserInfoListener listener) {
+        getUserInfo(accessToken, userId, listener);
+    }
+    
+    
     /**
      * 得到微博用户的信息
      *
      * @see "http://open.weibo.com/wiki/2/users/show"
      */
-    public static void getUserInfo(final @NonNull String accessToken, final @NonNull String uid, final UserInfoListener listener) {
+    public static void getUserInfo(final @NonNull String accessToken, final @NonNull String uid,
+            @Nullable final UserInfoListener listener) {
+        
         new AsyncTask<Void, Void, AuthUserInfo>() {
             
             @Override

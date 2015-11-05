@@ -110,12 +110,12 @@ ShareBlock.getInstance()
 #### 3. 如何进行登录、分享  
 ```JAVA  
         
-	ILoginManager mCurrentLoginManager = new 【WeiBo,WeiXin,QQ】LoginManager(MainActivity.this);
-	mCurrentLoginManager.login(mLoginListener);
+	ILoginManager mCurrentLoginManager = new 【WeiBo,WeiXin,QQ】LoginManager();
+	mCurrentLoginManager.login(MainActivity.this， mLoginListener);
 	
 	
-	mCurrentShareManager = new 【WeiBo,WeiXin,QQ】ShareManager(MainActivity.this);
-	mCurrentShareManager.share(
+	mCurrentShareManager = new 【WeiBo,WeiXin,QQ】ShareManager();
+	mCurrentShareManager.share(MainActivity.this， 
 	        new ShareContentWebpage("title", "hello world!", "http://www.baidu.com", mBitmap)
 	        , ShareBlock.WEIXIN_FRIEND
 	        , mShareListener);

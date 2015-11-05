@@ -20,6 +20,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.widget.Toast;
 
@@ -61,26 +62,25 @@ public class WeiXinLoginManager implements ILoginManager {
     }
 
     @Override
-    public void login(Context context, @NonNull LoginListener loginListener) {
+    public void login(@NonNull Activity activity, @NonNull LoginListener loginListener) {
         String weChatAppId = ShareBlock.getInstance().weiXinAppId;
         if (TextUtils.isEmpty(weChatAppId)) {
             throw new NullPointerException("请通过shareBlock初始化WeChatAppId");
         }
-        mApi = WXAPIFactory.createWXAPI(context.getApplicationContext(), weChatAppId, true);
+        
+        mApi = WXAPIFactory.createWXAPI(activity.getApplicationContext(), weChatAppId, true);
         if (!mApi.isWXAppInstalled()) {
-            Toast.makeText(context, context.getString(R.string.share_install_wechat_tips), Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity, activity.getString(R.string.share_install_wechat_tips), Toast.LENGTH_SHORT).show();
             return;
         } else {
             mApi.registerApp(weChatAppId);
         }
 
-        if (mApi != null) {
-            final SendAuth.Req req = new SendAuth.Req();
-            req.scope = SCOPE;
-            req.state = STATE;
-            mApi.sendReq(req);
-            mLoginListener = loginListener;
-        }
+        SendAuth.Req req = new SendAuth.Req();
+        req.scope = SCOPE;
+        req.state = STATE;
+        mApi.sendReq(req);
+        mLoginListener = loginListener;
     }
 
     public static void setRespListener(LoginRespListener respListener) {
@@ -147,13 +147,20 @@ public class WeiXinLoginManager implements ILoginManager {
     }
 
     // ---------------------------------- 得到用户信息 -------------------------------------
-
+    
+    @Override
+    public void getUserInformation(@NonNull String accessToken, @NonNull String userId, @Nullable UserInfoListener listener) {
+        getUserInfo(accessToken, userId, listener);
+    }
+    
     /**
      * 通过传入的参数来获得用户的信息
      */
-    public static void getUserInfo(@NonNull final String accessToken, @NonNull final String uid, final UserInfoListener listener) {
+    public static void getUserInfo(@NonNull final String accessToken, @NonNull final String uid, 
+            @Nullable final UserInfoListener listener) {
+        
         new AsyncTask<Void, Void, AuthUserInfo>() {
-
+            
             @Override
             protected AuthUserInfo doInBackground(Void... params) {
                 String respStr = HttpUtil.doGet("https://api.weixin.qq.com/sns/userinfo"

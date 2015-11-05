@@ -1,4 +1,6 @@
-package com.liulishuo.share.qq;
+package com.liulishuo.share.weibo;
+
+import com.liulishuo.share.weibo.WeiboLoginManager;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -8,18 +10,18 @@ import android.os.Bundle;
  * @author Jack Tony
  * @date 2015/10/26
  */
-public class QQLoginActivity extends Activity{
-    
+public class SL_WeiBoLoginActivity extends Activity{
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        QQLoginManager.sendLoginMsg(this);
+        WeiboLoginManager.sendLoginMsg(this);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        QQLoginManager.handlerOnActivityResult(requestCode, resultCode, data);
+        WeiboLoginManager.handlerOnActivityResult(requestCode, resultCode, data);
         finish();
     }
 }

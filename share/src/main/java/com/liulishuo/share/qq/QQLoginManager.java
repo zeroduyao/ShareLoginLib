@@ -14,10 +14,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 /**
@@ -27,46 +27,37 @@ public class QQLoginManager implements ILoginManager {
 
     private static Tencent mTencent;
 
-    private static LoginUiListener mLoginUiListener;
+    private static IUiListener mLoginUiListener;
 
     private static long mExpires = -1;
 
-    private class LoginUiListener implements IUiListener {
-
-        final private LoginListener mLoginListener;
-
-        private LoginUiListener(LoginListener loginListener) {
-            mLoginListener = loginListener;
-        }
-
-        @Override
-        public void onComplete(Object object) {
-            JSONObject jsonObject = (JSONObject) object; // qq_json
-            initOpenidAndToken(jsonObject); // 初始化id和access token
-            mLoginListener.onSuccess(mTencent.getAccessToken(), mTencent.getOpenId() , mExpires, jsonObject.toString());
-        }
-
-        @Override
-        public void onError(UiError uiError) {
-            mLoginListener.onError(uiError.errorCode + " - " + uiError.errorMessage + " - " + uiError.errorDetail);
-        }
-
-        @Override
-        public void onCancel() {
-            mLoginListener.onCancel();
-        }
-    }
-
     @Override
-    public void login(Context context, final @NonNull LoginListener loginListener) {
+    public void login(@NonNull Activity activity, final @NonNull LoginListener loginListener) {
         String appId = ShareBlock.getInstance().QQAppId;
         if (TextUtils.isEmpty(appId)) {
             throw new NullPointerException("请通过shareBlock初始化appId");
         }
-        mLoginUiListener = new LoginUiListener(loginListener);
-        mTencent = Tencent.createInstance(appId, context.getApplicationContext());
+        mLoginUiListener = new IUiListener() {
+
+            @Override
+            public void onComplete(Object object) {
+                initOpenidAndToken((JSONObject) object); // 初始化id和access token
+                loginListener.onSuccess(mTencent.getAccessToken(), mTencent.getOpenId(), mExpires, object.toString());
+            }
+
+            @Override
+            public void onError(UiError uiError) {
+                loginListener.onError(uiError.errorCode + " - " + uiError.errorMessage + " - " + uiError.errorDetail);
+            }
+
+            @Override
+            public void onCancel() {
+                loginListener.onCancel();
+            }
+        };
+        mTencent = Tencent.createInstance(appId, activity);
         // 启动activity后，应该立刻调用{sendLoginMsg}方法
-        context.startActivity(new Intent(context, QQLoginActivity.class));
+        activity.startActivity(new Intent(activity, SL_QQLoginActivity.class));
     }
 
     protected static void sendLoginMsg(Activity activity) {
@@ -103,12 +94,19 @@ public class QQLoginManager implements ILoginManager {
     }
 
     // ---------------------------------- 得到用户信息 -------------------------------------
-    
+
+    @Override
+    public void getUserInformation(@NonNull String accessToken, @NonNull String userId, @Nullable UserInfoListener listener) {
+        getUserInfo(accessToken, userId, listener);
+    }
+
     /**
      * 得到用户的信息，是一个静态的基础方法
      * @see "http://wiki.open.qq.com/wiki/website/get_simple_userinfo"
      */
-    public static void getUserInfo(@NonNull final String accessToken, @NonNull final String userId, final UserInfoListener listener) {
+    public static void getUserInfo(@NonNull final String accessToken, @NonNull final String userId, 
+            @Nullable final UserInfoListener listener) {
+        
         new AsyncTask<Void, Void, AuthUserInfo>() {
 
             @Override
