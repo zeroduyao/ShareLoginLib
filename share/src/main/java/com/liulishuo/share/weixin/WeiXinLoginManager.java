@@ -42,25 +42,6 @@ public class WeiXinLoginManager implements ILoginManager {
 
     private static LoginRespListener mRespListener;
 
-    /**
-     * 解析用户登录的结果
-     */
-    protected static void parseLoginResp(final Activity activity, SendAuth.Resp resp) {
-        switch (resp.errCode) {
-            case BaseResp.ErrCode.ERR_OK: // 登录成功
-                handlerLoginResp(activity, resp); // 登录成功后开始通过code换取token
-                break;
-            case BaseResp.ErrCode.ERR_USER_CANCEL:
-                mLoginListener.onCancel();
-                break;
-            case BaseResp.ErrCode.ERR_AUTH_DENIED:
-                mLoginListener.onError("用户拒绝授权");
-                break;
-            default:
-                mLoginListener.onError("未知错误");
-        }
-    }
-
     @Override
     public void login(@NonNull Activity activity, @NonNull LoginListener loginListener) {
         String weChatAppId = ShareBlock.getInstance().weiXinAppId;
@@ -81,6 +62,25 @@ public class WeiXinLoginManager implements ILoginManager {
         req.state = STATE;
         mApi.sendReq(req);
         mLoginListener = loginListener;
+    }
+
+    /**
+     * 解析用户登录的结果
+     */
+    protected static void parseLoginResp(final Activity activity, SendAuth.Resp resp) {
+        switch (resp.errCode) {
+            case BaseResp.ErrCode.ERR_OK: // 登录成功
+                handlerLoginResp(activity, resp); // 登录成功后开始通过code换取token
+                break;
+            case BaseResp.ErrCode.ERR_USER_CANCEL:
+                mLoginListener.onCancel();
+                break;
+            case BaseResp.ErrCode.ERR_AUTH_DENIED:
+                mLoginListener.onError("用户拒绝授权");
+                break;
+            default:
+                mLoginListener.onError("未知错误");
+        }
     }
 
     public static void setRespListener(LoginRespListener respListener) {

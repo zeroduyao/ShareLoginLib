@@ -1,7 +1,5 @@
 package com.liulishuo.share.qq;
 
-import com.liulishuo.share.qq.QQShareManager;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;

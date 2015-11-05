@@ -1,7 +1,5 @@
 package com.liulishuo.share.weixin;
 
-import com.liulishuo.share.weixin.WeiXinLoginManager;
-import com.liulishuo.share.weixin.WeiXinShareManager;
 import com.tencent.mm.sdk.modelbase.BaseReq;
 import com.tencent.mm.sdk.modelbase.BaseResp;
 import com.tencent.mm.sdk.modelmsg.SendAuth;
@@ -58,7 +56,7 @@ public abstract class WeiXinHandlerActivity extends Activity implements IWXAPIEv
                 WeiXinLoginManager.onLoginResp((SendAuth.Resp) resp); // 可以得到code
                 WeiXinLoginManager.parseLoginResp(this, (SendAuth.Resp) resp);
             } else {
-                WeiXinShareManager.parseShare(resp);
+                WeiXinShareManager.onShareResp(resp);
             }
         }
         finish();

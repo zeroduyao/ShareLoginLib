@@ -1,7 +1,6 @@
 package com.liulishuo.share.weibo;
 
 import com.liulishuo.share.ShareBlock;
-import com.liulishuo.share.weibo.WeiboShareManager;
 import com.sina.weibo.sdk.api.share.BaseResponse;
 import com.sina.weibo.sdk.api.share.IWeiboHandler;
 import com.sina.weibo.sdk.api.share.IWeiboShareAPI;

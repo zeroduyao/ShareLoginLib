@@ -29,26 +29,28 @@ import static com.liulishuo.share.ShareBlock.getInstance;
 /**
  * Created by echo on 5/18/15.
  */
-public class QQShareManager implements IShareManager{
+public class QQShareManager implements IShareManager {
 
     private static final String KEY_SHARE_TO_FRIEND = "key_share_to_friend";
-    
+
     private static Tencent mTencent;
 
     private static IUiListener mUiListener;
-    
+
+    /**
+     * 启动新的activity进行分享
+     */
     @Override
-    public void share(@NonNull Activity activity, @NonNull ShareContent shareContent, @ShareBlock.ShareType int shareType, 
+    public void share(@NonNull Activity activity, @NonNull ShareContent shareContent, @ShareBlock.ShareType int shareType,
             @Nullable final ShareStateListener listener) {
-        
+
         String appId = ShareBlock.getInstance().QQAppId;
         if (!TextUtils.isEmpty(appId)) {
             mTencent = Tencent.createInstance(appId, activity);
         } else {
             throw new NullPointerException("请通过shareBlock初始化QQAppId");
         }
-        
-        mUiListener = new IUiListener(){
+        mUiListener = new IUiListener() {
 
             @Override
             public void onComplete(Object response) {
@@ -71,15 +73,41 @@ public class QQShareManager implements IShareManager{
                 }
             }
         };
-        
+
+        Bundle params = null;
         if (shareType == ShareBlock.QQ_FRIEND) {
-            shareToQQ(activity, shareContent);
+            params = getShareToQQBundle(activity, shareContent);
+            params.putBoolean(KEY_SHARE_TO_FRIEND, true);
         } else if (shareType == ShareBlock.QQ_ZONE) {
-            shareToQZone(activity, shareContent);
+            params = getShareToQZoneBundle(activity, shareContent);
+            params.putBoolean(KEY_SHARE_TO_FRIEND, false);
+        }
+        activity.startActivity(new Intent(activity, SL_QQShareActivity.class).putExtras(params));
+    }
+
+    /**
+     * 启动的activity调用此方法进行分享
+     */
+    protected static void sendShareMsg(Activity activity, Bundle params) {
+        if (params.getBoolean(KEY_SHARE_TO_FRIEND)) {
+            mTencent.shareToQQ(activity, params, mUiListener);
+        } else {
+            mTencent.shareToQzone(activity, params, mUiListener);
         }
     }
 
-    private void shareToQQ(Activity activity, ShareContent shareContent) {
+    /**
+     * 解析分享的结果
+     */
+    protected static void handlerOnActivityResult(Intent data) {
+        if (mUiListener != null) {
+            Tencent.handleResultData(data, mUiListener);
+        }
+    }
+
+    // --------------------------
+
+    private @NonNull Bundle getShareToQQBundle(Activity activity, ShareContent shareContent) {
         Bundle bundle;
         switch (shareContent.getType()) {
             case Constants.SHARE_TYPE_TEXT:
@@ -87,7 +115,7 @@ public class QQShareManager implements IShareManager{
                 // FIXME: 2015/10/23 文档中说： "本接口支持3种模式，每种模式的参数设置不同"，这三种模式中不包含纯文本
                 Toast.makeText(activity, "QQ目前不支持分享纯文本信息", Toast.LENGTH_SHORT).show();
                 bundle = getTextObj();
-                return;
+                break;
             case Constants.SHARE_TYPE_PIC:
                 // 纯图片
                 bundle = getImageObj(shareContent);
@@ -103,12 +131,11 @@ public class QQShareManager implements IShareManager{
             default:
                 throw new UnsupportedOperationException("不支持的分享内容");
         }
-        shareMsgToQQFriend(activity, bundle, shareContent);
+        return getQQFriendParams(bundle, shareContent);
     }
 
     /**
      * @see "http://wiki.open.qq.com/wiki/mobile/API%E8%B0%83%E7%94%A8%E8%AF%B4%E6%98%8E#1.13_.E5.88.86.E4.BA.AB.E6.B6.88.E6.81.AF.E5.88.B0QQ.EF.BC.88.E6.97.A0.E9.9C.80QQ.E7.99.BB.E5.BD.95.EF.BC.89"
-     *
      * QQShare.PARAM_TITLE 	        必填 	String 	分享的标题, 最长30个字符。
      * QQShare.SHARE_TO_QQ_KEY_TYPE 	必填 	Int 	分享的类型。图文分享(普通分享)填Tencent.SHARE_TO_QQ_TYPE_DEFAULT
      * QQShare.PARAM_TARGET_URL 	必填 	String 	这条分享消息被好友点击后的跳转URL。
@@ -123,8 +150,7 @@ public class QQShareManager implements IShareManager{
      *
      * 发送给QQ好友
      */
-    private void shareMsgToQQFriend(Activity activity, Bundle params, ShareContent shareContent) {
-        params.putBoolean(KEY_SHARE_TO_FRIEND, true);
+    private Bundle getQQFriendParams(Bundle params, ShareContent shareContent) {
         params.putString(QQShare.SHARE_TO_QQ_TITLE, shareContent.getTitle()); // 标题
         params.putString(QQShare.SHARE_TO_QQ_SUMMARY, shareContent.getSummary()); // 描述
         params.putString(QQShare.SHARE_TO_QQ_TARGET_URL, shareContent.getURL()); // 这条分享消息被好友点击后的跳转URL
@@ -132,15 +158,7 @@ public class QQShareManager implements IShareManager{
             params.putString(QQShare.SHARE_TO_QQ_IMAGE_URL, saveByteArr(shareContent.getImageBmpBytes())); // 分享图片的URL或者本地路径 (可选)
         }
         params.putString(QQShare.SHARE_TO_QQ_APP_NAME, ShareBlock.getInstance().appName); // 手Q客户端顶部，替换“返回”按钮文字，如果为空，用返回代替 (可选)
-        activity.startActivity(new Intent(activity, SL_QQShareActivity.class).putExtras(params));
-    }
-
-    protected static void sendShareMsg(Activity activity, Bundle params) {
-        if (params.getBoolean(KEY_SHARE_TO_FRIEND)) {
-            mTencent.shareToQQ(activity, params, mUiListener);
-        } else {
-            mTencent.shareToQzone(activity, params, mUiListener);
-        }
+        return params;
     }
 
     private Bundle getTextObj() {
@@ -178,26 +196,24 @@ public class QQShareManager implements IShareManager{
      * QzoneShare.SHARE_TO_QQ_TITLE 	    必填      Int 	分享的标题，最多200个字符。
      * QzoneShare.SHARE_TO_QQ_SUMMARY 	    选填      String 	分享的摘要，最多600字符。
      * QzoneShare.SHARE_TO_QQ_TARGET_URL    必填      String 	需要跳转的链接，URL字符串。
-     * QzoneShare.SHARE_TO_QQ_IMAGE_URL     选填      String 	
+     * QzoneShare.SHARE_TO_QQ_IMAGE_URL     选填      String
      *
      * 注意:QZone接口暂不支持发送多张图片的能力，若传入多张图片，则会自动选入第一张图片作为预览图。多图的能力将会在以后支持。
      *
      * 如果分享的图片url是本地的图片地址那么在分享时会显示图片，如果分享的是图片的网址，那么就不会在分享时显示图片
      */
-    private void shareToQZone(Activity activity, ShareContent shareContent) {
+    private Bundle getShareToQZoneBundle(Activity activity, ShareContent shareContent) {
         /*params.putString(QzoneShare.SHARE_TO_QQ_KEY_TYPE,SHARE_TO_QZONE_TYPE_IMAGE_TEXT );
         params.putString(QzoneShare.SHARE_TO_QQ_TITLE, "标题");//必填
         params.putString(QzoneShare.SHARE_TO_QQ_SUMMARY, "摘要");//选填
         params.putString(QzoneShare.SHARE_TO_QQ_TARGET_URL, "跳转URL");//必填
         params.putStringArrayList(QzoneShare.SHARE_TO_QQ_IMAGE_URL, "图片链接ArrayList");*/
         Bundle params = new Bundle();
-        params.putBoolean(KEY_SHARE_TO_FRIEND, false);
         params.putInt(QzoneShare.SHARE_TO_QZONE_KEY_TYPE, QzoneShare.SHARE_TO_QZONE_TYPE_IMAGE_TEXT);
         String title = shareContent.getTitle();
         if (title == null) {
             // 如果没title，说明就是分享的纯文字、纯图片
             Toast.makeText(activity, "QQ空间目前只支持分享图文信息", Toast.LENGTH_SHORT).show();
-            return;
         }
         params.putString(QzoneShare.SHARE_TO_QQ_TITLE, title); // 标题
         params.putString(QzoneShare.SHARE_TO_QQ_SUMMARY, shareContent.getSummary()); // 描述
@@ -209,17 +225,11 @@ public class QQShareManager implements IShareManager{
             imageUrls.add(saveByteArr(shareContent.getImageBmpBytes()));
             params.putStringArrayList(QzoneShare.SHARE_TO_QQ_IMAGE_URL, imageUrls);
         }
-        activity.startActivity(new Intent(activity, SL_QQShareActivity.class).putExtras(params));
-    }
-
-    protected static void handlerOnActivityResult(Intent data) {
-        if (mUiListener != null) {
-            Tencent.handleResultData(data, mUiListener);
-        }
+        return params;
     }
 
     private String saveByteArr(@NonNull byte[] bytes) {
-        String imagePath = getInstance().pathTemp + File.separator  + "sharePic_temp.png";
+        String imagePath = getInstance().pathTemp + File.separator + "sharePic_temp.png";
         try {
             FileOutputStream fos = new FileOutputStream(imagePath);
             fos.write(bytes);

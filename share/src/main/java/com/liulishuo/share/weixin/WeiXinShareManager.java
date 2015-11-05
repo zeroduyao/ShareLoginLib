@@ -34,6 +34,9 @@ public class WeiXinShareManager implements IShareManager {
 
     private static ShareStateListener mShareStateListener;
 
+    /**
+     * 进行分享
+     */
     @Override
     public void share(@NonNull Activity activity, @NonNull ShareContent shareContent, @ShareBlock.ShareType int shareType, 
             @Nullable ShareStateListener listener) {
@@ -50,7 +53,62 @@ public class WeiXinShareManager implements IShareManager {
         }
         
         mShareStateListener = listener;
-        
+        SendMessageToWX.Req req = getReq(shareContent, shareType);
+        IWXAPI.sendReq(req); 
+    }
+
+
+    /**
+     * 解析分享到微信的结果
+     */
+    protected static void onShareResp(BaseResp resp) {
+        if (mShareStateListener != null) {
+            switch (resp.errCode) {
+                case BaseResp.ErrCode.ERR_OK:
+                    // 分享成功
+                    mShareStateListener.onSuccess();
+                    break;
+                case BaseResp.ErrCode.ERR_USER_CANCEL:
+                    // 用户取消
+                    mShareStateListener.onCancel();
+                    break;
+                case BaseResp.ErrCode.ERR_AUTH_DENIED:
+                    // 用户拒绝授权
+                    mShareStateListener.onError("用户拒绝授权");
+                    break;
+                case BaseResp.ErrCode.ERR_SENT_FAILED:
+                    // 发送失败
+                    mShareStateListener.onError("发送失败");
+                    break;
+                case BaseResp.ErrCode.ERR_COMM:
+                    // 一般错误
+                    mShareStateListener.onError("一般错误");
+                    break;
+                default:
+                    mShareStateListener.onError("未知错误");
+            }
+        }
+    }
+
+    // --------------------------
+
+    @NonNull
+    private SendMessageToWX.Req getReq(@NonNull ShareContent shareContent, @ShareBlock.ShareType int shareType) {
+        // 建立信息体
+        WXMediaMessage msg = new WXMediaMessage(getShareObject(shareContent));
+        msg.title = shareContent.getTitle();
+        msg.description = shareContent.getSummary();
+        msg.thumbData = shareContent.getImageBmpBytes();
+
+        // 发送信息
+        SendMessageToWX.Req req = new SendMessageToWX.Req();
+        req.transaction = ShareUtil.buildTransaction("tag");
+        req.message = msg;
+        req.scene = shareType;
+        return req;
+    }
+
+    private IMediaObject getShareObject(@NonNull ShareContent shareContent) {
         IMediaObject mediaObject;
         switch (shareContent.getType()) {
             case Constants.SHARE_TYPE_TEXT:
@@ -72,23 +130,10 @@ public class WeiXinShareManager implements IShareManager {
             default:
                 throw new UnsupportedOperationException("不支持的分享内容");
         }
-
         if (!mediaObject.checkArgs()) {
             throw new IllegalArgumentException("分享信息的参数类型不正确");
         }
-
-        // 建立信息体
-        WXMediaMessage msg = new WXMediaMessage(mediaObject);
-        msg.title = shareContent.getTitle();
-        msg.description = shareContent.getSummary();
-        msg.thumbData = shareContent.getImageBmpBytes();
-
-        // 发送信息
-        SendMessageToWX.Req req = new SendMessageToWX.Req();
-        req.transaction = ShareUtil.buildTransaction("tag");
-        req.message = msg;
-        req.scene = shareType;
-        IWXAPI.sendReq(req);
+        return mediaObject;
     }
 
     private IMediaObject getTextObj(ShareContent shareContent) {
@@ -123,37 +168,7 @@ public class WeiXinShareManager implements IShareManager {
         return app;
     }
 
-    /**
-     * 解析分享到微信的结果
-     */
-    protected static void parseShare(BaseResp resp) {
-        if (mShareStateListener != null) {
-            switch (resp.errCode) {
-                case BaseResp.ErrCode.ERR_OK:
-                    // 分享成功
-                    mShareStateListener.onSuccess();
-                    break;
-                case BaseResp.ErrCode.ERR_USER_CANCEL:
-                    // 用户取消
-                    mShareStateListener.onCancel();
-                    break;
-                case BaseResp.ErrCode.ERR_AUTH_DENIED:
-                    // 用户拒绝授权
-                    mShareStateListener.onError("用户拒绝授权");
-                    break;
-                case BaseResp.ErrCode.ERR_SENT_FAILED:
-                    // 发送失败
-                    mShareStateListener.onError("发送失败");
-                    break;
-                case BaseResp.ErrCode.ERR_COMM:
-                    // 一般错误
-                    mShareStateListener.onError("一般错误");
-                    break;
-                default:
-                    mShareStateListener.onError("未知错误");
-            }
-        }
-    }
+    
 
     /**
      * @return 是否已经安装微信

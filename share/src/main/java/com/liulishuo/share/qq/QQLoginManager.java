@@ -67,7 +67,10 @@ public class QQLoginManager implements ILoginManager {
             mTencent.logout(activity);
         }
     }
-
+    
+    /**
+     * 解析用户登录的结果
+     */
     protected static void handlerOnActivityResult(int requestCode, int resultCode, Intent data) {
         if (mLoginUiListener != null) {
             Tencent.onActivityResultData(requestCode, resultCode, data, mLoginUiListener);

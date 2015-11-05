@@ -88,7 +88,10 @@ public class WeiboLoginManager implements ILoginManager {
         mSsoHandler = new SsoHandler(activity, authInfo);
         mSsoHandler.authorize(mAuthLoginListener);
     }
-
+    
+    /**
+     * 解析用户登录的结果
+     */
     protected static void handlerOnActivityResult(int requestCode, int resultCode, Intent data) {
         // SSO 授权回调
         // 重要：发起 SSO 登陆的 Activity 必须重写 onActivityResult
