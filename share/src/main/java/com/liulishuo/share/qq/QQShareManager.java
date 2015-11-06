@@ -229,6 +229,10 @@ public class QQShareManager implements IShareManager {
     }
 
     private String saveByteArr(@NonNull byte[] bytes) {
+        if (getInstance().pathTemp == null) {
+            throw new NullPointerException("请先调用shareBlock的initSharePicFile(Application application)方法");
+        }
+        
         String imagePath = getInstance().pathTemp + File.separator + "sharePic_temp.png";
         try {
             FileOutputStream fos = new FileOutputStream(imagePath);

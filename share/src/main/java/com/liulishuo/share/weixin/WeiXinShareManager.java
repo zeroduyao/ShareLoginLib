@@ -1,6 +1,5 @@
 package com.liulishuo.share.weixin;
 
-import com.liulishuo.share.R;
 import com.liulishuo.share.ShareBlock;
 import com.liulishuo.share.base.Constants;
 import com.liulishuo.share.base.share.IShareManager;
@@ -47,7 +46,7 @@ public class WeiXinShareManager implements IShareManager {
         }
         IWXAPI IWXAPI = WXAPIFactory.createWXAPI(activity, weChatAppId, true);
         if (!IWXAPI.isWXAppInstalled()) {
-            Toast.makeText(activity, activity.getString(R.string.share_install_wechat_tips), Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity, "请安装微信哦~", Toast.LENGTH_SHORT).show();
         } else {
             IWXAPI.registerApp(weChatAppId);
         }

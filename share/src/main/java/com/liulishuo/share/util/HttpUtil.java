@@ -24,7 +24,6 @@ public class HttpUtil {
         void onError();
     }
 
-
     /**
      * 异步的Get请求
      */
@@ -114,7 +113,9 @@ public class HttpUtil {
                 }
             } catch (IOException ignore) {
             }
-            conn.disconnect();
+            if (conn != null) {
+                conn.disconnect();
+            }
         }
         return null;
     }
