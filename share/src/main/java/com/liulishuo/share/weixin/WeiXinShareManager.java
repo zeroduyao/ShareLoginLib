@@ -40,20 +40,25 @@ public class WeiXinShareManager implements IShareManager {
     public void share(@NonNull Activity activity, @NonNull ShareContent shareContent, @ShareBlock.ShareType int shareType, 
             @Nullable ShareStateListener listener) {
         
+        mShareStateListener = listener;
+        sendShareMsg(activity, shareContent, shareType); 
+    }
+
+    private void sendShareMsg(@NonNull Activity activity, @NonNull ShareContent shareContent, @ShareBlock.ShareType int shareType) {
         String weChatAppId = ShareBlock.getInstance().weiXinAppId;
         if (TextUtils.isEmpty(weChatAppId)) {
             throw new NullPointerException("请通过shareBlock初始化WeChatAppId");
         }
+
         IWXAPI IWXAPI = WXAPIFactory.createWXAPI(activity, weChatAppId, true);
         if (!IWXAPI.isWXAppInstalled()) {
             Toast.makeText(activity, "请安装微信哦~", Toast.LENGTH_SHORT).show();
         } else {
             IWXAPI.registerApp(weChatAppId);
         }
-        
-        mShareStateListener = listener;
+
         SendMessageToWX.Req req = getReq(shareContent, shareType);
-        IWXAPI.sendReq(req); 
+        IWXAPI.sendReq(req);
     }
 
 

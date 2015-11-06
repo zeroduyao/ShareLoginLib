@@ -35,50 +35,54 @@ public class WeiXinLoginManager implements ILoginManager {
 
     private static final String SCOPE = "snsapi_userinfo";
 
-    private static IWXAPI mApi;
-
     private static LoginListener mLoginListener;
 
     private static LoginRespListener mRespListener;
 
     @Override
-    public void login(@NonNull Activity activity, @NonNull LoginListener loginListener) {
+    public void login(@NonNull Activity activity, @Nullable LoginListener loginListener) {
+        mLoginListener = loginListener;
+        sendLoginMsg(activity);
+    }
+
+    private void sendLoginMsg(Activity activity) {
         String weChatAppId = ShareBlock.getInstance().weiXinAppId;
         if (TextUtils.isEmpty(weChatAppId)) {
             throw new NullPointerException("请通过shareBlock初始化WeChatAppId");
         }
-        
-        mApi = WXAPIFactory.createWXAPI(activity.getApplicationContext(), weChatAppId, true);
-        if (!mApi.isWXAppInstalled()) {
+
+        IWXAPI api = WXAPIFactory.createWXAPI(activity.getApplicationContext(), weChatAppId, true);
+        if (!api.isWXAppInstalled()) {
             Toast.makeText(activity, "请安装微信哦~", Toast.LENGTH_SHORT).show();
             return;
         } else {
-            mApi.registerApp(weChatAppId);
+            api.registerApp(weChatAppId);
         }
 
         SendAuth.Req req = new SendAuth.Req();
         req.scope = SCOPE;
         req.state = STATE;
-        mApi.sendReq(req);
-        mLoginListener = loginListener;
+        api.sendReq(req);
     }
 
     /**
      * 解析用户登录的结果
      */
     protected static void parseLoginResp(final Activity activity, SendAuth.Resp resp) {
-        switch (resp.errCode) {
-            case BaseResp.ErrCode.ERR_OK: // 登录成功
-                handlerLoginResp(activity, resp); // 登录成功后开始通过code换取token
-                break;
-            case BaseResp.ErrCode.ERR_USER_CANCEL:
-                mLoginListener.onCancel();
-                break;
-            case BaseResp.ErrCode.ERR_AUTH_DENIED:
-                mLoginListener.onError("用户拒绝授权");
-                break;
-            default:
-                mLoginListener.onError("未知错误");
+        if (mLoginListener != null) {
+            switch (resp.errCode) {
+                case BaseResp.ErrCode.ERR_OK: // 登录成功
+                    handlerLoginResp(activity, resp); // 登录成功后开始通过code换取token
+                    break;
+                case BaseResp.ErrCode.ERR_USER_CANCEL:
+                    mLoginListener.onCancel();
+                    break;
+                case BaseResp.ErrCode.ERR_AUTH_DENIED:
+                    mLoginListener.onError("用户拒绝授权");
+                    break;
+                default:
+                    mLoginListener.onError("未知错误");
+            }
         }
     }
 
@@ -138,28 +142,25 @@ public class WeiXinLoginManager implements ILoginManager {
     }
 
     public interface LoginRespListener {
+
         void onLoginResp(SendAuth.Resp resp);
     }
 
-    public static IWXAPI getApi() {
-        return mApi;
-    }
-
     // ---------------------------------- 得到用户信息 -------------------------------------
-    
+
     @Override
     public void getUserInformation(@NonNull String accessToken, @NonNull String userId, @Nullable UserInfoListener listener) {
         getUserInfo(accessToken, userId, listener);
     }
-    
+
     /**
      * 通过传入的参数来获得用户的信息
      */
-    public static void getUserInfo(@NonNull final String accessToken, @NonNull final String uid, 
+    public static void getUserInfo(@NonNull final String accessToken, @NonNull final String uid,
             @Nullable final UserInfoListener listener) {
-        
+
         new AsyncTask<Void, Void, AuthUserInfo>() {
-            
+
             @Override
             protected AuthUserInfo doInBackground(Void... params) {
                 String respStr = HttpUtil.doGet("https://api.weixin.qq.com/sns/userinfo"
@@ -167,7 +168,7 @@ public class WeiXinLoginManager implements ILoginManager {
                 if (respStr == null) {
                     return null;
                 }
-                
+
                 AuthUserInfo userInfo;
                 try {
                     userInfo = new AuthUserInfo();

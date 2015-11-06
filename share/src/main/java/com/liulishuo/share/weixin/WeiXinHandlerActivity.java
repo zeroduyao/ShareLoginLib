@@ -1,10 +1,12 @@
 package com.liulishuo.share.weixin;
 
+import com.liulishuo.share.ShareBlock;
 import com.tencent.mm.sdk.modelbase.BaseReq;
 import com.tencent.mm.sdk.modelbase.BaseResp;
 import com.tencent.mm.sdk.modelmsg.SendAuth;
 import com.tencent.mm.sdk.openapi.IWXAPI;
 import com.tencent.mm.sdk.openapi.IWXAPIEventHandler;
+import com.tencent.mm.sdk.openapi.WXAPIFactory;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -28,10 +30,8 @@ public abstract class WeiXinHandlerActivity extends Activity implements IWXAPIEv
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mIWXAPI = WeiXinLoginManager.getApi();
-        if (mIWXAPI != null) {
-            mIWXAPI.handleIntent(getIntent(), this);
-        }
+        mIWXAPI = WXAPIFactory.createWXAPI(this, ShareBlock.getInstance().weiXinAppId, true);
+        mIWXAPI.handleIntent(getIntent(), this);
         finish();
     }
 

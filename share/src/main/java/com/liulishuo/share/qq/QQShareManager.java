@@ -33,8 +33,6 @@ public class QQShareManager implements IShareManager {
 
     private static final String KEY_SHARE_TO_FRIEND = "key_share_to_friend";
 
-    private static Tencent mTencent;
-
     private static IUiListener mUiListener;
 
     /**
@@ -44,12 +42,6 @@ public class QQShareManager implements IShareManager {
     public void share(@NonNull Activity activity, @NonNull ShareContent shareContent, @ShareBlock.ShareType int shareType,
             @Nullable final ShareStateListener listener) {
 
-        String appId = ShareBlock.getInstance().QQAppId;
-        if (!TextUtils.isEmpty(appId)) {
-            mTencent = Tencent.createInstance(appId, activity);
-        } else {
-            throw new NullPointerException("请通过shareBlock初始化QQAppId");
-        }
         mUiListener = new IUiListener() {
 
             @Override
@@ -89,10 +81,16 @@ public class QQShareManager implements IShareManager {
      * 启动的activity调用此方法进行分享
      */
     protected static void sendShareMsg(Activity activity, Bundle params) {
+        String appId = ShareBlock.getInstance().QQAppId;
+        if (TextUtils.isEmpty(appId)) {
+            throw new NullPointerException("请通过shareBlock初始化QQAppId");
+        }
+
+        Tencent tencent = Tencent.createInstance(appId, activity);
         if (params.getBoolean(KEY_SHARE_TO_FRIEND)) {
-            mTencent.shareToQQ(activity, params, mUiListener);
+            tencent.shareToQQ(activity, params, mUiListener);
         } else {
-            mTencent.shareToQzone(activity, params, mUiListener);
+            tencent.shareToQzone(activity, params, mUiListener);
         }
     }
 
@@ -100,9 +98,7 @@ public class QQShareManager implements IShareManager {
      * 解析分享的结果
      */
     protected static void handlerOnActivityResult(Intent data) {
-        if (mUiListener != null) {
-            Tencent.handleResultData(data, mUiListener);
-        }
+        Tencent.handleResultData(data, mUiListener);
     }
 
     // --------------------------

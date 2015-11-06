@@ -30,11 +30,6 @@ import android.text.TextUtils;
  */
 public class WeiboShareManager implements IShareManager {
 
-    /**
-     * 微博分享的接口实例
-     */
-    private static IWeiboShareAPI mSinaAPI;
-
     private static ShareStateListener mShareStateListener;
 
     private static SendMultiMessageToWeiboRequest mRequest;
@@ -45,13 +40,6 @@ public class WeiboShareManager implements IShareManager {
     public void share(@NonNull Activity activity, @NonNull ShareContent shareContent, @ShareBlock.ShareType int shareType,
             @Nullable ShareStateListener listener) {
 
-        String appId = ShareBlock.getInstance().weiboAppId;
-        if (!TextUtils.isEmpty(appId)) {
-            mSinaAPI = WeiboShareSDK.createWeiboAPI(activity, appId);
-            mSinaAPI.registerApp();  // 将应用注册到微博客户端
-        } else {
-            throw new NullPointerException("请通过shareBlock初始化SinaAppKey");
-        }
         mShareStateListener = listener;
         // 建立请求体
         mRequest = new SendMultiMessageToWeiboRequest();
@@ -66,7 +54,14 @@ public class WeiboShareManager implements IShareManager {
      * 在启动的activity中发送分享的信息
      */
     protected static void sendShareMsg(Activity activity) {
-        mSinaAPI.sendRequest(activity, mRequest);
+        String appId = ShareBlock.getInstance().weiboAppId;
+        if (TextUtils.isEmpty(appId)) {
+            throw new NullPointerException("请通过shareBlock初始化SinaAppKey");
+        }
+
+        IWeiboShareAPI api = WeiboShareSDK.createWeiboAPI(activity, appId);
+        api.registerApp();  // 将应用注册到微博客户端
+        api.sendRequest(activity, mRequest);
     }
 
     /**
@@ -86,6 +81,8 @@ public class WeiboShareManager implements IShareManager {
                 case WBConstants.ErrorCode.ERR_FAIL:
                     mShareStateListener.onError(errorMsg);
                     break;
+                default:
+                    mShareStateListener.onError("未知错误");
             }
         }
     }
@@ -123,11 +120,6 @@ public class WeiboShareManager implements IShareManager {
             throw new IllegalArgumentException("分享信息的参数类型不正确");
         }
         return weiboMultiMessage;
-    }
-
-
-    public IWeiboShareAPI getSinaAPI() {
-        return mSinaAPI;
     }
 
     /**
