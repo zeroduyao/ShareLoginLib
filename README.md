@@ -122,7 +122,7 @@ ShareBlock.getInstance()
         
 ```   
 
-#### 5. 判断本机是否安装微博、微信  
+#### 4. 判断本机是否安装微博、微信  
 ```JAVA
         WeiBoLoginManager.isWeiBoInstalled(this);
         WeiBoShareManager.isWeiBoInstalled(this);
