@@ -9,7 +9,7 @@ import android.support.annotation.Nullable;
  */
 public interface ILoginManager {
 
-    void login(@NonNull Activity activity, @NonNull LoginListener listener);
+    void login(@NonNull Activity activity, @Nullable LoginListener listener);
 
     void getUserInformation(@NonNull String accessToken, @NonNull String userId, @Nullable UserInfoListener listener);
 }

@@ -13,20 +13,14 @@ import com.liulishuo.share.weibo.WeiboShareManager;
 import com.liulishuo.share.weixin.WeiXinLoginManager;
 import com.liulishuo.share.weixin.WeiXinShareManager;
 
-import android.app.ActivityManager;
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.text.TextUtils;
 import android.view.View;
 import android.widget.RadioGroup;
 import android.widget.TextView;
-
-import java.io.File;
-import java.io.FileOutputStream;
 
 /**
  * 步骤：
@@ -160,53 +154,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-    }
-
-
-    /**
-     * @return 手机当前的activity
-     */
-    String getRunningActivityName() {
-        ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-        return activityManager.getRunningTasks(1).get(0).topActivity.getClassName();
-    }
-
-
-    /**
-     * 截取对象是普通view，得到这个view在本地存放的地址
-     */
-    private String getImagePath(View view) {
-        String imagePath = getPathTemp() + File.separator + System.currentTimeMillis() + ".png";
-        try {
-            view.setDrawingCacheEnabled(true);
-            Bitmap bitmap = view.getDrawingCache();
-            if (bitmap != null) {
-                FileOutputStream out = new FileOutputStream(imagePath);
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
-                out.close();
-            }
-        } catch (OutOfMemoryError ignored) {
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-
-        return imagePath;
-    }
-
-    private String mPathTemp = "";
-
-    /**
-     * 临时文件地址 *
-     */
-    public String getPathTemp() {
-        if (TextUtils.isEmpty(mPathTemp)) {
-            mPathTemp = MainActivity.this.getExternalCacheDir() + File.separator + "temp";
-            File dir = new File(mPathTemp);
-            if (!dir.exists()) {
-                dir.mkdirs();
-            }
-        }
-        return mPathTemp;
     }
 
 }

@@ -29,30 +29,36 @@ public class QQLoginManager implements ILoginManager {
     private static IUiListener mUiListener;
 
     @Override
-    public void login(@NonNull Activity activity, final @NonNull LoginListener loginListener) {
+    public void login(@NonNull Activity activity, final @Nullable LoginListener loginListener) {
         mUiListener = new IUiListener() {
 
             @Override
             public void onComplete(Object object) {
-                JSONObject jsonObject = ((JSONObject) object);
-                try {
-                    String token = jsonObject.getString(Constants.PARAM_ACCESS_TOKEN);
-                    String openId = jsonObject.getString(Constants.PARAM_OPEN_ID);
-                    String expires = jsonObject.getString(Constants.PARAM_EXPIRES_IN);
-                    loginListener.onSuccess(token, openId, Long.valueOf(expires), object.toString());
-                } catch (Exception e) {
-                    e.printStackTrace();
+                if (loginListener != null) {
+                    JSONObject jsonObject = ((JSONObject) object);
+                    try {
+                        String token = jsonObject.getString(Constants.PARAM_ACCESS_TOKEN);
+                        String openId = jsonObject.getString(Constants.PARAM_OPEN_ID);
+                        String expires = jsonObject.getString(Constants.PARAM_EXPIRES_IN);
+                        loginListener.onSuccess(token, openId, Long.valueOf(expires), object.toString());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }
 
             @Override
             public void onError(UiError uiError) {
-                loginListener.onError(uiError.errorCode + " - " + uiError.errorMessage + " - " + uiError.errorDetail);
+                if (loginListener != null) {
+                    loginListener.onError(uiError.errorCode + " - " + uiError.errorMessage + " - " + uiError.errorDetail);
+                }
             }
 
             @Override
             public void onCancel() {
-                loginListener.onCancel();
+                if (loginListener != null) {
+                    loginListener.onCancel();
+                }
             }
         };
         // 启动activity后，应该立刻调用{sendLoginMsg}方法

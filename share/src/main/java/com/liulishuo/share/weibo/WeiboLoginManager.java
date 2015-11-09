@@ -39,7 +39,7 @@ public class WeiboLoginManager implements ILoginManager {
     private static LoginListener mLoginListener;
 
     @Override
-    public void login(@NonNull final Activity activity, @NonNull final LoginListener loginListener) {
+    public void login(@NonNull final Activity activity, @Nullable final LoginListener loginListener) {
         mLoginListener = loginListener;
         // 启动activity后，应该立刻调用{sendLoginMsg}方法
         activity.startActivity(new Intent(activity, SL_WeiBoLoginActivity.class));
@@ -69,22 +69,27 @@ public class WeiboLoginManager implements ILoginManager {
                 final Oauth2AccessToken accessToken = Oauth2AccessToken.parseAccessToken(values);
                 if (accessToken != null && accessToken.isSessionValid()) {
                     AccessTokenKeeper.writeAccessToken(activity, accessToken);
-
-                    mLoginListener.onSuccess(accessToken.getToken(),
-                            accessToken.getUid(),
-                            accessToken.getExpiresTime() / 1000000,
-                            oAuthData2Json(accessToken));
+                    if (mLoginListener != null) {
+                        mLoginListener.onSuccess(accessToken.getToken(),
+                                accessToken.getUid(),
+                                accessToken.getExpiresTime() / 1000000,
+                                oAuthData2Json(accessToken));
+                    }
                 }
             }
 
             @Override
             public void onWeiboException(WeiboException e) {
-                mLoginListener.onError(e.getMessage());
+                if (mLoginListener != null) {
+                    mLoginListener.onError(e.getMessage());
+                }
             }
 
             @Override
             public void onCancel() {
-                mLoginListener.onCancel();
+                if (mLoginListener != null) {
+                    mLoginListener.onCancel();
+                }
             }
         });
     }
