@@ -74,7 +74,7 @@ public class QQShareManager implements IShareManager {
             params = getShareToQZoneBundle(activity, shareContent);
             params.putBoolean(KEY_SHARE_TO_FRIEND, false);
         }
-        activity.startActivity(new Intent(activity, SL_QQShareActivity.class).putExtras(params));
+        activity.startActivity(SL_QQHandlerActivity.withIntent(activity, false).putExtras(params));
     }
 
     /**

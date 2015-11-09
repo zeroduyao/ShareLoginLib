@@ -47,19 +47,11 @@
         <!-- ============================= qq ============================= -->
 
         <activity
-            android:name=".qq.SL_QQLoginActivity"
+            android:name=".qq.SL_QQHandlerActivity"
             android:configChanges="keyboardHidden|orientation"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Translucent.NoTitleBar"
             />
-
-        <activity
-            android:name=".qq.SL_QQShareActivity"
-            android:configChanges="keyboardHidden|orientation"
-            android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.NoDisplay"
-            />
-
 
         <!-- 腾讯sdk中增加的帮助activity对象，可以用来查看日志 -->
         <activity

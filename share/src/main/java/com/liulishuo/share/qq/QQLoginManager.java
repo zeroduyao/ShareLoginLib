@@ -56,7 +56,7 @@ public class QQLoginManager implements ILoginManager {
             }
         };
         // 启动activity后，应该立刻调用{sendLoginMsg}方法
-        activity.startActivity(new Intent(activity, SL_QQLoginActivity.class));
+        activity.startActivity(SL_QQHandlerActivity.withIntent(activity, true));
     }
 
     protected static void sendLoginMsg(Activity activity) {

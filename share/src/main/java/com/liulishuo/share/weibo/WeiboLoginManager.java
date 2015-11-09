@@ -6,7 +6,6 @@ import com.liulishuo.share.base.login.ILoginManager;
 import com.liulishuo.share.base.login.LoginListener;
 import com.liulishuo.share.base.login.UserInfoListener;
 import com.liulishuo.share.util.HttpUtil;
-import com.liulishuo.share.weibo.model.AbsOpenAPI;
 import com.sina.weibo.sdk.api.share.IWeiboShareAPI;
 import com.sina.weibo.sdk.api.share.WeiboShareSDK;
 import com.sina.weibo.sdk.auth.AuthInfo;
@@ -132,7 +131,7 @@ public class WeiboLoginManager implements ILoginManager {
 
             @Override
             protected AuthUserInfo doInBackground(Void... params) {
-                String respStr = HttpUtil.doGet(AbsOpenAPI.API_SERVER + "/users/show.json"
+                String respStr = HttpUtil.doGet("https://api.weibo.com/2/users/show.json"
                         + "?access_token=" + accessToken + "&uid=" + uid);
                 if (respStr == null) {
                     return null;

@@ -10,7 +10,7 @@ public interface ShareStateListener {
      */
     void onSuccess();
 
-    void onError(String msg);
-
     void onCancel();
+
+    void onError(String msg);
 }
