@@ -3,6 +3,7 @@ package com.liulishuo.share.qq;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 /**
  * @author Jack Tony
@@ -12,8 +13,6 @@ public class SL_QQHandlerActivity extends Activity {
 
     private static final String KEY_IS_LOGIN_REQ = "key_is_login_req";
 
-    private boolean isLoginReq;
-
     public static Intent withIntent(Activity activity, boolean isLoginReq) {
         return new Intent(activity, SL_QQHandlerActivity.class)
                 .putExtra(KEY_IS_LOGIN_REQ, isLoginReq);
@@ -22,8 +21,7 @@ public class SL_QQHandlerActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        isLoginReq = getIntent().getBooleanExtra(KEY_IS_LOGIN_REQ, false);
-        if (isLoginReq) {
+        if (getIntent().getBooleanExtra(KEY_IS_LOGIN_REQ, true)) {
             QQLoginManager.sendLoginMsg(this);
         } else {
             QQShareManager.sendShareMsg(this, getIntent().getExtras());
@@ -33,7 +31,11 @@ public class SL_QQHandlerActivity extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (isLoginReq) {
+        Log.d(SL_QQHandlerActivity.class.getSimpleName(), "onActivityResult: reqCode = " + requestCode + " resCode = " + resultCode);
+        /**
+         * 11101 instead {@link com.tencent.tauth.Tencent#REQUEST_LOGIN}
+         */
+        if (requestCode == 11101) {
             QQLoginManager.handlerOnActivityResult(requestCode, resultCode, data);
         } else {
             QQShareManager.handlerOnActivityResult(data);

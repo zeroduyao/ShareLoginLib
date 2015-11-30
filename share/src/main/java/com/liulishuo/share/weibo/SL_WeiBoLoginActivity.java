@@ -1,7 +1,5 @@
 package com.liulishuo.share.weibo;
 
-import com.liulishuo.share.weibo.WeiboLoginManager;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;

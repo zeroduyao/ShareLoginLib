@@ -8,6 +8,8 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import java.io.File;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * Created by echo on 5/18/15.
@@ -39,6 +41,7 @@ public class ShareBlock {
      */
     public static final int WEIBO_TIME_LINE = 4;
 
+    @Retention(RetentionPolicy.SOURCE)
     @IntDef({WEIXIN_FRIEND, WEIXIN_FRIEND_ZONE, QQ_ZONE, QQ_FRIEND, WEIBO_TIME_LINE})
     public @interface ShareType {
 

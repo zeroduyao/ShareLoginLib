@@ -20,12 +20,12 @@ import android.os.Bundle;
  */
 public abstract class WeiXinHandlerActivity extends Activity implements IWXAPIEventHandler {
 
-    private IWXAPI mIWXAPI;
-
     /**
      * BaseResp的getType函数获得的返回值，1:第三方授权， 2:分享
      */
     private static final int TYPE_LOGIN = 1;
+
+    private IWXAPI mIWXAPI;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
