@@ -13,7 +13,9 @@ public class SL_WeiBoLoginActivity extends Activity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        WeiboLoginManager.sendLoginMsg(this);
+        if (savedInstanceState == null) {
+            WeiboLoginManager.sendLoginMsg(this);
+        }
     }
 
     @Override

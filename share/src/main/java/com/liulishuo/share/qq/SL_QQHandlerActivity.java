@@ -21,10 +21,12 @@ public class SL_QQHandlerActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getIntent().getBooleanExtra(KEY_IS_LOGIN_REQ, true)) {
-            QQLoginManager.sendLoginMsg(this);
-        } else {
-            QQShareManager.sendShareMsg(this, getIntent().getExtras());
+        if (savedInstanceState == null) {
+            if (getIntent().getBooleanExtra(KEY_IS_LOGIN_REQ, true)) {
+                QQLoginManager.sendLoginMsg(this);
+            } else {
+                QQShareManager.sendShareMsg(this, getIntent().getExtras());
+            }
         }
     }
 

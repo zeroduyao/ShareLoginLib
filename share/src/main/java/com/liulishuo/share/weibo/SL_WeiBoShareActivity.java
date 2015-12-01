@@ -24,7 +24,9 @@ public class SL_WeiBoShareActivity extends Activity implements IWeiboHandler.Res
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        WeiboShareManager.sendShareMsg(this);
+        if (savedInstanceState == null) {
+            WeiboShareManager.sendShareMsg(this);
+        }
         
         // 当 Activity 被重新初始化时（该 Activity 处于后台时，可能会由于内存不足被杀掉了），
         // 需要调用 {@link IWeiboShareAPI#handleWeiboResponse} 来接收微博客户端返回的数据。
