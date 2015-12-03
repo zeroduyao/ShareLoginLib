@@ -21,7 +21,7 @@ public class SL_QQHandlerActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (savedInstanceState == null) {
+        if (savedInstanceState == null) { // 防止不保留活动情况下activity被重置后直接进行操作的情况
             if (getIntent().getBooleanExtra(KEY_IS_LOGIN_REQ, true)) {
                 QQLoginManager.sendLoginMsg(this);
             } else {

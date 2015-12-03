@@ -17,6 +17,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.util.Log;
 import android.widget.Toast;
 
 import java.io.File;
@@ -98,7 +99,11 @@ public class QQShareManager implements IShareManager {
      * 解析分享的结果
      */
     protected static void handlerOnActivityResult(Intent data) {
-        Tencent.handleResultData(data, mUiListener);
+        if (mUiListener == null) { // 这里有可能为null
+            Log.e(QQShareManager.class.getSimpleName(), "handlerOnActivityResult: uiListener is null !!!!");
+        } else {
+            Tencent.handleResultData(data, mUiListener);
+        }
     }
 
     // --------------------------

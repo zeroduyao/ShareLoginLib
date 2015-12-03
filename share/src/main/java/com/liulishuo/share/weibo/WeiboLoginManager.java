@@ -25,6 +25,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.util.Log;
 
 /**
  * Created by echo on 5/19/15.
@@ -99,7 +100,14 @@ public class WeiboLoginManager implements ILoginManager {
      * SSO 授权回调   重要：发起 SSO 登陆的 Activity 必须重写 onActivityResult
      */
     protected static void handlerOnActivityResult(int requestCode, int resultCode, Intent data) {
-        mSsoHandler.authorizeCallBack(requestCode, resultCode, data);
+        if (mSsoHandler == null) {
+            Log.e(WeiboLoginManager.class.getSimpleName(), "handlerOnActivityResult: sso handler = null !!!");
+            if (mLoginListener != null) {
+                mLoginListener.onError("认证失败，请重试");
+            }
+        } else {
+            mSsoHandler.authorizeCallBack(requestCode, resultCode, data);
+        }
     }
 
     private static String oAuthData2Json(@NonNull Oauth2AccessToken data) {

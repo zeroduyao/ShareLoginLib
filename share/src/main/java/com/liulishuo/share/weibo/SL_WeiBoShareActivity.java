@@ -25,6 +25,7 @@ public class SL_WeiBoShareActivity extends Activity implements IWeiboHandler.Res
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (savedInstanceState == null) {
+            // 防止不保留活动情况下activity被重置后直接进行操作的情况
             WeiboShareManager.sendShareMsg(this);
         }
         
