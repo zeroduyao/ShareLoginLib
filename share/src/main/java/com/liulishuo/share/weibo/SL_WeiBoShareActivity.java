@@ -34,7 +34,9 @@ public class SL_WeiBoShareActivity extends Activity implements IWeiboHandler.Res
         // 执行成功，返回 true，并调用 {@link IWeiboHandler.Response#onResponse}；
         // 失败返回 false，不调用上述回调
         if (savedInstanceState != null) {
-            IWeiboShareAPI API = WeiboShareSDK.createWeiboAPI(getApplicationContext(), ShareBlock.getInstance().weiboAppId);
+            IWeiboShareAPI API = WeiboShareSDK.createWeiboAPI(getApplicationContext(),
+                    ShareBlock.getInstance().weiboAppId);
+            
             API.handleWeiboResponse(getIntent(), this);
         }
     }

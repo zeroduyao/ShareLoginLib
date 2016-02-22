@@ -5,6 +5,7 @@ import com.liulishuo.share.base.Constants;
 import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import java.io.ByteArrayOutputStream;
 
@@ -19,23 +20,12 @@ public class ShareContentPic implements ShareContent {
     /**
      * @param bitmap 分享的bitmap
      */
-    public ShareContentPic(@NonNull Bitmap bitmap) {
-        this.bitmapBytes = getThumbImageByteArr(bitmap);
+    public ShareContentPic(@Nullable Bitmap bitmap) {
+        if (bitmap != null) {
+            this.bitmapBytes = getThumbImageByteArr(bitmap);
+        }
     }
 
-    private byte[] getThumbImageByteArr(Bitmap bitmap) {
-        byte[] thumbData = null;
-        try {
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 85, outputStream);
-            thumbData = outputStream.toByteArray();
-            outputStream.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return thumbData;
-    }
-    
     @Override
     public String getSummary() {
         return null;
@@ -67,6 +57,10 @@ public class ShareContentPic implements ShareContent {
         return Constants.SHARE_TYPE_PIC;
     }
 
+    public void setBitmap(@NonNull Bitmap bitmap) {
+        this.bitmapBytes = getThumbImageByteArr(bitmap);
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -90,4 +84,20 @@ public class ShareContentPic implements ShareContent {
             return new ShareContentPic[size];
         }
     };
+
+
+    private
+    @Nullable
+    byte[] getThumbImageByteArr(@NonNull Bitmap bitmap) {
+        byte[] thumbData = null;
+        try {
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 85, outputStream);
+            thumbData = outputStream.toByteArray();
+            outputStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return thumbData;
+    }
 }

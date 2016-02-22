@@ -25,7 +25,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.util.Log;
 
 /**
  * Created by echo on 5/19/15.
@@ -101,7 +100,6 @@ public class WeiboLoginManager implements ILoginManager {
      */
     protected static void handlerOnActivityResult(int requestCode, int resultCode, Intent data) {
         if (mSsoHandler == null) {
-            Log.e(WeiboLoginManager.class.getSimpleName(), "handlerOnActivityResult: sso handler = null !!!");
             if (mLoginListener != null) {
                 mLoginListener.onError("认证失败，请重试");
             }
@@ -126,11 +124,11 @@ public class WeiboLoginManager implements ILoginManager {
 
     // ---------------------------------- 得到用户信息 -------------------------------------
 
+    
     @Override
     public void getUserInformation(@NonNull String accessToken, @NonNull String userId, @Nullable UserInfoListener listener) {
         getUserInfo(accessToken, userId, listener);
     }
-
 
     /**
      * 得到微博用户的信息

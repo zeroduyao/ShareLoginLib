@@ -167,6 +167,7 @@ public class WeiXinShareManager implements IShareManager {
 
     private IMediaObject getAppObj(ShareContent shareContent) {
         WXAppExtendObject app = new WXAppExtendObject();
+        // TODO: 2016/2/22  
        /* Log.d("ddd", "exinfo = " + ((ShareContentApp) shareContent).getAppInfo());
         app.extInfo = ((ShareContentApp) shareContent).getAppInfo();*/
         return app;

@@ -33,7 +33,7 @@ public class SL_QQHandlerActivity extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Log.d(SL_QQHandlerActivity.class.getSimpleName(), "onActivityResult: reqCode = " + requestCode + " resCode = " + resultCode);
+        Log.d("SL_QQHandlerActivity", "onActivityResult: reqCode = " + requestCode + " resCode = " + resultCode);
         /**
          * 11101 instead {@link com.tencent.tauth.Tencent#REQUEST_LOGIN}
          */

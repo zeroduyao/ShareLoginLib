@@ -59,7 +59,8 @@ public class MyLoginListener implements LoginListener {
                 default:
                     type = "qq"; 
             }
-            mTextView.setText(type + " 出错了！\n" + msg);
+            String text = type + " 出错了！\n" + msg;
+            mTextView.setText(text);
         }
     };
 
@@ -93,7 +94,6 @@ public class MyLoginListener implements LoginListener {
                 break;
             default:
         }
-
     }
 
     @Override

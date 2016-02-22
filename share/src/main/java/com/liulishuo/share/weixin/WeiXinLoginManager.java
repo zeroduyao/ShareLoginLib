@@ -148,15 +148,16 @@ public class WeiXinLoginManager implements ILoginManager {
 
     // ---------------------------------- 得到用户信息 -------------------------------------
 
+    /**
+     * 通过传入的参数来获得用户的信息
+     */
     @Override
     public void getUserInformation(@NonNull String accessToken, @NonNull String userId, @Nullable UserInfoListener listener) {
         getUserInfo(accessToken, userId, listener);
     }
 
-    /**
-     * 通过传入的参数来获得用户的信息
-     */
-    public static void getUserInfo(@NonNull final String accessToken, @NonNull final String uid,
+    
+    public static void getUserInfo(@NonNull final String accessToken, @NonNull final String userId,
             @Nullable final UserInfoListener listener) {
 
         new AsyncTask<Void, Void, AuthUserInfo>() {
@@ -164,12 +165,12 @@ public class WeiXinLoginManager implements ILoginManager {
             @Override
             protected AuthUserInfo doInBackground(Void... params) {
                 String respStr = HttpUtil.doGet("https://api.weixin.qq.com/sns/userinfo"
-                        + "?access_token=" + accessToken + "&openid=" + uid);
+                        + "?access_token=" + accessToken + "&openid=" + userId);
                 if (respStr == null) {
                     return null;
                 }
 
-                AuthUserInfo userInfo;
+                AuthUserInfo userInfo = null;
                 try {
                     userInfo = new AuthUserInfo();
                     JSONObject jsonObject = new JSONObject(respStr);
@@ -178,7 +179,6 @@ public class WeiXinLoginManager implements ILoginManager {
                     userInfo.headImgUrl = jsonObject.getString("headimgurl");
                     userInfo.userId = jsonObject.getString("unionid");
                 } catch (JSONException e) {
-                    userInfo = null;
                     e.printStackTrace();
                 }
                 return userInfo;

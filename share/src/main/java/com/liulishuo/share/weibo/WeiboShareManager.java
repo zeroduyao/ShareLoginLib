@@ -24,6 +24,7 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.util.Log;
 
 /**
  * Created by echo on 5/18/15.
@@ -56,7 +57,7 @@ public class WeiboShareManager implements IShareManager {
     protected static void sendShareMsg(Activity activity) {
         String appId = ShareBlock.getInstance().weiboAppId;
         if (TextUtils.isEmpty(appId)) {
-            throw new NullPointerException("请通过shareBlock初始化SinaAppKey");
+            throw new NullPointerException("请通过shareBlock初始化weiboAppId");
         }
 
         IWeiboShareAPI api = WeiboShareSDK.createWeiboAPI(activity, appId);
