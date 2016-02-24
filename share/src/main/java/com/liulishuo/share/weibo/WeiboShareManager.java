@@ -5,7 +5,6 @@ import com.liulishuo.share.base.Constants;
 import com.liulishuo.share.base.share.IShareManager;
 import com.liulishuo.share.base.share.ShareStateListener;
 import com.liulishuo.share.base.shareContent.ShareContent;
-import com.liulishuo.share.util.ShareUtil;
 import com.sina.weibo.sdk.api.ImageObject;
 import com.sina.weibo.sdk.api.MusicObject;
 import com.sina.weibo.sdk.api.TextObject;
@@ -24,7 +23,6 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.util.Log;
 
 /**
  * Created by echo on 5/18/15.
@@ -44,7 +42,7 @@ public class WeiboShareManager implements IShareManager {
         mShareStateListener = listener;
         // 建立请求体
         mRequest = new SendMultiMessageToWeiboRequest();
-        mRequest.transaction = ShareUtil.buildTransaction("tag");// 用transaction唯一标识一个请求
+        mRequest.transaction = buildTransaction("tag");// 用transaction唯一标识一个请求
         mRequest.multiMessage = getShareObject(shareContent);
 
         // 启动activity进行分享
@@ -68,7 +66,7 @@ public class WeiboShareManager implements IShareManager {
     /**
      * 处理分享的回调
      */
-    protected static void onShareResp(int respCode, String errorMsg) {
+    protected static void parseShareResp(int respCode, String errorMsg) {
         if (mShareStateListener != null) {
             switch (respCode) {
                 case WBConstants.ErrorCode.ERR_OK:
@@ -213,6 +211,12 @@ public class WeiboShareManager implements IShareManager {
     public static boolean isWeiBoInstalled(@NonNull Context context) {
         IWeiboShareAPI shareAPI = WeiboShareSDK.createWeiboAPI(context, ShareBlock.getInstance().weiboAppId);
         return shareAPI.isWeiboAppInstalled();
+    }
+
+
+    public static String buildTransaction(final String type) {
+        return (type == null) ? String.valueOf(System.currentTimeMillis())
+                : type + System.currentTimeMillis();
     }
 
 }

@@ -53,7 +53,7 @@ public class SL_WeiBoShareActivity extends Activity implements IWeiboHandler.Res
             mIsFirstTime = false;
         } else {
             // 这里处理保存到草稿箱的逻辑
-            WeiboShareManager.onShareResp(WBConstants.ErrorCode.ERR_CANCEL, "weibo cancel");
+            WeiboShareManager.parseShareResp(WBConstants.ErrorCode.ERR_CANCEL, "weibo cancel");
             finish();
         }
     }
@@ -72,7 +72,7 @@ public class SL_WeiBoShareActivity extends Activity implements IWeiboHandler.Res
     @CallSuper
     @Override
     public void onResponse(BaseResponse baseResponse) {
-        WeiboShareManager.onShareResp(baseResponse.errCode, baseResponse.errMsg);
+        WeiboShareManager.parseShareResp(baseResponse.errCode, baseResponse.errMsg);
         finish();
     }
 

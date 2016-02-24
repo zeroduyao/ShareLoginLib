@@ -12,7 +12,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
-
 /**
  * Created by echo on 5/19/15.
  * 用来处理微信登录、微信分享的activity。这里真不知道微信非要个activity干嘛，愚蠢的设计。
@@ -53,10 +52,9 @@ public abstract class WeiXinHandlerActivity extends Activity implements IWXAPIEv
     public void onResp(BaseResp resp) {
         if (resp != null) {
             if (resp instanceof SendAuth.Resp && resp.getType() == TYPE_LOGIN) {
-                WeiXinLoginManager.onLoginResp((SendAuth.Resp) resp); // 可以得到code
                 WeiXinLoginManager.parseLoginResp(this, (SendAuth.Resp) resp);
             } else {
-                WeiXinShareManager.onShareResp(resp);
+                WeiXinShareManager.parseShareResp(resp);
             }
         }
         finish();

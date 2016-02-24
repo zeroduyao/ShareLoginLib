@@ -5,7 +5,6 @@ import com.liulishuo.share.base.Constants;
 import com.liulishuo.share.base.share.IShareManager;
 import com.liulishuo.share.base.share.ShareStateListener;
 import com.liulishuo.share.base.shareContent.ShareContent;
-import com.liulishuo.share.util.ShareUtil;
 import com.tencent.mm.sdk.modelbase.BaseResp;
 import com.tencent.mm.sdk.modelmsg.SendMessageToWX;
 import com.tencent.mm.sdk.modelmsg.WXAppExtendObject;
@@ -65,7 +64,7 @@ public class WeiXinShareManager implements IShareManager {
     /**
      * 解析分享到微信的结果
      */
-    protected static void onShareResp(BaseResp resp) {
+    protected static void parseShareResp(BaseResp resp) {
         if (mShareStateListener != null) {
             switch (resp.errCode) {
                 case BaseResp.ErrCode.ERR_OK:
@@ -106,7 +105,7 @@ public class WeiXinShareManager implements IShareManager {
 
         // 发送信息
         SendMessageToWX.Req req = new SendMessageToWX.Req();
-        req.transaction = ShareUtil.buildTransaction("tag");
+        req.transaction = String.valueOf(System.currentTimeMillis());
         req.message = msg;
         req.scene = shareType;
         return req;

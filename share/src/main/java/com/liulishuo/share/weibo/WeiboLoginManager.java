@@ -109,13 +109,13 @@ public class WeiboLoginManager implements ILoginManager {
     }
 
     private static String oAuthData2Json(@NonNull Oauth2AccessToken data) {
-        JSONObject sinaJson = new JSONObject();
+        JSONObject jsonObject = new JSONObject();
         try {
-            sinaJson.put("uid", data.getUid());
-            sinaJson.put("refresh_token", data.getRefreshToken());
-            sinaJson.put("access_token", data.getToken());
-            sinaJson.put("expires_in", String.valueOf(data.getExpiresTime() / 1000000));
-            return sinaJson.toString();
+            jsonObject.put("uid", data.getUid());
+            jsonObject.put("refresh_token", data.getRefreshToken());
+            jsonObject.put("access_token", data.getToken());
+            jsonObject.put("expires_in", String.valueOf(data.getExpiresTime() / 1000000));
+            return jsonObject.toString();
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -148,16 +148,16 @@ public class WeiboLoginManager implements ILoginManager {
                     return null;
                 }
 
-                AuthUserInfo userInfo;
+                AuthUserInfo userInfo = null;
                 try {
-                    userInfo = new AuthUserInfo();
                     JSONObject jsonObject = new JSONObject(respStr);
+                    
+                    userInfo = new AuthUserInfo();
                     userInfo.nickName = jsonObject.getString("screen_name");
                     userInfo.sex = jsonObject.getString("gender");
                     userInfo.headImgUrl = jsonObject.getString("avatar_large");
                     userInfo.userId = jsonObject.getString("id");
                 } catch (JSONException e) {
-                    userInfo = null;
                     e.printStackTrace();
                 }
                 return userInfo;

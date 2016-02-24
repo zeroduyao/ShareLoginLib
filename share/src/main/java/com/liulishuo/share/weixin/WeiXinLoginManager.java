@@ -40,35 +40,36 @@ public class WeiXinLoginManager implements ILoginManager {
     private static LoginRespListener mRespListener;
 
     @Override
-    public void login(@NonNull Activity activity, @Nullable LoginListener loginListener) {
+    public void login(@NonNull Activity context, @Nullable LoginListener loginListener) {
         mLoginListener = loginListener;
-        sendLoginMsg(activity);
-    }
-
-    private void sendLoginMsg(Activity activity) {
-        String weChatAppId = ShareBlock.getInstance().weiXinAppId;
-        if (TextUtils.isEmpty(weChatAppId)) {
-            throw new NullPointerException("请通过shareBlock初始化WeChatAppId");
+        String appId = ShareBlock.getInstance().weiXinAppId;
+        if (TextUtils.isEmpty(appId)) {
+            throw new NullPointerException("请通过shareBlock初始化WeiXinAppId");
         }
 
-        IWXAPI api = WXAPIFactory.createWXAPI(activity.getApplicationContext(), weChatAppId, true);
+        IWXAPI api = WXAPIFactory.createWXAPI(context.getApplicationContext(), appId, true);
         if (!api.isWXAppInstalled()) {
-            Toast.makeText(activity, "请安装微信哦~", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context.getApplicationContext(), "请安装微信哦~", Toast.LENGTH_SHORT).show();
             return;
         } else {
-            api.registerApp(weChatAppId);
+            api.registerApp(appId);
         }
 
         SendAuth.Req req = new SendAuth.Req();
         req.scope = SCOPE;
         req.state = STATE;
         api.sendReq(req);
+        // 这里的请求的回调会在activity中收到，然后通过parseLoginResp方法解析
     }
 
     /**
      * 解析用户登录的结果
      */
     protected static void parseLoginResp(final Activity activity, SendAuth.Resp resp) {
+        // 有可能是listener传入的是null，也可能是调用静态方法前没初始化当前的类
+        if (mRespListener != null) {
+            mRespListener.onLoginResp(resp);
+        }
         if (mLoginListener != null) {
             switch (resp.errCode) {
                 case BaseResp.ErrCode.ERR_OK: // 登录成功
@@ -88,12 +89,6 @@ public class WeiXinLoginManager implements ILoginManager {
 
     public static void setRespListener(LoginRespListener respListener) {
         mRespListener = respListener;
-    }
-
-    protected static void onLoginResp(SendAuth.Resp resp) {
-        if (mRespListener != null) {
-            mRespListener.onLoginResp(resp);
-        }
     }
 
     private static void handlerLoginResp(final Activity activity, SendAuth.Resp resp) {
@@ -120,12 +115,6 @@ public class WeiXinLoginManager implements ILoginManager {
                             });
                         } catch (JSONException e) {
                             e.printStackTrace();
-                            activity.runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    mLoginListener.onError("login data parse error");
-                                }
-                            });
                         }
                     }
 
@@ -134,7 +123,7 @@ public class WeiXinLoginManager implements ILoginManager {
                         activity.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                mLoginListener.onError("get login data error : {netWork error}");
+                                mLoginListener.onError("无法得到登录结果 : {netWork error}");
                             }
                         });
                     }
@@ -172,8 +161,9 @@ public class WeiXinLoginManager implements ILoginManager {
 
                 AuthUserInfo userInfo = null;
                 try {
-                    userInfo = new AuthUserInfo();
                     JSONObject jsonObject = new JSONObject(respStr);
+                    
+                    userInfo = new AuthUserInfo();
                     userInfo.nickName = jsonObject.getString("nickname");
                     userInfo.sex = jsonObject.getString("sex");
                     userInfo.headImgUrl = jsonObject.getString("headimgurl");
