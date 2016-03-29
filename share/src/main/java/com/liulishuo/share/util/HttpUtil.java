@@ -26,7 +26,7 @@ public class HttpUtil {
     /**
      * 异步的Get请求
      */
-    public static void doGetAsyn(final String urlStr, final CallBack callBack) {
+    public static void doGetAsync(final String urlStr, final CallBack callBack) {
         new Thread() {
             public void run() {
                 String result = doGet(urlStr);

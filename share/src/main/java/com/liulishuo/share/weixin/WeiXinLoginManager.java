@@ -92,7 +92,7 @@ public class WeiXinLoginManager implements ILoginManager {
     }
 
     private static void handlerLoginResp(final Activity activity, SendAuth.Resp resp) {
-        HttpUtil.doGetAsyn(
+        HttpUtil.doGetAsync(
                 "https://api.weixin.qq.com/sns/oauth2/access_token"
                         + "?appid=" + ShareBlock.getInstance().weiXinAppId
                         + "&secret=" + ShareBlock.getInstance().weiXinSecret

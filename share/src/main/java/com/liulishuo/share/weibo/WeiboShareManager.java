@@ -29,9 +29,9 @@ import android.text.TextUtils;
  */
 public class WeiboShareManager implements IShareManager {
 
-    private static ShareStateListener mShareStateListener;
+    private static ShareStateListener shareStateListener;
 
-    private static SendMultiMessageToWeiboRequest mRequest;
+    private static SendMultiMessageToWeiboRequest request;
 
     /**
      * 启动新的activity进行分享
@@ -39,13 +39,14 @@ public class WeiboShareManager implements IShareManager {
     public void share(@NonNull Activity activity, @NonNull ShareContent shareContent, @ShareBlock.ShareType int shareType,
             @Nullable ShareStateListener listener) {
 
-        mShareStateListener = listener;
+        shareStateListener = listener;
         // 建立请求体
-        mRequest = new SendMultiMessageToWeiboRequest();
-        mRequest.transaction = buildTransaction("tag");// 用transaction唯一标识一个请求
-        mRequest.multiMessage = getShareObject(shareContent);
-
-        // 启动activity进行分享
+        request = new SendMultiMessageToWeiboRequest();
+        request.transaction = buildTransaction("tag");// 用transaction唯一标识一个请求
+        request.multiMessage = getShareObject(shareContent);
+        /**
+         * 启动activity进行分享，启动后应该立刻调用{@link #sendShareMsg(Activity)}
+         */
         activity.startActivity(new Intent(activity, SL_WeiBoShareActivity.class));
     }
 
@@ -57,31 +58,30 @@ public class WeiboShareManager implements IShareManager {
         if (TextUtils.isEmpty(appId)) {
             throw new NullPointerException("请通过shareBlock初始化weiboAppId");
         }
-
         IWeiboShareAPI api = WeiboShareSDK.createWeiboAPI(activity, appId);
         api.registerApp();  // 将应用注册到微博客户端
-        api.sendRequest(activity, mRequest);
+        api.sendRequest(activity, request);
     }
 
     /**
      * 处理分享的回调
      */
     protected static void parseShareResp(int respCode, String errorMsg) {
-        if (mShareStateListener != null) {
+        if (shareStateListener != null) {
             switch (respCode) {
                 case WBConstants.ErrorCode.ERR_OK:
-                    mShareStateListener.onSuccess();
+                    shareStateListener.onSuccess();
                     break;
 
                 case WBConstants.ErrorCode.ERR_CANCEL:
-                    mShareStateListener.onCancel();
+                    shareStateListener.onCancel();
                     break;
 
                 case WBConstants.ErrorCode.ERR_FAIL:
-                    mShareStateListener.onError(errorMsg);
+                    shareStateListener.onError(errorMsg);
                     break;
                 default:
-                    mShareStateListener.onError("未知错误");
+                    shareStateListener.onError("未知错误");
             }
         }
     }
@@ -212,7 +212,6 @@ public class WeiboShareManager implements IShareManager {
         IWeiboShareAPI shareAPI = WeiboShareSDK.createWeiboAPI(context, ShareBlock.getInstance().weiboAppId);
         return shareAPI.isWeiboAppInstalled();
     }
-
 
     public static String buildTransaction(final String type) {
         return (type == null) ? String.valueOf(System.currentTimeMillis())

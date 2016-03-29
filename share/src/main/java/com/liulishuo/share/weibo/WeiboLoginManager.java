@@ -34,14 +34,16 @@ public class WeiboLoginManager implements ILoginManager {
     /**
      * 注意：SsoHandler 仅当 SDK 支持 SSO 时有效
      */
-    private static SsoHandler mSsoHandler;
+    private static SsoHandler ssoHandler;
 
-    private static LoginListener mLoginListener;
+    private static LoginListener loginListener;
 
     @Override
     public void login(@NonNull final Activity activity, @Nullable final LoginListener loginListener) {
-        mLoginListener = loginListener;
-        // 启动activity后，应该立刻调用{sendLoginMsg}方法
+        WeiboLoginManager.loginListener = loginListener;
+        /**
+         * 启动activity后，应该立刻调用{@link #sendLoginMsg}方法
+         */
         activity.startActivity(new Intent(activity, SL_WeiBoLoginActivity.class));
     }
 
@@ -53,12 +55,12 @@ public class WeiboLoginManager implements ILoginManager {
 
         AccessTokenKeeper.clear(activity);
 
-        AuthInfo authInfo = new AuthInfo(activity.getApplicationContext(), appId,
+        AuthInfo authInfo = new AuthInfo(activity, appId,
                 ShareBlock.getInstance().weiboRedirectUrl,
                 ShareBlock.getInstance().weiboScope);
 
-        mSsoHandler = new SsoHandler(activity, authInfo);
-        mSsoHandler.authorize(new WeiboAuthListener() {
+        ssoHandler = new SsoHandler(activity, authInfo);
+        ssoHandler.authorize(new WeiboAuthListener() {
             /*
              * 1. SSO 授权时，需要在 onActivityResult 中调用 {@link SsoHandler#authorizeCallBack} 后，
              * 该回调才会被执行。
@@ -69,8 +71,8 @@ public class WeiboLoginManager implements ILoginManager {
                 final Oauth2AccessToken accessToken = Oauth2AccessToken.parseAccessToken(values);
                 if (accessToken != null && accessToken.isSessionValid()) {
                     AccessTokenKeeper.writeAccessToken(activity, accessToken);
-                    if (mLoginListener != null) {
-                        mLoginListener.onSuccess(accessToken.getToken(),
+                    if (loginListener != null) {
+                        loginListener.onSuccess(accessToken.getToken(),
                                 accessToken.getUid(),
                                 accessToken.getExpiresTime() / 1000000,
                                 oAuthData2Json(accessToken));
@@ -80,15 +82,15 @@ public class WeiboLoginManager implements ILoginManager {
 
             @Override
             public void onWeiboException(WeiboException e) {
-                if (mLoginListener != null) {
-                    mLoginListener.onError(e.getMessage());
+                if (loginListener != null) {
+                    loginListener.onError(e.getMessage());
                 }
             }
 
             @Override
             public void onCancel() {
-                if (mLoginListener != null) {
-                    mLoginListener.onCancel();
+                if (loginListener != null) {
+                    loginListener.onCancel();
                 }
             }
         });
@@ -99,16 +101,14 @@ public class WeiboLoginManager implements ILoginManager {
      * SSO 授权回调   重要：发起 SSO 登陆的 Activity 必须重写 onActivityResult
      */
     protected static void handlerOnActivityResult(int requestCode, int resultCode, Intent data) {
-        if (mSsoHandler == null) {
-            if (mLoginListener != null) {
-                mLoginListener.onError("认证失败，请重试");
-            }
-        } else {
-            mSsoHandler.authorizeCallBack(requestCode, resultCode, data);
+        if (ssoHandler != null) {
+            ssoHandler.authorizeCallBack(requestCode, resultCode, data);
         }
     }
 
-    private static String oAuthData2Json(@NonNull Oauth2AccessToken data) {
+    private static
+    @Nullable
+    String oAuthData2Json(@NonNull Oauth2AccessToken data) {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("uid", data.getUid());
@@ -124,7 +124,6 @@ public class WeiboLoginManager implements ILoginManager {
 
     // ---------------------------------- 得到用户信息 -------------------------------------
 
-    
     @Override
     public void getUserInformation(@NonNull String accessToken, @NonNull String userId, @Nullable UserInfoListener listener) {
         getUserInfo(accessToken, userId, listener);
@@ -150,9 +149,8 @@ public class WeiboLoginManager implements ILoginManager {
 
                 AuthUserInfo userInfo = null;
                 try {
-                    JSONObject jsonObject = new JSONObject(respStr);
-                    
                     userInfo = new AuthUserInfo();
+                    JSONObject jsonObject = new JSONObject(respStr);
                     userInfo.nickName = jsonObject.getString("screen_name");
                     userInfo.sex = jsonObject.getString("gender");
                     userInfo.headImgUrl = jsonObject.getString("avatar_large");
@@ -164,7 +162,7 @@ public class WeiboLoginManager implements ILoginManager {
             }
 
             @Override
-            protected void onPostExecute(AuthUserInfo userInfo) {
+            protected void onPostExecute(@Nullable AuthUserInfo userInfo) {
                 super.onPostExecute(userInfo);
                 if (listener != null) {
                     if (userInfo != null) {

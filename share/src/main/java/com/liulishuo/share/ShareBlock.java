@@ -44,9 +44,7 @@ public class ShareBlock {
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({WEIXIN_FRIEND, WEIXIN_FRIEND_ZONE, QQ_ZONE, QQ_FRIEND, WEIBO_TIME_LINE})
     public @interface ShareType {
-
     }
-
 
     private static ShareBlock mInstance;
 
