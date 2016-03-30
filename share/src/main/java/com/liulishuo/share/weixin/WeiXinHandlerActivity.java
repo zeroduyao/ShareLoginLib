@@ -1,6 +1,8 @@
 package com.liulishuo.share.weixin;
 
 import com.liulishuo.share.ShareBlock;
+import com.liulishuo.share.ShareManager;
+import com.liulishuo.share.LoginManager;
 import com.tencent.mm.sdk.modelbase.BaseReq;
 import com.tencent.mm.sdk.modelbase.BaseResp;
 import com.tencent.mm.sdk.modelmsg.SendAuth;
@@ -24,21 +26,21 @@ public abstract class WeiXinHandlerActivity extends Activity implements IWXAPIEv
      */
     private static final int TYPE_LOGIN = 1;
 
-    private IWXAPI mIWXAPI;
+    private IWXAPI api;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mIWXAPI = WXAPIFactory.createWXAPI(this, ShareBlock.getInstance().weiXinAppId, true);
-        mIWXAPI.handleIntent(getIntent(), this);
+        api = WXAPIFactory.createWXAPI(this, ShareBlock.getInstance().weiXinAppId, true);
+        api.handleIntent(getIntent(), this);
         finish();
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        if (mIWXAPI != null) {
-            mIWXAPI.handleIntent(getIntent(), this);
+        if (api != null) {
+            api.handleIntent(getIntent(), this);
         }
         finish();
     }
@@ -52,9 +54,9 @@ public abstract class WeiXinHandlerActivity extends Activity implements IWXAPIEv
     public void onResp(BaseResp resp) {
         if (resp != null) {
             if (resp instanceof SendAuth.Resp && resp.getType() == TYPE_LOGIN) {
-                WeiXinLoginManager.parseLoginResp(this, (SendAuth.Resp) resp);
+                WeiXinLoginManager.parseLoginResp(this, (SendAuth.Resp) resp, LoginManager.listener);
             } else {
-                WeiXinShareManager.parseShareResp(resp);
+                WeiXinShareManager.parseShareResp(resp, ShareManager.listener);
             }
         }
         finish();

@@ -1,10 +1,9 @@
 package com.liulishuo.share.qq;
 
 import com.liulishuo.share.ShareBlock;
-import com.liulishuo.share.base.Constants;
-import com.liulishuo.share.base.share.IShareManager;
-import com.liulishuo.share.base.share.ShareStateListener;
-import com.liulishuo.share.base.shareContent.ShareContent;
+import com.liulishuo.share.ShareManager;
+import com.liulishuo.share.model.Constants;
+import com.liulishuo.share.model.shareContent.ShareContent;
 import com.tencent.connect.share.QQShare;
 import com.tencent.connect.share.QzoneShare;
 import com.tencent.tauth.IUiListener;
@@ -15,9 +14,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.widget.Toast;
+import android.util.Log;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -27,22 +25,61 @@ import java.util.ArrayList;
 import static com.liulishuo.share.ShareBlock.getInstance;
 
 /**
- * Created by echo on 5/18/15.
+ * @author Jack Tony
+ * @date 2015/10/26
  */
-public class QQShareManager implements IShareManager {
+public class SL_QQShareActivity extends Activity {
 
-    private static final String KEY_SHARE_TO_FRIEND = "key_share_to_friend";
+    private static final String TAG = "SL_QQShareActivity";
 
-    private static IUiListener mUiListener;
+    public static final String KEY_TO_FRIEND = "key_to_friend";
 
+    private boolean isToFriend;
+
+    private IUiListener uiListener;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // 无论是否是恢复的activity，都要先初始化监听器，否则开启不保留活动后监听器对象就是null
+        uiListener = initListener(ShareManager.listener);
+        isToFriend = getIntent().getBooleanExtra(KEY_TO_FRIEND, true);
+        
+        if (savedInstanceState == null) { // 防止不保留活动情况下activity被重置后直接进行操作的情况
+            ShareContent shareContent = getIntent().getParcelableExtra(ShareManager.KEY_CONTENT);
+            share(shareContent);
+        }
+    }
+    
     /**
-     * 启动新的activity进行分享
+     * 解析分享的结果
      */
     @Override
-    public void share(@NonNull Activity activity, @NonNull ShareContent shareContent, @ShareBlock.ShareType int shareType,
-            @Nullable final ShareStateListener listener) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (uiListener != null && data != null) {
+            Tencent.handleResultData(data, uiListener);
+        }
+        finish();
+    }
 
-        mUiListener = new IUiListener() {
+    private void share(ShareContent shareContent) {
+        String appId = ShareBlock.getInstance().QQAppId;
+        if (TextUtils.isEmpty(appId)) {
+            throw new NullPointerException("请通过shareBlock初始化QQAppId");
+        }
+        Tencent tencent = Tencent.createInstance(appId, getApplicationContext());
+        if (isToFriend) {
+            Bundle params = getShareToQQBundle(shareContent);
+            tencent.shareToQQ(this, params, uiListener);
+        } else {
+            Bundle params = getShareToQZoneBundle(shareContent);
+            tencent.shareToQzone(this, params, uiListener);
+        }
+    }
+
+    private IUiListener initListener(final ShareManager.ShareStateListener listener) {
+        return new IUiListener() {
 
             @Override
             public void onComplete(Object response) {
@@ -65,53 +102,18 @@ public class QQShareManager implements IShareManager {
                 }
             }
         };
-
-        Bundle params = null;
-        if (shareType == ShareBlock.QQ_FRIEND) {
-            params = getShareToQQBundle(activity, shareContent);
-            params.putBoolean(KEY_SHARE_TO_FRIEND, true);
-        } else if (shareType == ShareBlock.QQ_ZONE) {
-            params = getShareToQZoneBundle(activity, shareContent);
-            params.putBoolean(KEY_SHARE_TO_FRIEND, false);
-        }
-        activity.startActivity(SL_QQHandlerActivity.withIntent(activity, false).putExtras(params));
     }
 
-    /**
-     * 启动的activity调用此方法进行分享
-     */
-    protected static void sendShareMsg(Activity activity, Bundle params) {
-        String appId = ShareBlock.getInstance().QQAppId;
-        if (TextUtils.isEmpty(appId)) {
-            throw new NullPointerException("请通过shareBlock初始化QQAppId");
-        }
-
-        Tencent tencent = Tencent.createInstance(appId, activity);
-        if (params.getBoolean(KEY_SHARE_TO_FRIEND)) {
-            tencent.shareToQQ(activity, params, mUiListener);
-        } else {
-            tencent.shareToQzone(activity, params, mUiListener);
-        }
-    }
-
-    /**
-     * 解析分享的结果
-     */
-    protected static void handlerOnActivityResult(Intent data) {
-        if (mUiListener != null && data != null) {
-            Tencent.handleResultData(data, mUiListener);
-        }
-    }
-
-    // --------------------------
-
-    private @NonNull Bundle getShareToQQBundle(Activity activity, ShareContent shareContent) {
+    private
+    @NonNull
+    Bundle getShareToQQBundle(ShareContent shareContent) {
         Bundle bundle;
         switch (shareContent.getType()) {
             case Constants.SHARE_TYPE_TEXT:
                 // 纯文字
-                // FIXME: 2015/10/23 文档中说： "本接口支持3种模式，每种模式的参数设置不同"，这三种模式中不包含纯文本
-                Toast.makeText(activity, "QQ目前不支持分享纯文本信息", Toast.LENGTH_SHORT).show();
+                // 文档中说： "本接口支持3种模式，每种模式的参数设置不同"，这三种模式中不包含纯文本
+                Log.e(TAG, "QQ目前不支持分享纯文本信息");
+                finish();
                 bundle = getTextObj();
                 break;
             case Constants.SHARE_TYPE_PIC:
@@ -193,25 +195,21 @@ public class QQShareManager implements IShareManager {
      * QzoneShare.SHARE_TO_QQ_KEY_TYPE 	    选填      Int 	SHARE_TO_QZONE_TYPE_IMAGE_TEXT（图文）
      * QzoneShare.SHARE_TO_QQ_TITLE 	    必填      Int 	分享的标题，最多200个字符。
      * QzoneShare.SHARE_TO_QQ_SUMMARY 	    选填      String 	分享的摘要，最多600字符。
-     * QzoneShare.SHARE_TO_QQ_TARGET_URL    必填      String 	需要跳转的链接，URL字符串。
-     * QzoneShare.SHARE_TO_QQ_IMAGE_URL     选填      String
+     * QzoneShare.SHARE_TO_QQ_TARGET_URL    必填      String 	跳转URL，URL字符串。
+     * QzoneShare.SHARE_TO_QQ_IMAGE_URL     选填      String     图片链接ArrayList
      *
      * 注意:QZone接口暂不支持发送多张图片的能力，若传入多张图片，则会自动选入第一张图片作为预览图。多图的能力将会在以后支持。
      *
      * 如果分享的图片url是本地的图片地址那么在分享时会显示图片，如果分享的是图片的网址，那么就不会在分享时显示图片
      */
-    private Bundle getShareToQZoneBundle(Activity activity, ShareContent shareContent) {
-        /*params.putString(QzoneShare.SHARE_TO_QQ_KEY_TYPE,SHARE_TO_QZONE_TYPE_IMAGE_TEXT );
-        params.putString(QzoneShare.SHARE_TO_QQ_TITLE, "标题");//必填
-        params.putString(QzoneShare.SHARE_TO_QQ_SUMMARY, "摘要");//选填
-        params.putString(QzoneShare.SHARE_TO_QQ_TARGET_URL, "跳转URL");//必填
-        params.putStringArrayList(QzoneShare.SHARE_TO_QQ_IMAGE_URL, "图片链接ArrayList");*/
+    private Bundle getShareToQZoneBundle(ShareContent shareContent) {
         Bundle params = new Bundle();
         params.putInt(QzoneShare.SHARE_TO_QZONE_KEY_TYPE, QzoneShare.SHARE_TO_QZONE_TYPE_IMAGE_TEXT);
         String title = shareContent.getTitle();
         if (title == null) {
             // 如果没title，说明就是分享的纯文字、纯图片
-            Toast.makeText(activity, "QQ空间目前只支持分享图文信息", Toast.LENGTH_SHORT).show();
+            Log.e(TAG, "QQ空间目前只支持分享图文信息");
+            finish();
         }
         params.putString(QzoneShare.SHARE_TO_QQ_TITLE, title); // 标题
         params.putString(QzoneShare.SHARE_TO_QQ_SUMMARY, shareContent.getSummary()); // 描述
@@ -230,7 +228,7 @@ public class QQShareManager implements IShareManager {
         if (getInstance().pathTemp == null) {
             throw new NullPointerException("请先调用shareBlock的initSharePicFile(Application application)方法");
         }
-        
+
         String imagePath = getInstance().pathTemp + File.separator + "sharePic_temp.png";
         try {
             FileOutputStream fos = new FileOutputStream(imagePath);
@@ -241,5 +239,4 @@ public class QQShareManager implements IShareManager {
         }
         return imagePath;
     }
-
 }

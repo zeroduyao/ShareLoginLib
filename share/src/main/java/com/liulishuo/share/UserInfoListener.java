@@ -1,6 +1,6 @@
-package com.liulishuo.share.base.login;
+package com.liulishuo.share;
 
-import com.liulishuo.share.base.AuthUserInfo;
+import com.liulishuo.share.model.AuthUserInfo;
 
 /**
  * @author Jack Tony

@@ -1,6 +1,6 @@
-package com.liulishuo.share.base.shareContent;
+package com.liulishuo.share.model.shareContent;
 
-import com.liulishuo.share.base.Constants;
+import com.liulishuo.share.model.Constants;
 
 import android.graphics.Bitmap;
 import android.os.Parcel;

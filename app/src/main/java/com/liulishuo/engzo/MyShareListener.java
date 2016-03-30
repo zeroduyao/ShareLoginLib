@@ -1,6 +1,6 @@
 package com.liulishuo.engzo;
 
-import com.liulishuo.share.base.share.ShareStateListener;
+import com.liulishuo.share.ShareManager;
 
 import android.content.Context;
 import android.util.Log;
@@ -10,7 +10,7 @@ import android.widget.Toast;
  * @author Jack Tony
  * @date 2015/10/23
  */
-public class MyShareListener implements ShareStateListener {
+public class MyShareListener implements ShareManager.ShareStateListener {
 
     private String TAG = "ShareListener";
 

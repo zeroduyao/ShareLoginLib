@@ -1,10 +1,10 @@
 package com.liulishuo.share.weixin;
 
 import com.liulishuo.share.ShareBlock;
-import com.liulishuo.share.base.Constants;
-import com.liulishuo.share.base.share.IShareManager;
-import com.liulishuo.share.base.share.ShareStateListener;
-import com.liulishuo.share.base.shareContent.ShareContent;
+import com.liulishuo.share.ShareManager;
+import com.liulishuo.share.model.Constants;
+import com.liulishuo.share.model.shareContent.ShareContent;
+import com.liulishuo.share.type.ShareType;
 import com.tencent.mm.sdk.modelbase.BaseResp;
 import com.tencent.mm.sdk.modelmsg.SendMessageToWX;
 import com.tencent.mm.sdk.modelmsg.WXAppExtendObject;
@@ -16,79 +16,59 @@ import com.tencent.mm.sdk.modelmsg.WXWebpageObject;
 import com.tencent.mm.sdk.openapi.IWXAPI;
 import com.tencent.mm.sdk.openapi.WXAPIFactory;
 
-import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.widget.Toast;
 
 import static com.tencent.mm.sdk.modelmsg.WXMediaMessage.IMediaObject;
 
 /**
  * Created by echo on 5/18/15.
  */
-public class WeiXinShareManager implements IShareManager {
+public class WeiXinShareManager {
 
-    private static ShareStateListener mShareStateListener;
-
-    /**
-     * 进行分享
-     */
-    @Override
-    public void share(@NonNull Activity activity, @NonNull ShareContent shareContent, @ShareBlock.ShareType int shareType, 
-            @Nullable ShareStateListener listener) {
-        
-        mShareStateListener = listener;
-        sendShareMsg(activity, shareContent, shareType); 
-    }
-
-    private void sendShareMsg(@NonNull Activity activity, @NonNull ShareContent shareContent, @ShareBlock.ShareType int shareType) {
+    public void sendShareMsg(@NonNull Context context, @NonNull ShareContent shareContent,
+            ShareType shareType) {
         String weChatAppId = ShareBlock.getInstance().weiXinAppId;
         if (TextUtils.isEmpty(weChatAppId)) {
             throw new NullPointerException("请通过shareBlock初始化WeChatAppId");
         }
 
-        IWXAPI IWXAPI = WXAPIFactory.createWXAPI(activity, weChatAppId, true);
-        if (!IWXAPI.isWXAppInstalled()) {
-            Toast.makeText(activity, "请安装微信哦~", Toast.LENGTH_SHORT).show();
-        } else {
-            IWXAPI.registerApp(weChatAppId);
-        }
+        IWXAPI IWXAPI = WXAPIFactory.createWXAPI(context, weChatAppId, true);
+        IWXAPI.registerApp(weChatAppId);
 
         SendMessageToWX.Req req = getReq(shareContent, shareType);
         IWXAPI.sendReq(req);
     }
 
-
     /**
      * 解析分享到微信的结果
      */
-    protected static void parseShareResp(BaseResp resp) {
-        if (mShareStateListener != null) {
+    protected static void parseShareResp(BaseResp resp, ShareManager.ShareStateListener listener) {
+        if (listener != null) {
             switch (resp.errCode) {
                 case BaseResp.ErrCode.ERR_OK:
                     // 分享成功
-                    mShareStateListener.onSuccess();
+                    listener.onSuccess();
                     break;
                 case BaseResp.ErrCode.ERR_USER_CANCEL:
                     // 用户取消
-                    mShareStateListener.onCancel();
+                    listener.onCancel();
                     break;
                 case BaseResp.ErrCode.ERR_AUTH_DENIED:
                     // 用户拒绝授权
-                    mShareStateListener.onError("用户拒绝授权");
+                    listener.onError("用户拒绝授权");
                     break;
                 case BaseResp.ErrCode.ERR_SENT_FAILED:
                     // 发送失败
-                    mShareStateListener.onError("发送失败");
+                    listener.onError("发送失败");
                     break;
                 case BaseResp.ErrCode.ERR_COMM:
                     // 一般错误
-                    mShareStateListener.onError("一般错误");
+                    listener.onError("一般错误");
                     break;
                 default:
-                    mShareStateListener.onError("未知错误");
+                    listener.onError("未知错误");
             }
         }
     }
@@ -96,7 +76,7 @@ public class WeiXinShareManager implements IShareManager {
     // --------------------------
 
     @NonNull
-    private SendMessageToWX.Req getReq(@NonNull ShareContent shareContent, @ShareBlock.ShareType int shareType) {
+    private SendMessageToWX.Req getReq(@NonNull ShareContent shareContent, ShareType shareType) {
         // 建立信息体
         WXMediaMessage msg = new WXMediaMessage(getShareObject(shareContent));
         msg.title = shareContent.getTitle();
@@ -107,7 +87,11 @@ public class WeiXinShareManager implements IShareManager {
         SendMessageToWX.Req req = new SendMessageToWX.Req();
         req.transaction = String.valueOf(System.currentTimeMillis());
         req.message = msg;
-        req.scene = shareType;
+        if (shareType == ShareType.WEIXIN_FRIEND) {
+            req.scene = SendMessageToWX.Req.WXSceneSession;
+        } else {
+            req.scene = SendMessageToWX.Req.WXSceneTimeline;
+        }
         return req;
     }
 
@@ -152,9 +136,9 @@ public class WeiXinShareManager implements IShareManager {
     }
 
     private IMediaObject getWebPageObj(ShareContent shareContent) {
-        WXWebpageObject webpage = new WXWebpageObject();
-        webpage.webpageUrl = shareContent.getURL();
-        return webpage;
+        WXWebpageObject webPage = new WXWebpageObject();
+        webPage.webpageUrl = shareContent.getURL();
+        return webPage;
     }
 
     private IMediaObject getMusicObj(ShareContent shareContent) {
@@ -170,16 +154,6 @@ public class WeiXinShareManager implements IShareManager {
        /* Log.d("ddd", "exinfo = " + ((ShareContentApp) shareContent).getAppInfo());
         app.extInfo = ((ShareContentApp) shareContent).getAppInfo();*/
         return app;
-    }
-
-    
-
-    /**
-     * @return 是否已经安装微信
-     */
-    public static boolean isWeiXinInstalled(Context context) {
-        IWXAPI api = WXAPIFactory.createWXAPI(context, ShareBlock.getInstance().weiXinAppId, true);
-        return api.isWXAppInstalled();
     }
 
 }

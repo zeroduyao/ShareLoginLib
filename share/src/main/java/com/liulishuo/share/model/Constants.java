@@ -1,4 +1,4 @@
-package com.liulishuo.share.base;
+package com.liulishuo.share.model;
 
 /**
  * Created by echo on 5/18/15.

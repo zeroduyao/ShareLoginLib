@@ -16,7 +16,7 @@ public class OAuthConstant {
 
     public static final String WEIBO_REDIRECT_URL = "xxx";
 
-    public static final String WECHAT_APPID = "xxx";
+    public static final String WEIXIN_APPID = "xxx";
 
-    public static final String WECHAT_SECRET = "xxx";
+    public static final String WEIXIN_SECRET = "xxx";
 }

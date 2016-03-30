@@ -11,24 +11,27 @@
     >
 
     <Button
-        android:id="@+id/login_wechat_btn"
+        android:id="@+id/微信登录"
         android:layout_width="180dp"
         android:layout_height="40dp"
         android:text="微信登录"
+        android:onClick="onClick"
         />
 
     <Button
-        android:id="@+id/share_wechat_btn"
+        android:id="@+id/分享给微信好友"
         android:layout_width="180dp"
         android:layout_height="40dp"
         android:text="分享到微信"
+        android:onClick="onClick"
         />
 
     <Button
-        android:id="@+id/share_friends_btn"
+        android:id="@+id/分享到微信朋友圈"
         android:layout_width="180dp"
         android:layout_height="40dp"
         android:text="分享到微信朋友圈"
+        android:onClick="onClick"
         />
 
     <TextView
@@ -38,17 +41,19 @@
         />
 
     <Button
-        android:id="@+id/login_weibo_btn"
+        android:id="@+id/微博登录"
         android:layout_width="180dp"
         android:layout_height="40dp"
         android:text="微博登录"
+        android:onClick="onClick"
         />
 
     <Button
-        android:id="@+id/share_weibo_btn"
+        android:id="@+id/分享到微博"
         android:layout_width="180dp"
         android:layout_height="40dp"
         android:text="分享到微博"
+        android:onClick="onClick"
         />
 
     <TextView
@@ -58,24 +63,27 @@
         />
 
     <Button
-        android:id="@+id/login_qq_btn"
+        android:id="@+id/QQ登录"
         android:layout_width="180dp"
         android:layout_height="40dp"
         android:text="QQ登录"
+        android:onClick="onClick"
         />
 
     <Button
-        android:id="@+id/share_qZone_btn"
+        android:id="@+id/分享到QQ空间"
         android:layout_width="180dp"
         android:layout_height="40dp"
         android:text="分享到QQ空间"
+        android:onClick="onClick"
         />
 
     <Button
-        android:id="@+id/share_qq_friend_btn"
+        android:id="@+id/分享给QQ好友"
         android:layout_width="180dp"
         android:layout_height="40dp"
         android:text="分享给QQ好友"
+        android:onClick="onClick"
         />
 
 
@@ -109,11 +117,25 @@
             />
     </RadioGroup>
 
-    <TextView
-        android:id="@+id/userinfo_tv"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:text="name = jack"
-        />
-    
+        android:orientation="horizontal"
+        >
+
+        <TextView
+            android:id="@+id/userinfo_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="name = jack"
+            />
+
+        <ImageView
+            android:id="@+id/user_img_iv"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            />
+
+    </LinearLayout>
+
 </LinearLayout>

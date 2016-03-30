@@ -47,7 +47,14 @@
         <!-- ============================= qq ============================= -->
 
         <activity
-            android:name=".qq.SL_QQHandlerActivity"
+            android:name=".qq.SL_QQLoginActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            />
+        
+        <activity
+            android:name=".qq.SL_QQShareActivity"
             android:configChanges="keyboardHidden|orientation"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Translucent.NoTitleBar"

@@ -1,4 +1,4 @@
-package com.liulishuo.share.base.shareContent;
+package com.liulishuo.share.model.shareContent;
 
 import android.os.Parcelable;
 

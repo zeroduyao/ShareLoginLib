@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.liulishuo.share.weibo;
+package com.liulishuo.share.util;
 
 
 import com.sina.weibo.sdk.auth.Oauth2AccessToken;
@@ -29,7 +29,7 @@ import android.content.SharedPreferences.Editor;
  * @author SINA
  * @since 2013-10-07
  */
-class AccessTokenKeeper {
+public class AccessTokenKeeper {
     private static final String PREFERENCES_NAME = "com_weibo_sdk_android";
     private static final String KEY_UID = "uid";
     private static final String KEY_ACCESS_TOKEN = "access_token";
@@ -41,7 +41,7 @@ class AccessTokenKeeper {
      * @param context 应用程序上下文环境
      * @param token   Token 对象
      */
-    protected static void writeAccessToken(Context context, Oauth2AccessToken token) {
+    public static void writeAccessToken(Context context, Oauth2AccessToken token) {
         if (null == context || null == token) {
             return;
         }
@@ -76,7 +76,7 @@ class AccessTokenKeeper {
      *
      * @param context 应用程序上下文环境
      */
-    protected static void clear(Context context) {
+    public static void clear(Context context) {
         if (null == context) {
             return;
         }
