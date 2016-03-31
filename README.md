@@ -127,7 +127,7 @@ ShareManager.share(MainActivity.this，
 
 ```   
 
-#### 3. 判断本机是否安装微博、微信  
+#### 3. 判断本机是否安装第三方客户端  
 ```JAVA
 ShareBlock.isWeiXinInstalled(this);
 ShareBlock.isWeiBoInstalled(this);
