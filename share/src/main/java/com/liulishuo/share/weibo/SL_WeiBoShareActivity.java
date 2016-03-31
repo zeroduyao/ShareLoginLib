@@ -23,6 +23,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
+import android.util.Log;
 
 /**
  * @author Jack Tony
@@ -104,7 +105,7 @@ public class SL_WeiBoShareActivity extends Activity implements IWeiboHandler.Res
     /**
      * 处理分享的回调
      */
-    protected void parseShareResp(int respCode, String errorMsg) {
+    private void parseShareResp(int respCode, String errorMsg) {
         ShareManager.ShareStateListener listener = ShareManager.listener;
         if (listener == null) {
             return;

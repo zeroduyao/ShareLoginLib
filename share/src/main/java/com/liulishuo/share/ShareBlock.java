@@ -1,10 +1,20 @@
 package com.liulishuo.share;
 
+import com.sina.weibo.sdk.api.share.IWeiboShareAPI;
+import com.sina.weibo.sdk.api.share.WeiboShareSDK;
+import com.tencent.mm.sdk.openapi.IWXAPI;
+import com.tencent.mm.sdk.openapi.WXAPIFactory;
+
 import android.app.Application;
+import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import java.io.File;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by echo on 5/18/15.
@@ -13,14 +23,14 @@ public class ShareBlock {
 
     private static ShareBlock mInstance;
 
-    private ShareBlock() {
-    }
-
     public static ShareBlock getInstance() {
         if (mInstance == null) {
             mInstance = new ShareBlock();
         }
         return mInstance;
+    }
+
+    private ShareBlock() {
     }
 
     public String appName;
@@ -79,6 +89,35 @@ public class ShareBlock {
         QQAppId = qqAppId;
         QQScope = scope;
         return this;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // 判断第三方客户端是否安装
+    ///////////////////////////////////////////////////////////////////////////
+
+    public static boolean isWeiXinInstalled(Context context) {
+        IWXAPI api = WXAPIFactory.createWXAPI(context, ShareBlock.getInstance().weiXinAppId, true);
+        return api.isWXAppInstalled();
+    }
+
+    public static boolean isWeiBoInstalled(@NonNull Context context) {
+        IWeiboShareAPI shareAPI = WeiboShareSDK.createWeiboAPI(context, ShareBlock.getInstance().weiBoAppId);
+        return shareAPI.isWeiboAppInstalled();
+    }
+
+    public static boolean isQQInstalled(@NonNull Context context) {
+        PackageManager pm = context.getApplicationContext().getPackageManager();
+        if (pm == null) {
+            return false;
+        }
+        List<PackageInfo> packages = pm.getInstalledPackages(0);
+        for (PackageInfo info : packages) {
+            String name = info.packageName.toLowerCase(Locale.ENGLISH);
+            if ("com.tencent.mobileqq".equals(name)) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

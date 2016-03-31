@@ -76,7 +76,7 @@ public class SL_WeiBoLoginActivity extends Activity {
             public void onComplete(Bundle values) {
                 final Oauth2AccessToken accessToken = Oauth2AccessToken.parseAccessToken(values);
                 if (accessToken != null && accessToken.isSessionValid()) {
-                    AccessTokenKeeper.writeAccessToken(activity, accessToken);
+                    AccessTokenKeeper.saveAccessToken(activity, accessToken);
                     if (listener != null) {
                         listener.onSuccess(accessToken.getToken(),
                                 accessToken.getUid(),
@@ -110,7 +110,7 @@ public class SL_WeiBoLoginActivity extends Activity {
             throw new NullPointerException("请通过shareBlock初始化weiboAppId");
         }
 
-        AccessTokenKeeper.clear(activity);
+        AccessTokenKeeper.clearToken(activity);
         AuthInfo authInfo = new AuthInfo(activity, appId,
                 ShareBlock.getInstance().weiBoRedirectUrl,
                 ShareBlock.getInstance().weiBoScope);

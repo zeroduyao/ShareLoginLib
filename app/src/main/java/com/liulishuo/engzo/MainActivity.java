@@ -61,11 +61,6 @@ public class MainActivity extends AppCompatActivity {
 
         final Bitmap mBitmap = ((BitmapDrawable) getResources().getDrawable(R.drawable.kale)).getBitmap();
 
-        LoginManager.isWeiBoInstalled(this);
-        ShareManager.isWeiBoInstalled(this);
-
-        LoginManager.isWeiXinInstalled(this);
-        ShareManager.isWeiXinInstalled(this);
 
         ShareBlock.getInstance()
                 .initAppName("TestAppName")
@@ -205,4 +200,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        LoginManager.recycle();
+        ShareManager.recycle();
+    }
 }

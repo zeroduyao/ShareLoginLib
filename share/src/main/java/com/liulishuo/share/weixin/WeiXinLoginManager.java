@@ -1,6 +1,5 @@
 package com.liulishuo.share.weixin;
 
-
 import com.liulishuo.share.LoginManager;
 import com.liulishuo.share.ShareBlock;
 import com.liulishuo.share.util.HttpUtil;

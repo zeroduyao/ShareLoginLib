@@ -6,26 +6,16 @@ import com.liulishuo.share.type.LoginType;
 import com.liulishuo.share.util.HttpUtil;
 import com.liulishuo.share.weibo.SL_WeiBoLoginActivity;
 import com.liulishuo.share.weixin.WeiXinLoginManager;
-import com.sina.weibo.sdk.api.share.IWeiboShareAPI;
-import com.sina.weibo.sdk.api.share.WeiboShareSDK;
-import com.tencent.mm.sdk.openapi.IWXAPI;
-import com.tencent.mm.sdk.openapi.WXAPIFactory;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.widget.Toast;
-
-import java.util.List;
-import java.util.Locale;
 
 /**
  * @author Kale
@@ -39,7 +29,7 @@ public class LoginManager {
         LoginManager.listener = listener;
         switch (type) {
             case WEIXIN:
-                if (!LoginManager.isWeiXinInstalled(activity)) {
+                if (!ShareBlock.isWeiXinInstalled(activity)) {
                     Toast.makeText(activity, "请安装微信哦~", Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -47,13 +37,15 @@ public class LoginManager {
                 break;
             case WEIBO:
                 activity.startActivity(new Intent(activity, SL_WeiBoLoginActivity.class));
+                activity.overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
                 break;
             case QQ:
-                if (!LoginManager.isQQInstalled(activity)) {
+                if (!ShareBlock.isQQInstalled(activity)) {
                     Toast.makeText(activity, "请先安装QQ哦~", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 activity.startActivity(new Intent(activity, SL_QQLoginActivity.class));
+                activity.overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
                 break;
         }
     }
@@ -71,6 +63,10 @@ public class LoginManager {
                 getQQUserInfo(accessToken, uid, listener);
                 break;
         }
+    }
+
+    public static void recycle() {
+        listener = null;
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -120,14 +116,6 @@ public class LoginManager {
         }.execute();
     }
 
-    /**
-     * @return 是否已经安装微信
-     */
-    public static boolean isWeiXinInstalled(Context context) {
-        IWXAPI api = WXAPIFactory.createWXAPI(context, ShareBlock.getInstance().weiXinAppId, true);
-        return api.isWXAppInstalled();
-    }
-    
     ///////////////////////////////////////////////////////////////////////////
     // 微博
     ///////////////////////////////////////////////////////////////////////////
@@ -178,11 +166,6 @@ public class LoginManager {
         }.execute();
     }
 
-    public static boolean isWeiBoInstalled(@NonNull Context context) {
-        IWeiboShareAPI shareAPI = WeiboShareSDK.createWeiboAPI(context, ShareBlock.getInstance().weiBoAppId);
-        return shareAPI.isWeiboAppInstalled();
-    }
-    
     ///////////////////////////////////////////////////////////////////////////
     // QQ
     ///////////////////////////////////////////////////////////////////////////
@@ -238,27 +221,13 @@ public class LoginManager {
         }.execute();
     }
 
-    public static boolean isQQInstalled(@NonNull Context context) {
-        PackageManager pm = context.getApplicationContext().getPackageManager();
-        if (pm == null) {
-            return false;
-        }
-        List<PackageInfo> packages = pm.getInstalledPackages(0);
-        for (PackageInfo info : packages) {
-            String name = info.packageName.toLowerCase(Locale.ENGLISH);
-            if ("com.tencent.mobileqq".equals(name)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public interface LoginListener {
-    
+
         void onSuccess(String accessToken, String uId, long expiresIn, @Nullable String wholeData);
-    
+
         void onError(String msg);
-    
+
         void onCancel();
     }
+
 }
