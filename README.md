@@ -10,10 +10,12 @@ ShareLoginLib likes simple sharesdk or umeng in China . It is a tool to help dev
 #### 1. 添加混淆参数
 ```  
 # ————————  微信 start    ————————
--keep class com.tencent.mm.sdk.** {
-   *;
-}
+-keep class com.tencent.mm.sdk.** { *;}
 # ————————  微信 end    ————————
+
+# ————————  微博 start    ————————   
+-keep class com.sina.weibo.sdk.api.* { *; }
+# ————————  微微博 end    ————————
 
 # ————————  qq start    ————————
 -keep class com.tencent.open.TDialog$*
