@@ -2,7 +2,6 @@ package com.liulishuo.share.weibo;
 
 import com.liulishuo.share.ShareBlock;
 import com.liulishuo.share.LoginManager;
-import com.liulishuo.share.util.AccessTokenKeeper;
 import com.sina.weibo.sdk.auth.AuthInfo;
 import com.sina.weibo.sdk.auth.Oauth2AccessToken;
 import com.sina.weibo.sdk.auth.WeiboAuthListener;
@@ -111,6 +110,7 @@ public class SL_WeiBoLoginActivity extends Activity {
         }
 
         AccessTokenKeeper.clearToken(activity);
+        
         AuthInfo authInfo = new AuthInfo(activity, appId,
                 ShareBlock.getInstance().weiBoRedirectUrl,
                 ShareBlock.getInstance().weiBoScope);

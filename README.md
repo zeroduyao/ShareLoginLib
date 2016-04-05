@@ -4,7 +4,7 @@ ShareLoginLib likes simple sharesdk or umeng in China . It is a tool to help dev
 ![](./screenshot/logo.png)
 
 ## 示例
-![](./screenshot/login.png) ![](./screenshot/share.png)
+![](./screenshot/login.png) ![](./screenshot/share.png) ![](./screenshot/wechat.png)
 ## 准备工作
 
 #### 1. 添加混淆参数
@@ -135,6 +135,22 @@ ShareBlock.isWeiXinInstalled(this);
 ShareBlock.isWeiBoInstalled(this);
 ShareBlock.isQQInstalled(this);
 ```
+
+#### 4. 通过token和id得到用户的详细信息
+```JAVA
+UserInfoManager.getUserInfo(context, accessToken, userId, new UserInfoManager.UserInfoListener() {
+        @Override
+        public void onSuccess(@NonNull AuthUserInfo userInfo) {
+            // 可以得到：昵称，性别，头像url，用户id
+        }
+
+        @Override
+        public void onError(String msg) {
+
+        }
+    }, LoginType.【WeiBo,WeiXin,QQ】);
+```  
+
 更多详细的操作请参考项目源码。
 
 ## 测试用例  

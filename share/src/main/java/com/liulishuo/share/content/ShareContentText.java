@@ -1,6 +1,6 @@
-package com.liulishuo.share.model.shareContent;
+package com.liulishuo.share.content;
 
-import com.liulishuo.share.model.Constants;
+import com.liulishuo.share.type.ContentType;
 
 import android.os.Parcel;
 import android.support.annotation.NonNull;
@@ -48,7 +48,7 @@ public class ShareContentText implements ShareContent {
 
     @Override
     public int getType() {
-        return Constants.SHARE_TYPE_TEXT;
+        return ContentType.TEXT;
     }
 
     @Override

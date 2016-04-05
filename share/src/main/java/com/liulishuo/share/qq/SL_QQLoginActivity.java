@@ -25,11 +25,16 @@ public class SL_QQLoginActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        String appId = ShareBlock.getInstance().QQAppId;
+        if (TextUtils.isEmpty(appId)) {
+            throw new NullPointerException("请通过shareBlock初始化appId");
+        }
+
         if (savedInstanceState == null) { // 防止不保留活动情况下activity被重置后直接进行操作的情况
-            doLogin(this, LoginManager.listener);
+            doLogin(this, appId, LoginManager.listener);
         }
     }
-    
+
     /**
      * 解析用户登录的结果
      */
@@ -40,11 +45,7 @@ public class SL_QQLoginActivity extends Activity {
         finish();
     }
 
-    private void doLogin(Activity activity,final LoginManager.LoginListener listener) {
-        String appId = ShareBlock.getInstance().QQAppId;
-        if (TextUtils.isEmpty(appId)) {
-            throw new NullPointerException("请通过shareBlock初始化appId");
-        }
+    private void doLogin(Activity activity, String appId, final LoginManager.LoginListener listener) {
         Tencent tencent = Tencent.createInstance(appId, activity);
 
         mUiListener = new IUiListener() {

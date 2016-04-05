@@ -2,8 +2,8 @@ package com.liulishuo.share.weibo;
 
 import com.liulishuo.share.ShareBlock;
 import com.liulishuo.share.ShareManager;
-import com.liulishuo.share.model.Constants;
-import com.liulishuo.share.model.shareContent.ShareContent;
+import com.liulishuo.share.type.ContentType;
+import com.liulishuo.share.content.ShareContent;
 import com.sina.weibo.sdk.api.ImageObject;
 import com.sina.weibo.sdk.api.MusicObject;
 import com.sina.weibo.sdk.api.TextObject;
@@ -23,7 +23,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
-import android.util.Log;
 
 /**
  * @author Jack Tony
@@ -33,20 +32,18 @@ public class SL_WeiBoShareActivity extends Activity implements IWeiboHandler.Res
 
     private boolean isFirstIn = true;
 
-    private SendMultiMessageToWeiboRequest request;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (savedInstanceState == null) {
             // 防止不保留活动情况下activity被重置后直接进行操作的情况
             // 建立请求体
-            request = new SendMultiMessageToWeiboRequest();
+            SendMultiMessageToWeiboRequest request = new SendMultiMessageToWeiboRequest();
             request.transaction = buildTransaction("tag");// 用transaction唯一标识一个请求
             ShareContent content = getIntent().getParcelableExtra(ShareManager.KEY_CONTENT);
             request.multiMessage = getShareObject(content);
 
-            sendShareMsg(this);
+            doShare(this, request);
         } else {
             /**
              * 当 Activity 被重新初始化时（该 Activity 处于后台时，可能会由于内存不足被杀掉了），
@@ -92,10 +89,10 @@ public class SL_WeiBoShareActivity extends Activity implements IWeiboHandler.Res
         parseShareResp(baseResponse.errCode, baseResponse.errMsg);
     }
 
-    protected void sendShareMsg(Activity activity) {
+    private void doShare(Activity activity, SendMultiMessageToWeiboRequest request) {
         String appId = ShareBlock.getInstance().weiBoAppId;
         if (TextUtils.isEmpty(appId)) {
-            throw new NullPointerException("请通过shareBlock初始化weiboAppId");
+            throw new NullPointerException("请通过shareBlock初始化weiBoAppId");
         }
         IWeiboShareAPI api = WeiboShareSDK.createWeiboAPI(activity, appId);
         api.registerApp();  // 将应用注册到微博客户端
@@ -134,15 +131,15 @@ public class SL_WeiBoShareActivity extends Activity implements IWeiboHandler.Res
     private WeiboMultiMessage getShareObject(@NonNull ShareContent shareContent) {
         WeiboMultiMessage weiboMultiMessage = new WeiboMultiMessage();
         switch (shareContent.getType()) {
-            case Constants.SHARE_TYPE_TEXT:
+            case ContentType.TEXT:
                 // 纯文字
                 weiboMultiMessage.textObject = getTextObj(shareContent.getSummary());
                 break;
-            case Constants.SHARE_TYPE_PIC:
+            case ContentType.PIC:
                 // 纯图片
                 weiboMultiMessage.imageObject = getImageObj(shareContent);
                 break;
-            case Constants.SHARE_TYPE_WEBPAGE:
+            case ContentType.WEBPAGE:
                 // 网页
                 if (shareContent.getURL() == null) {
                     weiboMultiMessage.imageObject = getImageObj(shareContent);
@@ -151,7 +148,7 @@ public class SL_WeiBoShareActivity extends Activity implements IWeiboHandler.Res
                     weiboMultiMessage.mediaObject = getWebPageObj(shareContent);
                 }
                 break;
-            case Constants.SHARE_TYPE_MUSIC:
+            case ContentType.MUSIC:
                 // 音乐
                 weiboMultiMessage.mediaObject = getMusicObj(shareContent);
                 break;

@@ -3,12 +3,12 @@ package com.liulishuo.engzo;
 import com.liulishuo.share.LoginManager;
 import com.liulishuo.share.ShareBlock;
 import com.liulishuo.share.ShareManager;
-import com.liulishuo.share.UserInfoListener;
-import com.liulishuo.share.model.AuthUserInfo;
-import com.liulishuo.share.model.shareContent.ShareContent;
-import com.liulishuo.share.model.shareContent.ShareContentPic;
-import com.liulishuo.share.model.shareContent.ShareContentText;
-import com.liulishuo.share.model.shareContent.ShareContentWebpage;
+import com.liulishuo.share.AuthUserInfo;
+import com.liulishuo.share.UserInfoManager;
+import com.liulishuo.share.content.ShareContent;
+import com.liulishuo.share.content.ShareContentPic;
+import com.liulishuo.share.content.ShareContentText;
+import com.liulishuo.share.content.ShareContentWebPage;
 import com.liulishuo.share.type.LoginType;
 import com.liulishuo.share.type.ShareType;
 
@@ -18,6 +18,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -61,7 +62,6 @@ public class MainActivity extends AppCompatActivity {
 
         final Bitmap mBitmap = ((BitmapDrawable) getResources().getDrawable(R.drawable.kale)).getBitmap();
 
-
         ShareBlock.getInstance()
                 .initAppName("TestAppName")
                 .initSharePicFile(getApplication())
@@ -72,14 +72,14 @@ public class MainActivity extends AppCompatActivity {
         RadioGroup shareType = (RadioGroup) findViewById(R.id.share_type_rg);
         shareType.check(R.id.rich_text);
 
-        mShareContent = new ShareContentWebpage(TITLE, MSG, URL, mBitmap);
+        mShareContent = new ShareContentWebPage(TITLE, MSG, URL, mBitmap);
 
         shareType.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 switch (checkedId) {
                     case R.id.rich_text:
-                        mShareContent = new ShareContentWebpage(TITLE, MSG, URL, mBitmap);
+                        mShareContent = new ShareContentWebPage(TITLE, MSG, URL, mBitmap);
                         break;
                     case R.id.only_image:
                         mShareContent = new ShareContentPic(mBitmap);
@@ -133,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            mImageView.setImageBitmap((Bitmap) msg.obj);
+            
         }
     };
 
@@ -143,9 +143,9 @@ public class MainActivity extends AppCompatActivity {
 
         private LoginType mType;
 
-        private UserInfoListener mUserInfoListener = new UserInfoListener() {
+        private UserInfoManager.UserInfoListener mUserInfoListener = new UserInfoManager.UserInfoListener() {
             @Override
-            public void onSuccess(final AuthUserInfo userInfo) {
+            public void onSuccess(@NonNull final AuthUserInfo userInfo) {
                 String str = " nickname = " + userInfo.nickName
                         + "\n sex = " + userInfo.sex
                         + "\n id = " + userInfo.userId;
@@ -185,7 +185,7 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "登录成功");
             Toast.makeText(MainActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
 
-            LoginManager.getUserInfo(accessToken, userId, mUserInfoListener, mType);
+            UserInfoManager.getUserInfo(MainActivity.this, accessToken, userId, mUserInfoListener, mType);
         }
 
         @Override

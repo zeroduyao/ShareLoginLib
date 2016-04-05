@@ -2,9 +2,8 @@ package com.liulishuo.share.weixin;
 
 import com.liulishuo.share.ShareBlock;
 import com.liulishuo.share.ShareManager;
-import com.liulishuo.share.model.Constants;
-import com.liulishuo.share.model.shareContent.ShareContent;
-import com.liulishuo.share.type.ShareType;
+import com.liulishuo.share.type.ContentType;
+import com.liulishuo.share.content.ShareContent;
 import com.tencent.mm.sdk.modelbase.BaseResp;
 import com.tencent.mm.sdk.modelmsg.SendMessageToWX;
 import com.tencent.mm.sdk.modelmsg.WXAppExtendObject;
@@ -28,7 +27,7 @@ import static com.tencent.mm.sdk.modelmsg.WXMediaMessage.IMediaObject;
 public class WeiXinShareManager {
 
     public void sendShareMsg(@NonNull Context context, @NonNull ShareContent shareContent,
-            ShareType shareType) {
+            com.liulishuo.share.type.ShareType shareType) {
         String weChatAppId = ShareBlock.getInstance().weiXinAppId;
         if (TextUtils.isEmpty(weChatAppId)) {
             throw new NullPointerException("请通过shareBlock初始化WeChatAppId");
@@ -76,7 +75,7 @@ public class WeiXinShareManager {
     // --------------------------
 
     @NonNull
-    private SendMessageToWX.Req getReq(@NonNull ShareContent shareContent, ShareType shareType) {
+    private SendMessageToWX.Req getReq(@NonNull ShareContent shareContent, com.liulishuo.share.type.ShareType shareType) {
         // 建立信息体
         WXMediaMessage msg = new WXMediaMessage(getShareObject(shareContent));
         msg.title = shareContent.getTitle();
@@ -87,7 +86,7 @@ public class WeiXinShareManager {
         SendMessageToWX.Req req = new SendMessageToWX.Req();
         req.transaction = String.valueOf(System.currentTimeMillis());
         req.message = msg;
-        if (shareType == ShareType.WEIXIN_FRIEND) {
+        if (shareType == com.liulishuo.share.type.ShareType.WEIXIN_FRIEND) {
             req.scene = SendMessageToWX.Req.WXSceneSession;
         } else {
             req.scene = SendMessageToWX.Req.WXSceneTimeline;
@@ -98,19 +97,19 @@ public class WeiXinShareManager {
     private IMediaObject getShareObject(@NonNull ShareContent shareContent) {
         IMediaObject mediaObject;
         switch (shareContent.getType()) {
-            case Constants.SHARE_TYPE_TEXT:
+            case ContentType.TEXT:
                 // 纯文字
                 mediaObject = getTextObj(shareContent);
                 break;
-            case Constants.SHARE_TYPE_PIC:
+            case ContentType.PIC:
                 // 纯图片
                 mediaObject = getImageObj(shareContent);
                 break;
-            case Constants.SHARE_TYPE_WEBPAGE:
+            case ContentType.WEBPAGE:
                 // 网页
                 mediaObject = getWebPageObj(shareContent);
                 break;
-            case Constants.SHARE_TYPE_MUSIC:
+            case ContentType.MUSIC:
                 // 音乐
                 mediaObject = getMusicObj(shareContent);
                 break;

@@ -1,6 +1,6 @@
-package com.liulishuo.share.model.shareContent;
+package com.liulishuo.share.content;
 
-import com.liulishuo.share.model.Constants;
+import com.liulishuo.share.type.ContentType;
 
 import android.graphics.Bitmap;
 import android.os.Parcel;
@@ -54,7 +54,7 @@ public class ShareContentPic implements ShareContent {
 
     @Override
     public int getType() {
-        return Constants.SHARE_TYPE_PIC;
+        return ContentType.PIC;
     }
 
     public void setBitmap(@NonNull Bitmap bitmap) {

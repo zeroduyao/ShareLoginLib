@@ -16,7 +16,7 @@ import android.os.Bundle;
 
 /**
  * Created by echo on 5/19/15.
- * 用来处理微信登录、微信分享的activity。这里真不知道微信非要个activity干嘛，愚蠢的设计。
+ * 用来处理微信登录、微信分享的activity。这里真不知道微信非要个activity干嘛，愚蠢的设计!
  * 参考文档:https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=open1419317853&lang=zh_CN
  */
 public abstract class WeiXinHandlerActivity extends Activity implements IWXAPIEventHandler {

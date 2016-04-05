@@ -1,4 +1,4 @@
-package com.liulishuo.share.model;
+package com.liulishuo.share;
 
 /**
  * @author Jack Tony

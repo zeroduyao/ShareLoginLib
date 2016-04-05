@@ -1,6 +1,6 @@
 package com.liulishuo.share;
 
-import com.liulishuo.share.model.shareContent.ShareContent;
+import com.liulishuo.share.content.ShareContent;
 import com.liulishuo.share.qq.SL_QQShareActivity;
 import com.liulishuo.share.type.ShareType;
 import com.liulishuo.share.weibo.SL_WeiBoShareActivity;

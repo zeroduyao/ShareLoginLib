@@ -2,8 +2,8 @@ package com.liulishuo.share.qq;
 
 import com.liulishuo.share.ShareBlock;
 import com.liulishuo.share.ShareManager;
-import com.liulishuo.share.model.Constants;
-import com.liulishuo.share.model.shareContent.ShareContent;
+import com.liulishuo.share.type.ContentType;
+import com.liulishuo.share.content.ShareContent;
 import com.tencent.connect.share.QQShare;
 import com.tencent.connect.share.QzoneShare;
 import com.tencent.tauth.IUiListener;
@@ -47,7 +47,7 @@ public class SL_QQShareActivity extends Activity {
         
         if (savedInstanceState == null) { // 防止不保留活动情况下activity被重置后直接进行操作的情况
             ShareContent shareContent = getIntent().getParcelableExtra(ShareManager.KEY_CONTENT);
-            share(shareContent);
+            doShare(shareContent);
         }
     }
     
@@ -63,7 +63,7 @@ public class SL_QQShareActivity extends Activity {
         finish();
     }
 
-    private void share(ShareContent shareContent) {
+    private void doShare(ShareContent shareContent) {
         String appId = ShareBlock.getInstance().QQAppId;
         if (TextUtils.isEmpty(appId)) {
             throw new NullPointerException("请通过shareBlock初始化QQAppId");
@@ -109,22 +109,22 @@ public class SL_QQShareActivity extends Activity {
     Bundle getShareToQQBundle(ShareContent shareContent) {
         Bundle bundle;
         switch (shareContent.getType()) {
-            case Constants.SHARE_TYPE_TEXT:
+            case ContentType.TEXT:
                 // 纯文字
                 // 文档中说： "本接口支持3种模式，每种模式的参数设置不同"，这三种模式中不包含纯文本
                 Log.e(TAG, "QQ目前不支持分享纯文本信息");
                 finish();
                 bundle = getTextObj();
                 break;
-            case Constants.SHARE_TYPE_PIC:
+            case ContentType.PIC:
                 // 纯图片
                 bundle = getImageObj(shareContent);
                 break;
-            case Constants.SHARE_TYPE_WEBPAGE:
+            case ContentType.WEBPAGE:
                 // 网页
                 bundle = getWebPageObj();
                 break;
-            case Constants.SHARE_TYPE_MUSIC:
+            case ContentType.MUSIC:
                 // 音乐
                 bundle = getMusicObj(shareContent);
                 break;
