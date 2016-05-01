@@ -68,7 +68,6 @@
             android:theme="@android:style/Theme.Translucent.NoTitleBar"
             />
 
-
         <!-- 腾讯的认证activity -->
         <activity
             android:name="com.tencent.tauth.AuthActivity"

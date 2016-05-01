@@ -100,31 +100,31 @@ public class MainActivity extends AppCompatActivity {
         switch (v.getId()) {
             case R.id.QQ登录:
                 mLoginListener.setType(LoginType.QQ);
-                LoginManager.login(this, mLoginListener, LoginType.QQ);
+                LoginManager.login(this, LoginType.QQ, mLoginListener);
                 break;
             case R.id.微信登录:
                 mLoginListener.setType(LoginType.WEIXIN);
-                LoginManager.login(this, mLoginListener, LoginType.WEIXIN);
+                LoginManager.login(this, LoginType.WEIXIN, mLoginListener);
                 break;
             case R.id.微博登录:
                 mLoginListener.setType(LoginType.WEIBO);
-                LoginManager.login(this, mLoginListener, LoginType.WEIBO);
+                LoginManager.login(this, LoginType.WEIBO, mLoginListener);
                 break;
 
             case R.id.分享给QQ好友:
-                ShareManager.share(this, mShareContent, ShareType.QQ_FRIEND, mShareListener);
+                ShareManager.share(this, ShareType.QQ_FRIEND, mShareContent, mShareListener);
                 break;
             case R.id.分享到QQ空间:
-                ShareManager.share(this, mShareContent, ShareType.QQ_ZONE, mShareListener);
+                ShareManager.share(this, ShareType.QQ_ZONE, mShareContent, mShareListener);
                 break;
             case R.id.分享给微信好友:
-                ShareManager.share(this, mShareContent, ShareType.WEIXIN_FRIEND, mShareListener);
+                ShareManager.share(this, ShareType.WEIXIN_FRIEND, mShareContent, mShareListener);
                 break;
             case R.id.分享到微信朋友圈:
-                ShareManager.share(this, mShareContent, ShareType.WEIXIN_FRIEND_ZONE, mShareListener);
+                ShareManager.share(this, ShareType.WEIXIN_FRIEND_ZONE, mShareContent, mShareListener);
                 break;
             case R.id.分享到微博:
-                ShareManager.share(this, mShareContent, ShareType.WEIBO_TIME_LINE, mShareListener);
+                ShareManager.share(this, ShareType.WEIBO_TIME_LINE, mShareContent, mShareListener);
                 break;
         }
     }
@@ -133,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            
+
         }
     };
 
@@ -141,7 +141,9 @@ public class MainActivity extends AppCompatActivity {
 
         public static final String TAG = "LoginListener";
 
-        private @LoginType int mType;
+        private
+        @LoginType
+        String mType;
 
         private UserInfoManager.UserInfoListener mUserInfoListener = new UserInfoManager.UserInfoListener() {
             @Override
@@ -173,7 +175,7 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        public void setType(@LoginType int type) {
+        public void setType(@LoginType String type) {
             mType = type;
         }
 
@@ -185,7 +187,7 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "登录成功");
             Toast.makeText(MainActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
 
-            UserInfoManager.getUserInfo(MainActivity.this, accessToken, userId, mUserInfoListener, mType);
+            UserInfoManager.getUserInfo(MainActivity.this, mType, accessToken, userId, mUserInfoListener);
         }
 
         @Override

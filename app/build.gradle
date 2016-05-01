@@ -10,6 +10,11 @@ android {
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
+
+        manifestPlaceholders = [
+                // 这里需要换成:tencent+你的AppId
+                "tencentAuthId": "tencent23456",
+        ]
     }
 
     buildTypes {

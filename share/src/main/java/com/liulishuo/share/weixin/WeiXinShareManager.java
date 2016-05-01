@@ -28,7 +28,7 @@ import static com.tencent.mm.sdk.modelmsg.WXMediaMessage.IMediaObject;
 public class WeiXinShareManager {
 
     public void sendShareMsg(@NonNull Context context, @NonNull ShareContent shareContent,
-            @ShareType int shareType) {
+            @ShareType String shareType) {
         String weChatAppId = ShareBlock.getInstance().weiXinAppId;
         if (TextUtils.isEmpty(weChatAppId)) {
             throw new NullPointerException("请通过shareBlock初始化WeChatAppId");
@@ -76,7 +76,7 @@ public class WeiXinShareManager {
     // --------------------------
 
     @NonNull
-    private SendMessageToWX.Req getReq(@NonNull ShareContent shareContent, @ShareType int shareType) {
+    private SendMessageToWX.Req getReq(@NonNull ShareContent shareContent, @ShareType String shareType) {
         // 建立信息体
         WXMediaMessage msg = new WXMediaMessage(getShareObject(shareContent));
         msg.title = shareContent.getTitle();
@@ -87,7 +87,7 @@ public class WeiXinShareManager {
         SendMessageToWX.Req req = new SendMessageToWX.Req();
         req.transaction = String.valueOf(System.currentTimeMillis());
         req.message = msg;
-        if (shareType == ShareType.WEIXIN_FRIEND) {
+        if (shareType.equals(ShareType.WEIXIN_FRIEND)) {
             req.scene = SendMessageToWX.Req.WXSceneSession;
         } else {
             req.scene = SendMessageToWX.Req.WXSceneTimeline;

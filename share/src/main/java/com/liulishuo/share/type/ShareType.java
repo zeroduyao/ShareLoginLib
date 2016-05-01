@@ -1,18 +1,22 @@
 package com.liulishuo.share.type;
 
-import android.support.annotation.IntDef;
+import android.support.annotation.StringDef;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * @author Kale
  * @date 2016/3/30
  */
-@IntDef({ShareType.WEIXIN_FRIEND, ShareType.WEIXIN_FRIEND_ZONE, ShareType.WEIBO_TIME_LINE, ShareType.QQ_ZONE, ShareType.QQ_FRIEND})
+@Retention(RetentionPolicy.CLASS)
+@StringDef({ShareType.WEIXIN_FRIEND, ShareType.WEIXIN_FRIEND_ZONE, ShareType.WEIBO_TIME_LINE, ShareType.QQ_ZONE, ShareType.QQ_FRIEND})
 public @interface ShareType {
 
-    int
-            WEIXIN_FRIEND = 0,
-            WEIXIN_FRIEND_ZONE = 1,
-            WEIBO_TIME_LINE = 2,
-            QQ_ZONE = 3,
-            QQ_FRIEND = 4;
+    String
+            WEIXIN_FRIEND = "WEIXIN_FRIEND",
+            WEIXIN_FRIEND_ZONE = "WEIXIN_FRIEND_ZONE",
+            WEIBO_TIME_LINE = "WEIBO_TIME_LINE",
+            QQ_ZONE = "QQ_ZONE",
+            QQ_FRIEND = "QQ_FRIEND";
 }

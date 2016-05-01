@@ -19,8 +19,8 @@ import android.support.annotation.Nullable;
  */
 public class UserInfoManager {
 
-    public static void getUserInfo(Context context, @NonNull String accessToken, @NonNull String uid,
-            @Nullable final UserInfoListener listener, @LoginType int type) {
+    public static void getUserInfo(Context context, @LoginType String type, @NonNull String accessToken, @NonNull String uid,
+            @Nullable final UserInfoListener listener) {
         switch (type) {
             case LoginType.WEIXIN:
                 getWeiXinUserInfo(context, accessToken, uid, listener);
