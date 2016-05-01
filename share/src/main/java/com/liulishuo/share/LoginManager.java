@@ -17,23 +17,25 @@ import android.widget.Toast;
  */
 public class LoginManager {
 
-    public static @Nullable LoginListener listener;
+    public static
+    @Nullable
+    LoginListener listener;
 
-    public static void login(@NonNull Activity activity, @Nullable LoginListener listener, LoginType type) {
+    public static void login(@NonNull Activity activity, @Nullable LoginListener listener, @LoginType int type) {
         LoginManager.listener = listener;
         switch (type) {
-            case WEIXIN:
+            case LoginType.WEIXIN:
                 if (!ShareBlock.isWeiXinInstalled(activity)) {
                     Toast.makeText(activity, "请安装微信哦~", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 new WeiXinLoginManager().login(activity.getApplicationContext());
                 break;
-            case WEIBO:
+            case LoginType.WEIBO:
                 activity.startActivity(new Intent(activity, SL_WeiBoLoginActivity.class));
                 activity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                 break;
-            case QQ:
+            case LoginType.QQ:
                 if (!ShareBlock.isQQInstalled(activity)) {
                     Toast.makeText(activity, "请先安装QQ哦~", Toast.LENGTH_SHORT).show();
                     return;

@@ -22,12 +22,12 @@ public class ShareManager {
 
     public static ShareStateListener listener;
 
-    public static void share(@NonNull Activity activity, @NonNull ShareContent shareContent, ShareType shareType,
+    public static void share(@NonNull Activity activity, @NonNull ShareContent shareContent, @ShareType int shareType,
             @Nullable final ShareStateListener listener) {
         ShareManager.listener = listener;
         switch (shareType) {
-            case QQ_FRIEND:
-            case QQ_ZONE:
+            case ShareType.QQ_FRIEND:
+            case ShareType.QQ_ZONE:
                 if (!ShareBlock.isQQInstalled(activity)) {
                     Toast.makeText(activity, "请先安装QQ哦~", Toast.LENGTH_SHORT).show();
                     return;
@@ -35,19 +35,19 @@ public class ShareManager {
                 activity.startActivity(new Intent(activity, SL_QQShareActivity.class)
                         .putExtra(SL_QQShareActivity.KEY_TO_FRIEND, shareType == ShareType.QQ_FRIEND)
                         .putExtra(KEY_CONTENT, shareContent));
-                activity.overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+                activity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                 break;
-            case WEIBO_TIME_LINE:
+            case ShareType.WEIBO_TIME_LINE:
                 if (!ShareBlock.isWeiBoInstalled(activity)) {
                     Toast.makeText(activity, "请先安装微博哦~", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 activity.startActivity(new Intent(activity, SL_WeiBoShareActivity.class)
                         .putExtra(KEY_CONTENT, shareContent));
-                activity.overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+                activity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                 break;
-            case WEIXIN_FRIEND:
-            case WEIXIN_FRIEND_ZONE:
+            case ShareType.WEIXIN_FRIEND:
+            case ShareType.WEIXIN_FRIEND_ZONE:
                 if (!ShareBlock.isWeiXinInstalled(activity)) {
                     Toast.makeText(activity, "请安装微信哦~", Toast.LENGTH_SHORT).show();
                     return;
@@ -62,11 +62,11 @@ public class ShareManager {
     }
 
     public interface ShareStateListener {
-    
+
         void onSuccess();
-    
+
         void onCancel();
-    
+
         void onError(String msg);
     }
 }

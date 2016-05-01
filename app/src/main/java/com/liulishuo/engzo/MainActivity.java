@@ -141,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
 
         public static final String TAG = "LoginListener";
 
-        private LoginType mType;
+        private @LoginType int mType;
 
         private UserInfoManager.UserInfoListener mUserInfoListener = new UserInfoManager.UserInfoListener() {
             @Override
@@ -173,7 +173,7 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        public void setType(LoginType type) {
+        public void setType(@LoginType int type) {
             mType = type;
         }
 

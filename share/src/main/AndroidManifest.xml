@@ -68,6 +68,24 @@
             android:theme="@android:style/Theme.Translucent.NoTitleBar"
             />
 
+
+        <!-- 腾讯的认证activity -->
+        <activity
+            android:name="com.tencent.tauth.AuthActivity"
+            android:launchMode="singleTask"
+            android:noHistory="true"
+            >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <!-- 这里需要换成:tencent+你的AppId -->
+                <data android:scheme="${tencentAuthId}" />
+            </intent-filter>
+        </activity>
+
     </application>
 
 </manifest>

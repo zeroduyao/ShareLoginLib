@@ -1,5 +1,7 @@
 package com.liulishuo.share.content;
 
+import com.liulishuo.share.type.ContentType;
+
 import android.os.Parcelable;
 
 /**
@@ -11,7 +13,7 @@ public interface ShareContent extends Parcelable {
     /**
      * @return 分享的方式
      */
-    int getType();
+    @ContentType int getType();
 
     /**
      * 分享的描述信息(摘要)

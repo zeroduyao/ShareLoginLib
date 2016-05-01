@@ -20,15 +20,15 @@ import android.support.annotation.Nullable;
 public class UserInfoManager {
 
     public static void getUserInfo(Context context, @NonNull String accessToken, @NonNull String uid,
-            @Nullable final UserInfoListener listener, LoginType type) {
+            @Nullable final UserInfoListener listener, @LoginType int type) {
         switch (type) {
-            case WEIXIN:
+            case LoginType.WEIXIN:
                 getWeiXinUserInfo(context, accessToken, uid, listener);
                 break;
-            case WEIBO:
+            case LoginType.WEIBO:
                 getWeiBoUserInfo(context, accessToken, uid, listener);
                 break;
-            case QQ:
+            case LoginType.QQ:
                 getQQUserInfo(context, accessToken, uid, listener);
                 break;
         }

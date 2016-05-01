@@ -1,9 +1,13 @@
 package com.liulishuo.share.type;
 
+import android.support.annotation.IntDef;
+
 /**
  * Created by echo on 5/18/15.
  */
-public interface ContentType {
+@IntDef({ContentType.TEXT, ContentType.PIC, ContentType.WEBPAGE, ContentType.MUSIC})
+public @interface ContentType {
+
     /**
      * text
      */
