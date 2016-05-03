@@ -25,11 +25,6 @@ import android.text.TextUtils;
  */
 public class WeiXinLoginManager {
 
-    /**
-     * 判断请求认证时传递的状态码和响应得到的状态码是否相等
-     */
-    private static final String STATE = "kale_is_weixin_login";
-
     private static final String SCOPE = "snsapi_userinfo";
 
     //private static LoginRespListener mRespListener;
@@ -45,7 +40,6 @@ public class WeiXinLoginManager {
 
         SendAuth.Req req = new SendAuth.Req();
         req.scope = SCOPE;
-        req.state = STATE;
         api.sendReq(req); // 这里的请求的回调会在activity中收到，然后通过parseLoginResp方法解析
     }
 

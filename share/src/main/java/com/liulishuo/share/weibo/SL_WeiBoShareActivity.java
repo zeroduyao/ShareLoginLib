@@ -2,12 +2,11 @@ package com.liulishuo.share.weibo;
 
 import com.liulishuo.share.ShareBlock;
 import com.liulishuo.share.ShareManager;
-import com.liulishuo.share.type.ContentType;
 import com.liulishuo.share.content.ShareContent;
+import com.liulishuo.share.type.ContentType;
 import com.sina.weibo.sdk.api.ImageObject;
 import com.sina.weibo.sdk.api.MusicObject;
 import com.sina.weibo.sdk.api.TextObject;
-import com.sina.weibo.sdk.api.VideoObject;
 import com.sina.weibo.sdk.api.WebpageObject;
 import com.sina.weibo.sdk.api.WeiboMultiMessage;
 import com.sina.weibo.sdk.api.share.BaseResponse;
@@ -39,7 +38,7 @@ public class SL_WeiBoShareActivity extends Activity implements IWeiboHandler.Res
             // 防止不保留活动情况下activity被重置后直接进行操作的情况
             // 建立请求体
             SendMultiMessageToWeiboRequest request = new SendMultiMessageToWeiboRequest();
-            request.transaction = buildTransaction("tag");// 用transaction唯一标识一个请求
+            request.transaction = String.valueOf(System.currentTimeMillis());// 用transaction唯一标识一个请求
             ShareContent content = getIntent().getParcelableExtra(ShareManager.KEY_CONTENT);
             request.multiMessage = getShareObject(content);
 
@@ -227,11 +226,11 @@ public class SL_WeiBoShareActivity extends Activity implements IWeiboHandler.Res
         return musicObject;
     }
 
-    /**
+   /* *//**
      * 创建多媒体（视频）消息对象。
      *
      * @return 多媒体（视频）消息对象。
-     */
+     *//*
     private VideoObject getVideoObj(ShareContent shareContent) {
         VideoObject videoObject = new VideoObject();
         videoObject.identify = Utility.generateGUID();
@@ -246,11 +245,11 @@ public class SL_WeiBoShareActivity extends Activity implements IWeiboHandler.Res
         videoObject.duration = 10;
         videoObject.defaultText = shareContent.getSummary(); // 默认文案
         return videoObject;
-    }
+    }*/
 
-    public static String buildTransaction(final String type) {
+    /*public static String buildTransaction(final String type) {
         return (type == null) ? String.valueOf(System.currentTimeMillis())
                 : type + System.currentTimeMillis();
-    }
+    }*/
 
 }

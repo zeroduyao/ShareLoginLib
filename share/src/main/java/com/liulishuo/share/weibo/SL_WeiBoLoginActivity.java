@@ -37,7 +37,7 @@ public class SL_WeiBoLoginActivity extends Activity {
         ssoHandler = initHandler(this);
         if (savedInstanceState == null) {
             // 防止不保留活动情况下activity被重置后直接进行操作的情况
-            doLogin(this, LoginManager.listener);
+            doLogin(LoginManager.listener);
         } else {
             isFirstIn = false;
         }
@@ -64,7 +64,7 @@ public class SL_WeiBoLoginActivity extends Activity {
         }
     }
 
-    private void doLogin(final Activity activity, final LoginManager.LoginListener listener) {
+    private void doLogin(final LoginManager.LoginListener listener) {
         WeiboAuthListener authListener = new WeiboAuthListener() {
             /*
              * 1. SSO 授权时，需要在 onActivityResult 中调用 {@link SsoHandler#authorizeCallBack} 后，
@@ -75,12 +75,9 @@ public class SL_WeiBoLoginActivity extends Activity {
             public void onComplete(Bundle values) {
                 final Oauth2AccessToken accessToken = Oauth2AccessToken.parseAccessToken(values);
                 if (accessToken != null && accessToken.isSessionValid()) {
-                    AccessTokenKeeper.saveAccessToken(activity, accessToken);
                     if (listener != null) {
-                        listener.onSuccess(accessToken.getToken(),
-                                accessToken.getUid(),
-                                accessToken.getExpiresTime() / 1000000,
-                                oAuthData2Json(accessToken));
+                        listener.onSuccess(accessToken.getToken(), accessToken.getUid(), 
+                                accessToken.getExpiresTime() / 1000000, oAuthData2Json(accessToken));
                     }
                 }
             }
@@ -109,13 +106,9 @@ public class SL_WeiBoLoginActivity extends Activity {
             throw new NullPointerException("请通过shareBlock初始化weiboAppId");
         }
 
-        AccessTokenKeeper.clearToken(activity);
-        
-        AuthInfo authInfo = new AuthInfo(activity, appId,
+        return new SsoHandler(activity, new AuthInfo(activity, appId,
                 ShareBlock.getInstance().weiBoRedirectUrl,
-                ShareBlock.getInstance().weiBoScope);
-
-        return new SsoHandler(activity, authInfo);
+                ShareBlock.getInstance().weiBoScope));
     }
 
     private

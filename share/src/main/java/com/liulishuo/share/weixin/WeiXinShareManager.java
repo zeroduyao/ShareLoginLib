@@ -7,7 +7,6 @@ import com.liulishuo.share.type.ContentType;
 import com.liulishuo.share.type.ShareType;
 import com.tencent.mm.sdk.modelbase.BaseResp;
 import com.tencent.mm.sdk.modelmsg.SendMessageToWX;
-import com.tencent.mm.sdk.modelmsg.WXAppExtendObject;
 import com.tencent.mm.sdk.modelmsg.WXImageObject;
 import com.tencent.mm.sdk.modelmsg.WXMediaMessage;
 import com.tencent.mm.sdk.modelmsg.WXMusicObject;
@@ -146,14 +145,6 @@ public class WeiXinShareManager {
         //Str1+"#wechat_music_url="+str2 ;str1是网页地址，str2是音乐地址。
         music.musicUrl = shareContent.getURL() + "#wechat_music_url=" + shareContent.getMusicUrl();
         return music;
-    }
-
-    private IMediaObject getAppObj(ShareContent shareContent) {
-        WXAppExtendObject app = new WXAppExtendObject();
-        // TODO: 2016/2/22  
-       /* Log.d("ddd", "exinfo = " + ((ShareContentApp) shareContent).getAppInfo());
-        app.extInfo = ((ShareContentApp) shareContent).getAppInfo();*/
-        return app;
     }
 
 }

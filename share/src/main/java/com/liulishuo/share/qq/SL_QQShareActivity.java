@@ -30,8 +30,6 @@ import static com.liulishuo.share.ShareBlock.getInstance;
  */
 public class SL_QQShareActivity extends Activity {
 
-    private static final String TAG = "SL_QQShareActivity";
-
     public static final String KEY_TO_FRIEND = "key_to_friend";
 
     private boolean isToFriend;
@@ -112,7 +110,7 @@ public class SL_QQShareActivity extends Activity {
             case ContentType.TEXT:
                 // 纯文字
                 // 文档中说： "本接口支持3种模式，每种模式的参数设置不同"，这三种模式中不包含纯文本
-                Log.e(TAG, "QQ目前不支持分享纯文本信息");
+                Log.e("Share by QQ", "QQ目前不支持分享纯文本信息");
                 finish();
                 bundle = getTextObj();
                 break;
@@ -208,7 +206,7 @@ public class SL_QQShareActivity extends Activity {
         String title = shareContent.getTitle();
         if (title == null) {
             // 如果没title，说明就是分享的纯文字、纯图片
-            Log.e(TAG, "QQ空间目前只支持分享图文信息");
+            Log.e("Share by qq zone", "QQ空间目前只支持分享图文信息");
             finish();
         }
         params.putString(QzoneShare.SHARE_TO_QQ_TITLE, title); // 标题
