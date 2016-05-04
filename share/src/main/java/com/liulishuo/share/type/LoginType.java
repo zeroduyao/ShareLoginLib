@@ -9,7 +9,7 @@ import java.lang.annotation.RetentionPolicy;
  * @author Kale
  * @date 2016/3/30
  */
-@Retention(RetentionPolicy.CLASS)
+@Retention(RetentionPolicy.SOURCE)
 @StringDef({LoginType.WEIXIN, LoginType.WEIBO, LoginType.QQ})
 public @interface LoginType {
 

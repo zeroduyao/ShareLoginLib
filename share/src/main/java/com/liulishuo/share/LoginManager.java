@@ -9,9 +9,10 @@ import android.app.Activity;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.widget.Toast;
 
-import static com.liulishuo.share.type.LoginType.*;
+import static com.liulishuo.share.type.LoginType.QQ;
+import static com.liulishuo.share.type.LoginType.WEIBO;
+import static com.liulishuo.share.type.LoginType.WEIXIN;
 
 /**
  * @author Kale
@@ -27,23 +28,27 @@ public class LoginManager {
         LoginManager.listener = listener;
         switch (type) {
             case WEIXIN:
-                if (!ShareBlock.isWeiXinInstalled(activity)) {
-                    Toast.makeText(activity, "请安装微信哦~", Toast.LENGTH_SHORT).show();
-                    return;
+                if (ShareBlock.isWeiXinInstalled(activity)) {
+                    new WeiXinLoginManager().login(activity.getApplicationContext());
+                } else {
+                    if (listener != null) {
+                        listener.onError("未安装微信");
+                    }
                 }
-                new WeiXinLoginManager().login(activity.getApplicationContext());
                 break;
             case WEIBO:
                 activity.startActivity(new Intent(activity, SL_WeiBoLoginActivity.class));
                 activity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                 break;
             case QQ:
-                if (!ShareBlock.isQQInstalled(activity)) {
-                    Toast.makeText(activity, "请先安装QQ哦~", Toast.LENGTH_SHORT).show();
-                    return;
+                if (ShareBlock.isQQInstalled(activity)) {
+                    activity.startActivity(new Intent(activity, SL_QQLoginActivity.class));
+                    activity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                } else {
+                    if (listener != null) {
+                        listener.onError("未安装QQ");
+                    }
                 }
-                activity.startActivity(new Intent(activity, SL_QQLoginActivity.class));
-                activity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                 break;
         }
     }
