@@ -1,7 +1,7 @@
 package com.liulishuo.share.weibo;
 
-import com.liulishuo.share.ShareBlock;
 import com.liulishuo.share.LoginManager;
+import com.liulishuo.share.ShareBlock;
 import com.sina.weibo.sdk.auth.AuthInfo;
 import com.sina.weibo.sdk.auth.Oauth2AccessToken;
 import com.sina.weibo.sdk.auth.WeiboAuthListener;
@@ -58,7 +58,9 @@ public class SL_WeiBoLoginActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (!isFirstIn) {
+        if (isFirstIn) {
+            isFirstIn = false;
+        } else {
             // 这里处理通过网页登录无回调的问题
             finish();
         }
