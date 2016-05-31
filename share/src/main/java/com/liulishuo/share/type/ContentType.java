@@ -12,24 +12,5 @@ import java.lang.annotation.RetentionPolicy;
 @IntDef({ContentType.TEXT, ContentType.PIC, ContentType.WEBPAGE, ContentType.MUSIC})
 public @interface ContentType {
 
-    /**
-     * text
-     */
-    int TEXT = 1;
-
-    /**
-     * picture
-     */
-    int PIC = 2;
-
-    /**
-     * webPage
-     */
-    int WEBPAGE = 3;
-
-    /**
-     * music
-     */
-    int MUSIC = 4;
-
+    int TEXT = 1, PIC = 2, WEBPAGE = 3, MUSIC = 4;
 }

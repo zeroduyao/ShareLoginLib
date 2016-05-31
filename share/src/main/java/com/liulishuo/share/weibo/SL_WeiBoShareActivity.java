@@ -129,6 +129,9 @@ public class SL_WeiBoShareActivity extends Activity implements IWeiboHandler.Res
 
     private WeiboMultiMessage getShareObject(@NonNull ShareContent shareContent) {
         WeiboMultiMessage weiboMultiMessage = new WeiboMultiMessage();
+        if (shareContent.getSummary() == null) {
+            throw new NullPointerException("share summary is null");
+        }
         switch (shareContent.getType()) {
             case ContentType.TEXT:
                 // 纯文字
@@ -151,8 +154,6 @@ public class SL_WeiBoShareActivity extends Activity implements IWeiboHandler.Res
                 // 音乐
                 weiboMultiMessage.mediaObject = getMusicObj(shareContent);
                 break;
-            default:
-                throw new UnsupportedOperationException("不支持的分享内容");
         }
         if (!weiboMultiMessage.checkArgs()) {
             throw new IllegalArgumentException("分享信息的参数类型不正确");

@@ -52,6 +52,7 @@ public class ShareContentPic implements ShareContent {
         return null;
     }
 
+    @ContentType
     @Override
     public int getType() {
         return ContentType.PIC;

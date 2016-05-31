@@ -122,18 +122,7 @@ import com.liulishuo.share.weixin.WeiXinHandlerActivity;
 public class WXEntryActivity extends WeiXinHandlerActivity {}
 ```
 
-#### 3. 在项目工程的manifest中配置Activity  
-```XML  
-<!-- 处理微信回调的Activity -->
-<activity
-    android:name=".wxapi.WXEntryActivity"
-    android:exported="true"
-    android:screenOrientation="portrait"
-    android:theme="@android:style/Theme.NoDisplay"
-    />  
-```
-
-#### 4. 在使用lib的module中的build.gradle中配置腾讯的key
+#### 3. 在使用lib的module中的build.gradle中配置腾讯的key
 ```JAVA
 defaultConfig {
         applicationId "com.liulishuo.engzo"
