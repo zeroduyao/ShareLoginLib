@@ -46,10 +46,8 @@ public class SL_QQLoginActivity extends Activity {
     }
 
     private void doLogin(Activity activity, String appId, final LoginManager.LoginListener listener) {
-        Tencent tencent = Tencent.createInstance(appId, activity);
-
+        Tencent tencent = Tencent.createInstance(appId, activity.getApplicationContext());
         mUiListener = new IUiListener() {
-
             @Override
             public void onComplete(Object object) {
                 if (listener != null) {
