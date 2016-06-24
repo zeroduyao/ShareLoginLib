@@ -1,4 +1,6 @@
-# ShareLoginLib
+# ShareLoginLib   
+[![](https://jitpack.io/v/tianzhijiexian/ShareLoginLib.svg)](https://jitpack.io/#tianzhijiexian/ShareLoginLib)  
+
 ShareLoginLib likes simple sharesdk or umeng in China . It is a tool to help developers to share their content (image , text or music ) to WeChat,Weibo and QQ.  
 
 ![](./screenshot/logo.png)
@@ -10,31 +12,23 @@ ShareLoginLib likes simple sharesdk or umeng in China . It is a tool to help dev
 #### 1. 在项目中使用第三方SDK功能前进行参数的注册  
 ```java  
 ShareBlock.getInstance()
-              .initAppName("TestAppName")
-              .initSharePicFile(getApplication())
-              .initQQ(OAuthConstant.QQ_APPID, OAuthConstant.QQ_SCOPE)
-              .initWeiXin(OAuthConstant.WEIXIN_APPID, OAuthConstant.WEIXIN_SECRET)
-              .initWeiBo(OAuthConstant.WEIBO_APPID, OAuthConstant.WEIBO_REDIRECT_URL, OAuthConstant.WEIBO_SCOPE);
+              .appName("TestAppName")
+              .picTempFile(getApplication())
+              .qq(OAuthConstant.QQ_APPID, OAuthConstant.QQ_SCOPE)
+              .weiXin(OAuthConstant.WEIXIN_APPID, OAuthConstant.WEIXIN_SECRET)
+              .weiBo(OAuthConstant.WEIBO_APPID, OAuthConstant.WEIBO_REDIRECT_URL, OAuthConstant.WEIBO_SCOPE);
 ```  
 
 #### 2. 进行登录、分享  
 ```JAVA  
 // 登录
 LoginManager.login(this, LoginType.【WeiBo,WeiXin,QQ】, new LoginManager.LoginListener() {
-      @Override
-      public void onSuccess(String accessToken, String uId, long expiresIn, @Nullable String wholeData) {
 
-      }
+      public void onSuccess(String accessToken, String uId, long expiresIn, @Nullable String wholeData) {}
 
-      @Override
-      public void onError(String msg) {
+      public void onError(String msg) {}
 
-      }
-
-      @Override
-      public void onCancel() {
-
-      }
+      public void onCancel() {}
   });
 
 
@@ -42,20 +36,12 @@ LoginManager.login(this, LoginType.【WeiBo,WeiXin,QQ】, new LoginManager.Login
 ShareManager.share(MainActivity.this，ShareType.【xxxx】
         new ShareContentWebpage("title", "hello world!", "http://www.baidu.com", mBitmap),
         new ShareManager.ShareStateListener() {
-                  @Override
-                  public void onSuccess() {
 
-                  }
+                  public void onSuccess() {}
 
-                  @Override
-                  public void onCancel() {
+                  public void onCancel() {}
 
-                  }
-
-                  @Override
-                  public void onError(String msg) {
-
-                  }
+                  public void onError(String msg) {}
               });
 
 ```   

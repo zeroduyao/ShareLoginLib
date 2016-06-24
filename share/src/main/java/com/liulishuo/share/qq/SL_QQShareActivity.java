@@ -2,8 +2,8 @@ package com.liulishuo.share.qq;
 
 import com.liulishuo.share.ShareBlock;
 import com.liulishuo.share.ShareManager;
-import com.liulishuo.share.type.ContentType;
 import com.liulishuo.share.content.ShareContent;
+import com.liulishuo.share.type.ContentType;
 import com.tencent.connect.share.QQShare;
 import com.tencent.connect.share.QzoneShare;
 import com.tencent.tauth.IUiListener;
@@ -17,7 +17,6 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -42,13 +41,13 @@ public class SL_QQShareActivity extends Activity {
         // 无论是否是恢复的activity，都要先初始化监听器，否则开启不保留活动后监听器对象就是null
         uiListener = initListener(ShareManager.listener);
         isToFriend = getIntent().getBooleanExtra(KEY_TO_FRIEND, true);
-        
+
         if (savedInstanceState == null) { // 防止不保留活动情况下activity被重置后直接进行操作的情况
             ShareContent shareContent = getIntent().getParcelableExtra(ShareManager.KEY_CONTENT);
             doShare(shareContent);
         }
     }
-    
+
     /**
      * 解析分享的结果
      */
@@ -62,7 +61,7 @@ public class SL_QQShareActivity extends Activity {
     }
 
     private void doShare(ShareContent shareContent) {
-        String appId = ShareBlock.getInstance().QQAppId;
+        String appId = ShareBlock.getInstance().qqAppId;
         if (TextUtils.isEmpty(appId)) {
             throw new NullPointerException("请通过shareBlock初始化QQAppId");
         }
@@ -227,7 +226,7 @@ public class SL_QQShareActivity extends Activity {
             throw new NullPointerException("请先调用shareBlock的initSharePicFile(Application application)方法");
         }
 
-        String imagePath = getInstance().pathTemp + File.separator + "sharePic_temp.png";
+        String imagePath = getInstance().pathTemp  + "sharePic_temp";
         try {
             FileOutputStream fos = new FileOutputStream(imagePath);
             fos.write(bytes);

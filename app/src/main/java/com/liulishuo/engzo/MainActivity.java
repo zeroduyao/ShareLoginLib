@@ -63,11 +63,11 @@ public class MainActivity extends AppCompatActivity {
         final Bitmap mBitmap = ((BitmapDrawable) getResources().getDrawable(R.drawable.kale)).getBitmap();
 
         ShareBlock.getInstance()
-                .initAppName("TestAppName")
-                .initSharePicFile(getApplication())
-                .initQQ(OAuthConstant.QQ_APPID, OAuthConstant.QQ_SCOPE)
-                .initWeiXin(OAuthConstant.WEIXIN_APPID, OAuthConstant.WEIXIN_SECRET)
-                .initWeiBo(OAuthConstant.WEIBO_APPID, OAuthConstant.WEIBO_REDIRECT_URL, OAuthConstant.WEIBO_SCOPE);
+                .appName("TestAppName")
+                .picTempFile(getApplication())
+                .qq(OAuthConstant.QQ_APPID, OAuthConstant.QQ_SCOPE)
+                .weiXin(OAuthConstant.WEIXIN_APPID, OAuthConstant.WEIXIN_SECRET)
+                .weiBo(OAuthConstant.WEIBO_APPID, OAuthConstant.WEIBO_REDIRECT_URL, OAuthConstant.WEIBO_SCOPE);
 
         RadioGroup shareType = (RadioGroup) findViewById(R.id.share_type_rg);
         shareType.check(R.id.rich_text);

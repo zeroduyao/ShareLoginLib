@@ -25,7 +25,7 @@ public class SL_QQLoginActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        String appId = ShareBlock.getInstance().QQAppId;
+        String appId = ShareBlock.getInstance().qqAppId;
         if (TextUtils.isEmpty(appId)) {
             throw new NullPointerException("请通过shareBlock初始化appId");
         }
@@ -79,7 +79,7 @@ public class SL_QQLoginActivity extends Activity {
         };
 
         if (!tencent.isSessionValid()) {
-            tencent.login(activity, ShareBlock.getInstance().QQScope, mUiListener);
+            tencent.login(activity, ShareBlock.getInstance().qqScope, mUiListener);
         } else {
             tencent.logout(activity);
         }
