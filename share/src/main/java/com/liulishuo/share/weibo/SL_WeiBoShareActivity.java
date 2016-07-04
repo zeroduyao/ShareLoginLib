@@ -40,6 +40,9 @@ public class SL_WeiBoShareActivity extends Activity implements IWeiboHandler.Res
             SendMultiMessageToWeiboRequest request = new SendMultiMessageToWeiboRequest();
             request.transaction = String.valueOf(System.currentTimeMillis());// 用transaction唯一标识一个请求
             ShareContent content = getIntent().getParcelableExtra(ShareManager.KEY_CONTENT);
+            if (content == null) {
+                throw new NullPointerException("shareContent is null，intent = " + getIntent());
+            }
             request.multiMessage = getShareObject(content);
 
             doShare(this, request);
