@@ -128,6 +128,10 @@ public class SL_WeiBoShareActivity extends Activity implements IWeiboHandler.Res
     // --------------------------
 
     private WeiboMultiMessage getShareObject(@NonNull ShareContent shareContent) {
+        if (shareContent == null) {
+            throw new NullPointerException("shareContent is null!!!!!!!!!");
+        }
+        
         WeiboMultiMessage weiboMultiMessage = new WeiboMultiMessage();
         switch (shareContent.getType()) {
             case ContentType.TEXT:

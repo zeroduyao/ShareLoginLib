@@ -21,8 +21,6 @@ import java.util.Locale;
  */
 public class ShareBlock {
 
-    private static final String TAG = "ShareBlock";
-
     private static ShareBlock mInstance;
 
     public static ShareBlock getInstance() {
@@ -61,7 +59,8 @@ public class ShareBlock {
     }
 
     /**
-     * 初始化临时文件地址
+     * 初始化临时文件地址，这里仅仅是为了qq分享用的。
+     * 这里必须用外部存储器，因为qq会读取这个目录下的图片文件
      */
     public ShareBlock picTempFile(Application application) {
         if (TextUtils.isEmpty(pathTemp)) {
@@ -80,43 +79,6 @@ public class ShareBlock {
         this.debug = debug;
         return this;
     }
-
-    /**
-     * 初始化临时文件地址
-     * 优先取缓存文件，然后才取外部缓存空间
-     *
-     * 内部缓存目录：http://stackoverflow.com/a/32752861/400717
-     * 可能为空，参考下面两个链接
-     * https://groups.google.com/d/msg/android-developers/-694j87eXVU/YYs4b6kextwJ 和
-     * http://stackoverflow.com/q/4441849/400717.
-     */
-    /*public ShareBlock picTempFile(Application application) {
-        if (TextUtils.isEmpty(pathTemp)) {
-            File baseDir = application.getApplicationContext().getCacheDir();
-//            baseDir = null;
-            if (baseDir != null) {
-                pathTemp = baseDir + File.separator;
-
-                if (debug) {
-                    Log.d(TAG, "cache dir is " + pathTemp);
-                }
-            } else {
-                if (android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)) {
-                    pathTemp = application.getExternalCacheDir() + File.separator;
-
-                    if (debug) {
-                        Log.d(TAG, "external cache dir is " + pathTemp);
-                    }
-                }
-            }
-
-            File dir = new File(pathTemp);
-            if (!dir.exists()) {
-                dir.mkdirs();
-            }
-        }
-        return this;
-    }*/
 
     public ShareBlock weiXin(@NonNull String weiXinAppId, @NonNull String weiXinSecret) {
         this.weiXinAppId = weiXinAppId;
