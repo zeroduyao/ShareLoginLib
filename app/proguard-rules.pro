@@ -1,6 +1,6 @@
 # Add project specific ProGuard rules here.
 # By default, the flags in this file are appended to flags specified
-# in /Users/echo/Documents/DevelopTools/sdk/tools/proguard/proguard-android.txt
+# in H:\Android\sdk/tools/proguard/proguard-android.txt
 # You can edit the include path and order by changing the proguardFiles
 # directive in build.gradle.
 #
@@ -16,10 +16,12 @@
 #   public *;
 #}
 # ————————  微信 start    ————————
--keep class com.tencent.mm.sdk.** {
-   *;
-}
+-keep class com.tencent.mm.sdk.** { *;}
 # ————————  微信 end    ————————
+
+# ————————  微博 start    ————————   
+-keep class com.sina.weibo.sdk.api.* { *; }
+# ————————  微微博 end    ————————
 
 # ————————  qq start    ————————
 -keep class com.tencent.open.TDialog$*

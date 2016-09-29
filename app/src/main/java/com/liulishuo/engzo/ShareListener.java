@@ -1,5 +1,6 @@
 package com.liulishuo.engzo;
 
+
 import com.liulishuo.share.ShareManager;
 
 import android.content.Context;
@@ -10,13 +11,13 @@ import android.widget.Toast;
  * @author Jack Tony
  * @date 2015/10/23
  */
-public class MyShareListener implements ShareManager.ShareStateListener {
+class ShareListener implements ShareManager.ShareStateListener {
 
     private String TAG = "ShareListener";
 
     private Context mContext;
 
-    public MyShareListener(Context context) {
+    ShareListener(Context context) {
         mContext = context;
     }
 
@@ -28,7 +29,7 @@ public class MyShareListener implements ShareManager.ShareStateListener {
 
     @Override
     public void onError(String msg) {
-        Log.d(TAG, "分享失败，出错信息：" + msg);
+        Log.e(TAG, "分享失败，出错信息：" + msg);
         Toast.makeText(mContext, "分享失败，出错信息：" + msg, Toast.LENGTH_SHORT).show();
     }
 

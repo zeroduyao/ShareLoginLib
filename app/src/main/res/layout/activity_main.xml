@@ -1,4 +1,4 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -7,135 +7,153 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context=".MainActivity"
     >
 
-    <Button
-        android:id="@+id/微信登录"
-        android:layout_width="180dp"
-        android:layout_height="40dp"
-        android:text="微信登录"
-        android:onClick="onClick"
+    <ImageView
+        android:id="@+id/temp_pic_iv"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_gravity="center|right"
+        android:contentDescription="default pic"
+        tools:background="#aaaaaa"
         />
-
-    <Button
-        android:id="@+id/分享给微信好友"
-        android:layout_width="180dp"
-        android:layout_height="40dp"
-        android:text="分享到微信"
-        android:onClick="onClick"
-        />
-
-    <Button
-        android:id="@+id/分享到微信朋友圈"
-        android:layout_width="180dp"
-        android:layout_height="40dp"
-        android:text="分享到微信朋友圈"
-        android:onClick="onClick"
-        />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="-----------------------------------------------"
-        />
-
-    <Button
-        android:id="@+id/微博登录"
-        android:layout_width="180dp"
-        android:layout_height="40dp"
-        android:text="微博登录"
-        android:onClick="onClick"
-        />
-
-    <Button
-        android:id="@+id/分享到微博"
-        android:layout_width="180dp"
-        android:layout_height="40dp"
-        android:text="分享到微博"
-        android:onClick="onClick"
-        />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="-----------------------------------------------"
-        />
-
-    <Button
-        android:id="@+id/QQ登录"
-        android:layout_width="180dp"
-        android:layout_height="40dp"
-        android:text="QQ登录"
-        android:onClick="onClick"
-        />
-
-    <Button
-        android:id="@+id/分享到QQ空间"
-        android:layout_width="180dp"
-        android:layout_height="40dp"
-        android:text="分享到QQ空间"
-        android:onClick="onClick"
-        />
-
-    <Button
-        android:id="@+id/分享给QQ好友"
-        android:layout_width="180dp"
-        android:layout_height="40dp"
-        android:text="分享给QQ好友"
-        android:onClick="onClick"
-        />
-
-
-    <RadioGroup
-        android:id="@+id/share_type_rg"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:orientation="horizontal"
-        >
-
-        <RadioButton
-            android:id="@+id/rich_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="图文"
-            />
-
-        <RadioButton
-            android:id="@+id/only_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="仅文字"
-            />
-
-        <RadioButton
-            android:id="@+id/only_image"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="仅图片"
-            />
-    </RadioGroup>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         >
 
-        <TextView
-            android:id="@+id/userinfo_tv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            tools:text="name = jack"
+        <Button
+            android:id="@+id/微信登录"
+            android:layout_width="180dp"
+            android:layout_height="40dp"
+            android:onClick="onClick"
+            android:text="微信登录"
             />
 
-        <ImageView
-            android:id="@+id/user_img_iv"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+        <Button
+            android:id="@+id/分享给微信好友"
+            android:layout_width="180dp"
+            android:layout_height="40dp"
+            android:onClick="onClick"
+            android:text="分享到微信"
             />
+
+        <Button
+            android:id="@+id/分享到微信朋友圈"
+            android:layout_width="180dp"
+            android:layout_height="40dp"
+            android:onClick="onClick"
+            android:text="分享到微信朋友圈"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="-----------------------------------------------"
+            />
+
+        <Button
+            android:id="@+id/微博登录"
+            android:layout_width="180dp"
+            android:layout_height="40dp"
+            android:onClick="onClick"
+            android:text="微博登录"
+            />
+
+        <Button
+            android:id="@+id/分享到微博"
+            android:layout_width="180dp"
+            android:layout_height="40dp"
+            android:onClick="onClick"
+            android:text="分享到微博"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="-----------------------------------------------"
+            />
+
+        <Button
+            android:id="@+id/QQ登录"
+            android:layout_width="180dp"
+            android:layout_height="40dp"
+            android:onClick="onClick"
+            android:text="QQ登录"
+            />
+
+        <Button
+            android:id="@+id/分享到QQ空间"
+            android:layout_width="180dp"
+            android:layout_height="40dp"
+            android:onClick="onClick"
+            android:text="分享到QQ空间"
+            />
+
+        <Button
+            android:id="@+id/分享给QQ好友"
+            android:layout_width="180dp"
+            android:layout_height="40dp"
+            android:onClick="onClick"
+            android:text="分享给QQ好友"
+            />
+
+
+        <RadioGroup
+            android:id="@+id/share_type_rg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal"
+            >
+
+            <RadioButton
+                android:id="@+id/rich_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="图文"
+                />
+
+            <RadioButton
+                android:id="@+id/only_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="仅文字"
+                />
+
+            <RadioButton
+                android:id="@+id/only_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="仅图片"
+                />
+        </RadioGroup>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            >
+
+            <TextView
+                android:id="@+id/user_info_tv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                tools:text="name = jack"
+                />
+
+            <ImageView
+                android:id="@+id/user_pic_iv"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                tools:background="#aaaaaa"
+                />
+
+        </LinearLayout>
 
     </LinearLayout>
 
-</LinearLayout>
+</FrameLayout>

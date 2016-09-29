@@ -26,12 +26,16 @@ import static com.liulishuo.share.type.ShareType.WEIXIN_FRIEND_ZONE;
  */
 public class ShareManager {
 
-    public static final String KEY_CONTENT = "key_content";
+    public static final String KEY_CONTENT = "KEY_CONTENT";
 
     public static ShareStateListener listener;
 
     public static void share(@NonNull Activity activity, @ShareType String shareType,
             @NonNull ShareContent shareContent, @Nullable final ShareStateListener listener) {
+
+        if (shareContent == null) {
+            throw new NullPointerException("ShareContent is null!!!");
+        }
 
         ShareManager.listener = listener;
         switch (shareType) {
@@ -39,10 +43,8 @@ public class ShareManager {
             case WEIXIN_FRIEND_ZONE:
                 if (ShareBlock.isWeiXinInstalled(activity)) {
                     new WeiXinShareManager().sendShareMsg(activity.getApplicationContext(), shareContent, shareType);
-                } else {
-                    if (listener != null) {
-                        listener.onError("未安装微信");
-                    }
+                } else if (listener != null) {
+                    listener.onError("未安装微信");
                 }
                 break;
             case WEIBO_TIME_LINE:
@@ -50,10 +52,8 @@ public class ShareManager {
                     activity.startActivity(new Intent(activity, SL_WeiBoShareActivity.class)
                             .putExtra(KEY_CONTENT, shareContent));
                     activity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-                } else {
-                    if (listener != null) {
-                        listener.onError("未安装微博");
-                    }
+                } else if (listener != null) {
+                    listener.onError("未安装微博");
                 }
                 break;
             case QQ_FRIEND:
@@ -63,10 +63,8 @@ public class ShareManager {
                             .putExtra(SL_QQShareActivity.KEY_TO_FRIEND, shareType.equals(QQ_FRIEND))
                             .putExtra(KEY_CONTENT, shareContent));
                     activity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-                } else {
-                    if (listener != null) {
-                        listener.onError("未安装QQ");
-                    }
+                } else if (listener != null) {
+                    listener.onError("未安装QQ");
                 }
                 break;
         }

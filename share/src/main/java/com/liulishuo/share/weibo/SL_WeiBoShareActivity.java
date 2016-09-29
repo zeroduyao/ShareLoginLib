@@ -41,7 +41,7 @@ public class SL_WeiBoShareActivity extends Activity implements IWeiboHandler.Res
             request.transaction = String.valueOf(System.currentTimeMillis());// 用transaction唯一标识一个请求
             ShareContent content = getIntent().getParcelableExtra(ShareManager.KEY_CONTENT);
             if (content == null) {
-                throw new NullPointerException("shareContent is null，intent = " + getIntent());
+                throw new NullPointerException("ShareContent is null，intent = " + getIntent());
             }
             request.multiMessage = getShareObject(content);
 
@@ -131,10 +131,6 @@ public class SL_WeiBoShareActivity extends Activity implements IWeiboHandler.Res
     // --------------------------
 
     private WeiboMultiMessage getShareObject(@NonNull ShareContent shareContent) {
-        if (shareContent == null) {
-            throw new NullPointerException("shareContent is null!!!!!!!!!");
-        }
-        
         WeiboMultiMessage weiboMultiMessage = new WeiboMultiMessage();
         switch (shareContent.getType()) {
             case ContentType.TEXT:

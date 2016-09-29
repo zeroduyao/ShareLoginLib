@@ -18,6 +18,10 @@ import java.util.Locale;
 
 /**
  * Created by echo on 5/18/15.
+ *
+ * QQ sdk:
+ *
+ * @see :"http://wiki.open.qq.com/wiki/mobile/SDK%E4%B8%8B%E8%BD%BD"
  */
 public class ShareBlock {
 
@@ -33,7 +37,7 @@ public class ShareBlock {
     private ShareBlock() {
     }
 
-    public boolean debug = false;
+    private boolean debug = false;
 
     public String appName;
 
