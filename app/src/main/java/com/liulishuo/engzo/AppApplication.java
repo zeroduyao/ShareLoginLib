@@ -28,22 +28,27 @@ public class AppApplication extends Application {
         Log.d(TAG, "onCreate: weibo:" + ShareBlock.isWeiBoInstalled(this));
         Log.d(TAG, "onCreate: qq:" + ShareBlock.isQQInstalled(this));
 
-        ShareBlock.getInstance()
+        ShareBlock.Config config = ShareBlock.Config.getInstance()
                 .debug(true)
-                .appName("测试应用")
-                .picTempFile(this)
+                .appName("test app")
+                .picTempFile(null)
                 .qq(QQ_APPID, QQ_SCOPE)
                 .weiXin(WEIXIN_APPID, WEIXIN_SECRET)
                 .weiBo(WEIBO_APPID, WEIBO_REDIRECT_URL, WEIBO_SCOPE);
+
+        ShareBlock.init(this, config);
     }
 
+    /**
+     * 初始化一些常量
+     */
     protected void initConstant() {
-        QQ_APPID =              "xxxxxxxxxxxx";
-        QQ_SCOPE =              "xxxxxxxxxxxx";
-        WEIBO_APPID =           "xxxxxxxxxxxx";
-        WEIBO_REDIRECT_URL =    "xxxxxxxxxxxx";
-        WEIXIN_APPID =          "xxxxxxxxxxxx";
-        WEIXIN_SECRET =         "xxxxxxxxxxxx";
-        WEIBO_SCOPE =           "xxxxxxxxxxxx";
+        QQ_APPID = "xxxxxxxxxxxx";
+        QQ_SCOPE = "xxxxxxxxxxxx";
+        WEIBO_APPID = "xxxxxxxxxxxx";
+        WEIBO_REDIRECT_URL = "xxxxxxxxxxxx";
+        WEIXIN_APPID = "xxxxxxxxxxxx";
+        WEIXIN_SECRET = "xxxxxxxxxxxx";
+        WEIBO_SCOPE = "xxxxxxxxxxxx";
     }
 }

@@ -14,14 +14,13 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-
-import static com.liulishuo.share.ShareBlock.getInstance;
 
 /**
  * @author Jack Tony
@@ -40,10 +39,11 @@ public class SL_QQShareActivity extends Activity {
         super.onCreate(savedInstanceState);
         // 无论是否是恢复的activity，都要先初始化监听器，否则开启不保留活动后监听器对象就是null
         uiListener = initListener(ShareManager.listener);
-        isToFriend = getIntent().getBooleanExtra(KEY_TO_FRIEND, true);
+        Intent i = getIntent();
+        isToFriend = i.getBooleanExtra(KEY_TO_FRIEND, true);
 
         if (savedInstanceState == null) { // 防止不保留活动情况下activity被重置后直接进行操作的情况
-            ShareContent shareContent = getIntent().getParcelableExtra(ShareManager.KEY_CONTENT);
+            ShareContent shareContent = (ShareContent) i.getSerializableExtra(ShareManager.KEY_CONTENT);
             doShare(shareContent);
         }
     }
@@ -61,7 +61,7 @@ public class SL_QQShareActivity extends Activity {
     }
 
     private void doShare(ShareContent shareContent) {
-        String appId = ShareBlock.getInstance().qqAppId;
+        String appId = ShareBlock.Config.qqAppId;
         if (TextUtils.isEmpty(appId)) {
             throw new NullPointerException("请通过shareBlock初始化QQAppId");
         }
@@ -96,6 +96,7 @@ public class SL_QQShareActivity extends Activity {
             public void onError(UiError e) {
                 if (listener != null) {
                     listener.onError(e.errorCode + " - " + e.errorMessage + " - " + e.errorDetail);
+                    finish();
                 }
             }
         };
@@ -109,7 +110,7 @@ public class SL_QQShareActivity extends Activity {
             case ContentType.TEXT:
                 // 纯文字
                 // 文档中说： "本接口支持3种模式，每种模式的参数设置不同"，这三种模式中不包含纯文本
-                Log.e("Share by QQ", "QQ目前不支持分享纯文本信息");
+                Log.e("Share by QQ", "目前不支持分享纯文本信息给QQ好友");
                 finish();
                 bundle = getTextObj();
                 break;
@@ -151,10 +152,16 @@ public class SL_QQShareActivity extends Activity {
         params.putString(QQShare.SHARE_TO_QQ_TITLE, shareContent.getTitle()); // 标题
         params.putString(QQShare.SHARE_TO_QQ_SUMMARY, shareContent.getSummary()); // 描述
         params.putString(QQShare.SHARE_TO_QQ_TARGET_URL, shareContent.getURL()); // 这条分享消息被好友点击后的跳转URL
-        if (shareContent.getImageBmpBytes() != null) {
-            params.putString(QQShare.SHARE_TO_QQ_IMAGE_URL, saveByteArr(shareContent.getImageBmpBytes())); // 分享图片的URL或者本地路径 (可选)
+
+        // 如果是分享纯图片，那么就不多余传递图片url
+        if (!params.containsKey(QQShare.SHARE_TO_QQ_IMAGE_LOCAL_URL)) {
+            String uri = getImageUri(shareContent, false);
+            if (uri != null) {
+                params.putString(QQShare.SHARE_TO_QQ_IMAGE_URL, uri); // 分享图片的URL或者本地路径 (可选)
+            }
         }
-        params.putString(QQShare.SHARE_TO_QQ_APP_NAME, ShareBlock.getInstance().appName); // 手Q客户端顶部，替换“返回”按钮文字，如果为空，用返回代替 (可选)
+
+        params.putString(QQShare.SHARE_TO_QQ_APP_NAME, ShareBlock.Config.appName); // 手Q客户端顶部，替换“返回”按钮文字，如果为空，用返回代替 (可选)
         return params;
     }
 
@@ -167,7 +174,10 @@ public class SL_QQShareActivity extends Activity {
     private Bundle getImageObj(ShareContent shareContent) {
         final Bundle params = new Bundle();
         params.putInt(QQShare.SHARE_TO_QQ_KEY_TYPE, QQShare.SHARE_TO_QQ_TYPE_IMAGE); // 标识分享的是纯图片 (必填)
-        params.putString(QQShare.SHARE_TO_QQ_IMAGE_LOCAL_URL, saveByteArr(shareContent.getImageBmpBytes())); // 信息中的图片 (必填)
+        String uri = getImageUri(shareContent, true);
+        if (uri != null) {
+            params.putString(QQShare.SHARE_TO_QQ_IMAGE_LOCAL_URL, uri); // 信息中的图片 (必填)
+        }
         params.putInt(QQShare.SHARE_TO_QQ_EXT_INT, QQShare.SHARE_TO_QQ_FLAG_QZONE_AUTO_OPEN); // (可选)
         return params;
     }
@@ -205,7 +215,7 @@ public class SL_QQShareActivity extends Activity {
         String title = shareContent.getTitle();
         if (title == null) {
             // 如果没title，说明就是分享的纯文字、纯图片
-            Log.e("Share by qq zone", "QQ空间目前只支持分享图文信息");
+            Log.e("Share by qq zone", "QQ空间目前只支持分享图文信息，title is null");
             finish();
         }
         params.putString(QzoneShare.SHARE_TO_QQ_TITLE, title); // 标题
@@ -213,27 +223,47 @@ public class SL_QQShareActivity extends Activity {
         params.putString(QzoneShare.SHARE_TO_QQ_TARGET_URL, shareContent.getURL()); // 点击后跳转的url
 
         // 分享的图片, 以ArrayList<String>的类型传入，以便支持多张图片 （注：图片最多支持9张图片，多余的图片会被丢弃）。
-        if (shareContent.getImageBmpBytes() != null) {
-            ArrayList<String> imageUrls = new ArrayList<>(); // 图片的ArrayList
-            imageUrls.add(saveByteArr(shareContent.getImageBmpBytes()));
-            params.putStringArrayList(QzoneShare.SHARE_TO_QQ_IMAGE_URL, imageUrls);
+        String uri = getImageUri(shareContent, false);
+        if (uri != null) {
+            ArrayList<String> uris = new ArrayList<>(); // 图片的ArrayList
+            uris.add(uri);
+            params.putStringArrayList(QzoneShare.SHARE_TO_QQ_IMAGE_URL, uris);
         }
         return params;
     }
 
-    private String saveByteArr(@NonNull byte[] bytes) {
-        if (getInstance().pathTemp == null) {
-            throw new NullPointerException("请先调用shareBlock的initSharePicFile(Application application)方法");
+    @Nullable
+    private String getImageUri(@NonNull ShareContent content, boolean forceUseLocal) {
+        String url = content.getImagePicUrl();
+        String path = ShareBlock.Config.pathTemp;
+        byte[] bytes = content.getImageBmpBytes();
+
+        if (forceUseLocal) {
+            url = null;
         }
 
-        String imagePath = getInstance().pathTemp  + "sharePic_temp";
-        try {
-            FileOutputStream fos = new FileOutputStream(imagePath);
-            fos.write(bytes);
-            fos.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (!TextUtils.isEmpty(url)) {
+            if (url.startsWith("https")) {
+                return null;
+            } else if (url.startsWith("http")) {
+                return url;
+            } else {
+                return null;
+            }
+        } else if (!TextUtils.isEmpty(path) && bytes != null) {
+            String imagePath = path + "sharePic_temp";
+            try {
+                FileOutputStream fos = new FileOutputStream(imagePath);
+                fos.write(bytes);
+                fos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+                return null;
+            }
+            return imagePath;
+        } else {
+            return null;
         }
-        return imagePath;
     }
+
 }

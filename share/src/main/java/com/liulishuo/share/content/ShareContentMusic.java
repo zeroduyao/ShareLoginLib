@@ -3,7 +3,6 @@ package com.liulishuo.share.content;
 import com.liulishuo.share.type.ContentType;
 
 import android.graphics.Bitmap;
-import android.os.Parcel;
 
 /**
  * Created by echo on 5/18/15.
@@ -20,8 +19,10 @@ class ShareContentMusic extends ShareContentWebPage {
      * @param imageBmp 分享内容中的bitmap对象
      * @param musicUrl 音乐的url
      */
-    public ShareContentMusic(String title, String summary, String url, Bitmap imageBmp, String musicUrl) {
-        super(title, summary, url, imageBmp);
+    public ShareContentMusic(String title, String summary, String url, 
+            Bitmap imageBmp, String imageUrl, String musicUrl) {
+        
+        super(title, summary, url, imageBmp, imageUrl);
         this.musicUrl = musicUrl;
     }
 
@@ -35,24 +36,4 @@ class ShareContentMusic extends ShareContentWebPage {
         return ContentType.MUSIC;
     }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        super.writeToParcel(dest, flags);
-        dest.writeString(this.musicUrl);
-    }
-
-    protected ShareContentMusic(Parcel in) {
-        super(in);
-        this.musicUrl = in.readString();
-    }
-
-    public static final Creator<ShareContentMusic> CREATOR = new Creator<ShareContentMusic>() {
-        public ShareContentMusic createFromParcel(Parcel source) {
-            return new ShareContentMusic(source);
-        }
-
-        public ShareContentMusic[] newArray(int size) {
-            return new ShareContentMusic[size];
-        }
-    };
 }

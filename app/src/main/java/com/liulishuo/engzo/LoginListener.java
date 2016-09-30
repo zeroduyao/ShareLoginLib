@@ -1,6 +1,6 @@
 package com.liulishuo.engzo;
 
-import com.liulishuo.share.AuthUserInfo;
+import com.liulishuo.share.bean.AuthUserInfo;
 import com.liulishuo.share.LoginManager;
 import com.liulishuo.share.UserInfoManager;
 import com.liulishuo.share.type.LoginType;
@@ -58,12 +58,12 @@ class LoginListener implements LoginManager.LoginListener {
                         + " sex = " + userInfo.sex + "\n"
                         + " id = " + userInfo.userId;
 
-                activity.onGotUserInfo1(info, userInfo.headImgUrl);
+                activity.onGotUserInfo(info, userInfo.headImgUrl);
             }
 
             @Override
             public void onError(String msg) {
-                activity.onGotUserInfo1(" 出错了！\n" + msg, null);
+                activity.onGotUserInfo(" 出错了！\n" + msg, null);
             }
         });
     }

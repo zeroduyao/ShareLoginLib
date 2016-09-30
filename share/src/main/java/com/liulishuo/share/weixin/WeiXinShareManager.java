@@ -28,7 +28,7 @@ public class WeiXinShareManager {
 
     public void sendShareMsg(@NonNull Context context, @NonNull ShareContent shareContent,
             @ShareType String shareType) {
-        String weChatAppId = ShareBlock.getInstance().weiXinAppId;
+        String weChatAppId = ShareBlock.Config.weiXinAppId;
         if (TextUtils.isEmpty(weChatAppId)) {
             throw new NullPointerException("请通过shareBlock初始化WeChatAppId");
         }

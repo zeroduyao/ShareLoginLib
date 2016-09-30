@@ -3,7 +3,6 @@ package com.liulishuo.share.content;
 import com.liulishuo.share.type.ContentType;
 
 import android.graphics.Bitmap;
-import android.os.Parcel;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -15,15 +14,26 @@ import java.io.ByteArrayOutputStream;
  */
 public class ShareContentPic implements ShareContent {
 
+    /**
+     * 图片的byte数组
+     */
     protected byte[] bitmapBytes;
 
     /**
-     * @param bitmap 分享的bitmap
+     * 图片的url
      */
-    public ShareContentPic(@Nullable Bitmap bitmap) {
+    protected String imageUrl;
+
+    /**
+     * @param bitmap      如果需要分享图片，则必传
+     * @param imagePicUrl 分享图片的url，能传则传，仅供QQ分享使用
+     *                    目前不支持https的图片！
+     */
+    public ShareContentPic(@Nullable Bitmap bitmap, @Nullable String imagePicUrl) {
         if (bitmap != null) {
             this.bitmapBytes = getThumbImageByteArr(bitmap);
         }
+        this.imageUrl = imagePicUrl;
     }
 
     @Override
@@ -46,6 +56,11 @@ public class ShareContentPic implements ShareContent {
         return bitmapBytes;
     }
 
+    @Override
+    public String getImagePicUrl() {
+        return imageUrl;
+    }
+
 
     @Override
     public String getMusicUrl() {
@@ -61,31 +76,6 @@ public class ShareContentPic implements ShareContent {
     public void setBitmap(@NonNull Bitmap bitmap) {
         this.bitmapBytes = getThumbImageByteArr(bitmap);
     }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeByteArray(this.bitmapBytes);
-    }
-
-    protected ShareContentPic(Parcel in) {
-        this.bitmapBytes = in.createByteArray();
-    }
-
-    public static final Creator<ShareContentPic> CREATOR = new Creator<ShareContentPic>() {
-        public ShareContentPic createFromParcel(Parcel source) {
-            return new ShareContentPic(source);
-        }
-
-        public ShareContentPic[] newArray(int size) {
-            return new ShareContentPic[size];
-        }
-    };
-
 
     private
     @Nullable

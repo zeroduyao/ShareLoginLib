@@ -5,7 +5,7 @@ android {
     buildToolsVersion "24.0.2"
     
     defaultConfig {
-        applicationId "com.liulishuo.engzo"
+        applicationId "com"
         minSdkVersion 14
         targetSdkVersion 24
         versionCode 1
@@ -35,21 +35,23 @@ android {
             shrinkResources false // 是否去除无效的资源文件
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
+            applicationIdSuffix '.liulishuo.engzo'
+        }
+        debug{
+            applicationIdSuffix '.liulishuo.engzo'
+        }
+        
+        signed.initWith(buildTypes.release)
+        signed{
+            applicationIdSuffix PACKAGE_NAME_SUFFIX
         }
     }
 
-    productFlavors {
-        signed {
-            // 换成自己的包名
-            applicationId PACKAGE_NAME
-        }
-        demo{}
-    }
 }
 
 dependencies {
     compile project(':share')
-    
+
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.android.support:appcompat-v7:24.2.1'
 

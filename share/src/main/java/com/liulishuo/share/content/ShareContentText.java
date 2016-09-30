@@ -2,7 +2,6 @@ package com.liulishuo.share.content;
 
 import com.liulishuo.share.type.ContentType;
 
-import android.os.Parcel;
 import android.support.annotation.NonNull;
 
 /**
@@ -42,6 +41,11 @@ public class ShareContentText implements ShareContent {
     }
 
     @Override
+    public String getImagePicUrl() {
+        return null;
+    }
+
+    @Override
     public String getMusicUrl() {
         return null;
     }
@@ -51,27 +55,4 @@ public class ShareContentText implements ShareContent {
         return ContentType.TEXT;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.summary);
-    }
-
-    protected ShareContentText(Parcel in) {
-        this.summary = in.readString();
-    }
-
-    public static final Creator<ShareContentText> CREATOR = new Creator<ShareContentText>() {
-        public ShareContentText createFromParcel(Parcel source) {
-            return new ShareContentText(source);
-        }
-
-        public ShareContentText[] newArray(int size) {
-            return new ShareContentText[size];
-        }
-    };
 }

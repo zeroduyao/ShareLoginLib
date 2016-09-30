@@ -2,13 +2,13 @@ package com.liulishuo.share.content;
 
 import com.liulishuo.share.type.ContentType;
 
-import android.os.Parcelable;
+import java.io.Serializable;
 
 /**
  * Created by echo on 5/18/15.
  */
 
-public interface ShareContent extends Parcelable {
+public interface ShareContent extends Serializable {
 
     /**
      * @return 分享的方式
@@ -34,6 +34,11 @@ public interface ShareContent extends Parcelable {
      * 分享的图片
      */
     byte[] getImageBmpBytes();
+
+    /**
+     * 分享的图片url
+     */
+    String getImagePicUrl();
 
     /**
      * 音频url

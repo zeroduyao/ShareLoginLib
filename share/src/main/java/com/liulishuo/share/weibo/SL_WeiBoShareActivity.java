@@ -39,7 +39,7 @@ public class SL_WeiBoShareActivity extends Activity implements IWeiboHandler.Res
             // 建立请求体
             SendMultiMessageToWeiboRequest request = new SendMultiMessageToWeiboRequest();
             request.transaction = String.valueOf(System.currentTimeMillis());// 用transaction唯一标识一个请求
-            ShareContent content = getIntent().getParcelableExtra(ShareManager.KEY_CONTENT);
+            ShareContent content = (ShareContent) getIntent().getSerializableExtra(ShareManager.KEY_CONTENT);
             if (content == null) {
                 throw new NullPointerException("ShareContent is null，intent = " + getIntent());
             }
@@ -54,7 +54,7 @@ public class SL_WeiBoShareActivity extends Activity implements IWeiboHandler.Res
              * 失败返回 false，不调用上述回调
              */
             IWeiboShareAPI API = WeiboShareSDK.createWeiboAPI(getApplicationContext(),
-                    ShareBlock.getInstance().weiBoAppId);
+                    ShareBlock.Config.weiBoAppId);
             API.handleWeiboResponse(getIntent(), this);
         }
     }
@@ -82,7 +82,7 @@ public class SL_WeiBoShareActivity extends Activity implements IWeiboHandler.Res
          * 来接收微博客户端返回的数据；执行成功，返回 true，并调用
          * {@link IWeiboHandler.Response#onResponse}；失败返回 false，不调用上述回调
          */
-        IWeiboShareAPI API = WeiboShareSDK.createWeiboAPI(getApplicationContext(), ShareBlock.getInstance().weiBoAppId);
+        IWeiboShareAPI API = WeiboShareSDK.createWeiboAPI(getApplicationContext(), ShareBlock.Config.weiBoAppId);
         API.handleWeiboResponse(intent, this); // 当前应用唤起微博分享后，返回当前应用
     }
 
@@ -92,7 +92,7 @@ public class SL_WeiBoShareActivity extends Activity implements IWeiboHandler.Res
     }
 
     private void doShare(Activity activity, SendMultiMessageToWeiboRequest request) {
-        String appId = ShareBlock.getInstance().weiBoAppId;
+        String appId = ShareBlock.Config.weiBoAppId;
         if (TextUtils.isEmpty(appId)) {
             throw new NullPointerException("请通过shareBlock初始化weiBoAppId");
         }
@@ -220,8 +220,8 @@ public class SL_WeiBoShareActivity extends Activity implements IWeiboHandler.Res
         // 设置缩略图。 注意：最终压缩过的缩略图大小不得超过 32kb。
         musicObject.thumbData = shareContent.getImageBmpBytes();
         musicObject.actionUrl = shareContent.getMusicUrl();
-        musicObject.dataUrl = ShareBlock.getInstance().weiBoRedirectUrl;
-        musicObject.dataHdUrl = ShareBlock.getInstance().weiBoRedirectUrl;
+        musicObject.dataUrl = ShareBlock.Config.weiBoRedirectUrl;
+        musicObject.dataHdUrl = ShareBlock.Config.weiBoRedirectUrl;
         musicObject.duration = 10;
         musicObject.defaultText = shareContent.getSummary();
         return musicObject;
@@ -241,8 +241,8 @@ public class SL_WeiBoShareActivity extends Activity implements IWeiboHandler.Res
         // 设置缩略图。 注意：最终压缩过的缩略图大小不得超过 32kb。
         videoObject.thumbData = shareContent.getImageBmpBytes();
         videoObject.actionUrl = shareContent.getURL();
-        videoObject.dataUrl = ShareBlock.getInstance().weiBoRedirectUrl;
-        videoObject.dataHdUrl = ShareBlock.getInstance().weiBoRedirectUrl;
+        videoObject.dataUrl = ShareBlock.Config.weiBoRedirectUrl;
+        videoObject.dataHdUrl = ShareBlock.Config.weiBoRedirectUrl;
         videoObject.duration = 10;
         videoObject.defaultText = shareContent.getSummary(); // 默认文案
         return videoObject;

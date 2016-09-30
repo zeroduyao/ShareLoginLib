@@ -1,5 +1,6 @@
 package com.liulishuo.share;
 
+import com.liulishuo.share.bean.AuthUserInfo;
 import com.liulishuo.share.type.LoginType;
 import com.sina.weibo.sdk.exception.WeiboException;
 import com.sina.weibo.sdk.net.AsyncWeiboRunner;
@@ -129,7 +130,7 @@ public class UserInfoManager {
         WeiboParameters params = new WeiboParameters(null);
         params.put("access_token", accessToken);
         params.put("openid", userId);
-        params.put("oauth_consumer_key", ShareBlock.getInstance().qqAppId);
+        params.put("oauth_consumer_key", ShareBlock.Config.qqAppId);
         params.put("format", "json");
 
         runner.requestAsync("https://graph.qq.com/user/get_simple_userinfo", params, "GET", new UserInfoRequestListener(listener) {

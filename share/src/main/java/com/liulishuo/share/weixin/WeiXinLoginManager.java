@@ -20,6 +20,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
+import static com.liulishuo.share.ShareBlock.Config.weiXinAppId;
+
 /**
  * Created by echo on 5/19/15.
  */
@@ -30,7 +32,7 @@ public class WeiXinLoginManager {
     //private static LoginRespListener mRespListener;
 
     public void login(@NonNull Context context) {
-        String appId = ShareBlock.getInstance().weiXinAppId;
+        String appId = ShareBlock.Config.weiXinAppId;
         if (TextUtils.isEmpty(appId)) {
             throw new NullPointerException("请通过shareBlock初始化WeiXinAppId");
         }
@@ -80,8 +82,8 @@ public class WeiXinLoginManager {
 
         AsyncWeiboRunner runner = new AsyncWeiboRunner(context);
         WeiboParameters params = new WeiboParameters(null);
-        params.put("appid", ShareBlock.getInstance().weiXinAppId);
-        params.put("secret", ShareBlock.getInstance().weiXinSecret);
+        params.put("appid", weiXinAppId);
+        params.put("secret", ShareBlock.Config.weiXinSecret);
         params.put("code", resp.code);
         params.put("grant_type", "authorization_code");
 

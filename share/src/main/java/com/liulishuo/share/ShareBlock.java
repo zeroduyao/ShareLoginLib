@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import java.io.File;
@@ -25,82 +26,34 @@ import java.util.Locale;
  */
 public class ShareBlock {
 
-    private static ShareBlock mInstance;
-
-    public static ShareBlock getInstance() {
-        if (mInstance == null) {
-            mInstance = new ShareBlock();
-        }
-        return mInstance;
-    }
+    private static Config config;
 
     private ShareBlock() {
     }
 
-    private boolean debug = false;
+    public static void init(Application application, @NonNull Config cfg) {
+        config = cfg;
 
-    public String appName;
-
-    public String pathTemp = null;
-
-    public String weiXinAppId;
-
-    public String weiXinSecret;
-
-    public String weiBoAppId;
-
-    public String weiBoRedirectUrl;
-
-    public String weiBoScope;
-
-    public String qqAppId;
-
-    public String qqScope;
-
-    public ShareBlock appName(@NonNull String appName) {
-        this.appName = appName;
-        return this;
-    }
-
-    /**
-     * 初始化临时文件地址，这里仅仅是为了qq分享用的。
-     * 这里必须用外部存储器，因为qq会读取这个目录下的图片文件
-     */
-    public ShareBlock picTempFile(Application application) {
-        if (TextUtils.isEmpty(pathTemp)) {
+        if (TextUtils.isEmpty(Config.pathTemp)) {
             if (android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)) {
-                pathTemp = application.getExternalCacheDir() + File.separator;
-                File dir = new File(pathTemp);
-                if (!dir.exists()) {
-                    dir.mkdirs();
+                try {
+                    Config.pathTemp = application.getExternalCacheDir() + File.separator;
+                    File dir = new File(Config.pathTemp);
+                    if (!dir.exists()) {
+                        dir.mkdirs();
+                    }
+                } catch (Exception e) {
+                    if (Config.isDebug) {
+                        throw e;
+                    }
+                    Config.pathTemp = null;
                 }
             }
         }
-        return this;
     }
 
-    public ShareBlock debug(boolean debug) {
-        this.debug = debug;
-        return this;
-    }
-
-    public ShareBlock weiXin(@NonNull String weiXinAppId, @NonNull String weiXinSecret) {
-        this.weiXinAppId = weiXinAppId;
-        this.weiXinSecret = weiXinSecret;
-        return this;
-    }
-
-    public ShareBlock weiBo(@NonNull String weiBoAppId, @NonNull String redirectUrl, @NonNull String scope) {
-        this.weiBoAppId = weiBoAppId;
-        weiBoRedirectUrl = redirectUrl;
-        weiBoScope = scope;
-        return this;
-    }
-
-    public ShareBlock qq(@NonNull String qqAppId, @NonNull String scope) {
-        this.qqAppId = qqAppId;
-        this.qqScope = scope;
-        return this;
+    public static Config getConfig() {
+        return config;
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -108,12 +61,12 @@ public class ShareBlock {
     ///////////////////////////////////////////////////////////////////////////
 
     public static boolean isWeiXinInstalled(Context context) {
-        IWXAPI api = WXAPIFactory.createWXAPI(context, ShareBlock.getInstance().weiXinAppId, true);
+        IWXAPI api = WXAPIFactory.createWXAPI(context, Config.weiXinAppId, true);
         return api.isWXAppInstalled();
     }
 
     public static boolean isWeiBoInstalled(@NonNull Context context) {
-        IWeiboShareAPI shareAPI = WeiboShareSDK.createWeiboAPI(context, ShareBlock.getInstance().weiBoAppId);
+        IWeiboShareAPI shareAPI = WeiboShareSDK.createWeiboAPI(context, Config.weiBoAppId);
         return shareAPI.isWeiboAppInstalled();
     }
 
@@ -130,6 +83,76 @@ public class ShareBlock {
             }
         }
         return false;
+    }
+
+    public static class Config {
+
+        private static boolean isDebug = false;
+
+        public static String appName;
+
+        public static String pathTemp = null;
+
+        public static String weiXinAppId;
+
+        public static String weiXinSecret;
+
+        public static String weiBoAppId;
+
+        public static String weiBoRedirectUrl;
+
+        public static String weiBoScope;
+
+        public static String qqAppId;
+
+        public static String qqScope;
+
+        private static Config mInstance = null;
+
+        public static Config getInstance() {
+            if (mInstance == null) {
+                mInstance = new Config();
+            }
+            return mInstance;
+        }
+
+        public Config appName(@NonNull String appName) {
+            Config.appName = appName;
+            return this;
+        }
+
+        /**
+         * 初始化临时文件地址，这里仅仅是为了qq分享用的。
+         * 这里必须用外部存储器，因为qq会读取这个目录下的图片文件!!!
+         */
+        public Config picTempFile(@Nullable String tempPath) {
+            pathTemp = tempPath;
+            return this;
+        }
+
+        public Config debug(boolean debug) {
+            isDebug = debug;
+            return this;
+        }
+
+        public Config weiXin(@NonNull String weiXinAppId, @NonNull String weiXinSecret) {
+            Config.weiXinAppId = weiXinAppId;
+            Config.weiXinSecret = weiXinSecret;
+            return this;
+        }
+
+        public Config weiBo(@NonNull String weiBoAppId, @NonNull String redirectUrl, @NonNull String scope) {
+            Config.weiBoAppId = weiBoAppId;
+            weiBoRedirectUrl = redirectUrl;
+            weiBoScope = scope;
+            return this;
+        }
+
+        public Config qq(@NonNull String qqAppId, @NonNull String scope) {
+            Config.qqAppId = qqAppId;
+            qqScope = scope;
+            return this;
+        }
     }
 
 }

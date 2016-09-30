@@ -103,14 +103,14 @@ public class SL_WeiBoLoginActivity extends Activity {
     }
 
     private SsoHandler initHandler(Activity activity) {
-        String appId = ShareBlock.getInstance().weiBoAppId;
+        String appId = ShareBlock.Config.weiBoAppId;
         if (TextUtils.isEmpty(appId)) {
             throw new NullPointerException("请通过shareBlock初始化weiboAppId");
         }
 
         return new SsoHandler(activity, new AuthInfo(activity, appId,
-                ShareBlock.getInstance().weiBoRedirectUrl,
-                ShareBlock.getInstance().weiBoScope));
+                ShareBlock.Config.weiBoRedirectUrl,
+                ShareBlock.Config.weiBoScope));
     }
 
     private

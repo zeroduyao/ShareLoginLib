@@ -3,7 +3,6 @@ package com.liulishuo.share.content;
 import com.liulishuo.share.type.ContentType;
 
 import android.graphics.Bitmap;
-import android.os.Parcel;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -25,8 +24,9 @@ public class ShareContentWebPage extends ShareContentPic {
      * @param url     点击分享的内容后跳转的链接
      * @param bitmap  图片的bitmap（请用缩略图）
      */
-    public ShareContentWebPage(@NonNull String title, @NonNull String summary, String url, @Nullable Bitmap bitmap) {
-        super(bitmap);
+    public ShareContentWebPage(@NonNull String title, @NonNull String summary, String url, 
+            @Nullable Bitmap bitmap, @Nullable String imageUrl) {
+        super(bitmap, imageUrl);
         this.title = title;
         this.summary = summary;
         this.url = url;
@@ -52,33 +52,4 @@ public class ShareContentWebPage extends ShareContentPic {
         return ContentType.WEBPAGE;
     }
 
-    @Override
-    public String getMusicUrl() {
-        return null;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        super.writeToParcel(dest, flags);
-        dest.writeString(this.title);
-        dest.writeString(this.summary);
-        dest.writeString(this.url);
-    }
-
-    protected ShareContentWebPage(Parcel in) {
-        super(in);
-        this.title = in.readString();
-        this.summary = in.readString();
-        this.url = in.readString();
-    }
-
-    public static final Creator<ShareContentWebPage> CREATOR = new Creator<ShareContentWebPage>() {
-        public ShareContentWebPage createFromParcel(Parcel source) {
-            return new ShareContentWebPage(source);
-        }
-
-        public ShareContentWebPage[] newArray(int size) {
-            return new ShareContentWebPage[size];
-        }
-    };
 }

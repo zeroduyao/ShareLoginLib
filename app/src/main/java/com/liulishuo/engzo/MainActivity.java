@@ -1,5 +1,6 @@
 package com.liulishuo.engzo;
 
+import com.liulishuo.demo.R;
 import com.liulishuo.share.LoginManager;
 import com.liulishuo.share.ShareBlock;
 import com.liulishuo.share.ShareManager;
@@ -34,6 +35,8 @@ import java.io.FileNotFoundException;
  */
 public class MainActivity extends AppCompatActivity {
 
+    private static final String TAG = "MainActivity";
+
     public static final String URL = "https://www.zhihu.com/question/22913650";
 
     public static final String TITLE = "这里是标题";
@@ -59,23 +62,29 @@ public class MainActivity extends AppCompatActivity {
         userPicIv = (ImageView) findViewById(R.id.user_pic_iv);
 
         assert getResources().getDrawable(R.drawable.kale) != null;
-        final Bitmap mBitmap = ((BitmapDrawable) getResources().getDrawable(R.drawable.kale)).getBitmap();
+        final Bitmap imageBmp = ((BitmapDrawable) getResources().getDrawable(R.drawable.kale)).getBitmap();
 
         loadPicFromTempFile();
+        String imagePic = "http://aliimg.changba.com/cache/photo/177593234_200_200.jpg";
 
-        mShareContent = new ShareContentWebPage(TITLE, MSG, URL, mBitmap);
+//        imagePic = "http://ww1.sinaimg.cn/mw690/854f1e58gw1f8ao1y3xd2j215o15ogrv.jpg";
+        
+//        imagePic = "https://ss0.bdstatic.com/5aV1bjqh_Q23odCf/static/superman/img/logo/logo_white_fe6da1ec.png";
+
+        final String imageUrl = imagePic; // 仅仅qq分享的sdk支持url，但是竟然不支持https的图片！！！
+
+        mShareContent = new ShareContentWebPage(TITLE, MSG, URL, imageBmp, imagePic);
 
         shareTypeRg.check(R.id.rich_text);
         shareTypeRg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 if (checkedId == R.id.rich_text) {
-                    mShareContent = new ShareContentWebPage(TITLE, MSG, URL, mBitmap);
+                    mShareContent = new ShareContentWebPage(TITLE, MSG, URL, imageBmp, imageUrl);
                 } else if (checkedId == R.id.only_image) {
-                    mShareContent = new ShareContentPic(mBitmap);
+                    mShareContent = new ShareContentPic(imageBmp, imageUrl);
                 } else if (checkedId == R.id.only_text) {
                     mShareContent = new ShareContentText("share text");
-
                 }
             }
         });
@@ -85,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void loadPicFromTempFile() {
         try {
-            String path = ShareBlock.getInstance().pathTemp + "sharePic_temp.png";
+            String path = ShareBlock.Config.pathTemp + "sharePic_temp";
             File file = new File(path);
             if (file.exists()) {
                 FileInputStream fis = new FileInputStream(file);
@@ -126,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void onGotUserInfo1(@Nullable String text, @Nullable String imageUrl) {
+    public void onGotUserInfo(@Nullable String text, @Nullable String imageUrl) {
         userInfoTv.setText(text);
         Picasso.with(this).load(imageUrl).into(userPicIv);
     }

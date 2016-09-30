@@ -31,7 +31,7 @@ public abstract class WeiXinHandlerActivity extends Activity implements IWXAPIEv
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        api = WXAPIFactory.createWXAPI(this, ShareBlock.getInstance().weiXinAppId, true);
+        api = WXAPIFactory.createWXAPI(this, ShareBlock.Config.weiXinAppId, true);
         api.handleIntent(getIntent(), this);
         finish();
     }

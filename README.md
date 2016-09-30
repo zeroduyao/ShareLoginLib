@@ -9,17 +9,7 @@ ShareLoginLib likes simple sharesdk or umeng in China . It is a tool to help dev
 ![](./screenshot/login.png) ![](./screenshot/share.png) ![](./screenshot/wechat.png)
 
 ## 如何使用
-#### 1. 在项目中使用第三方SDK功能前进行参数的注册  
-```java  
-ShareBlock.getInstance()
-              .appName("TestAppName")
-              .picTempFile(getApplication())
-              .qq(OAuthConstant.QQ_APPID, OAuthConstant.QQ_SCOPE)
-              .weiXin(OAuthConstant.WEIXIN_APPID, OAuthConstant.WEIXIN_SECRET)
-              .weiBo(OAuthConstant.WEIBO_APPID, OAuthConstant.WEIBO_REDIRECT_URL, OAuthConstant.WEIBO_SCOPE);
-```  
-
-#### 2. 进行登录、分享  
+### 登录、分享  
 ```JAVA  
 // 登录
 LoginManager.login(this, LoginType.【WeiBo,WeiXin,QQ】, new LoginManager.LoginListener() {
@@ -46,14 +36,14 @@ ShareManager.share(MainActivity.this，ShareType.【xxxx】
 
 ```   
 
-#### 3. 判断本机是否安装第三方客户端  
+### 判断是否已安装第三方客户端  
 ```JAVA
 ShareBlock.isWeiXinInstalled(this);
 ShareBlock.isWeiBoInstalled(this);
 ShareBlock.isQQInstalled(this);
 ```
 
-#### 4. 通过token和id得到用户的详细信息
+### 通过token和id得到用户的详细信息
 ```JAVA
 UserInfoManager.getUserInfo(context, LoginType.【WeiBo,WeiXin,QQ】, accessToken, userId, new UserInfoManager.UserInfoListener() {
         @Override
@@ -68,11 +58,14 @@ UserInfoManager.getUserInfo(context, LoginType.【WeiBo,WeiXin,QQ】, accessToke
     });
 ```  
 
-更多详细的操作请参考项目源码。
+更多详细的操作请参考项目的源码。
 
 ## 配置工作
+因为本项目需要签名和第三方认证，所以需要使用者在第三方（qq/weibo/weixin）网站进行注册后才可测试。**本库的作者是不会提供任何和签名和密码有关的信息的。**
 
-#### 1. 添加混淆参数
+注意：第三方的登录和分享功能均需要在已签名的app版本中进行测试
+
+### 1. 添加混淆参数
 ```  
 # ———————— 微信 ————————
 -keep class com.tencent.mm.sdk.** { *;}
@@ -89,40 +82,51 @@ UserInfoManager.getUserInfo(context, LoginType.【WeiBo,WeiXin,QQ】, accessToke
 -keep class com.tencent.open.PKDialog$* {*;}
 ```  
 
-#### 2. 在包名下新建wxapi这个包，然后放入WXEntryActivity  
+### 2. 在主包名下新建wxapi这个包，然后放入WXEntryActivity  
 Activity的写法如下：  
 
 ```JAVA   
 package 你自己的包名.wxapi;
 import com.liulishuo.share.weixin.WeiXinHandlerActivity;
 
-/**
- * -----------------------------------------------------------------------
- * 这是微信客户端回调activity.
- * 必须在项目包名下的wxapi中定义，类名也不能改。奇葩到一定境界了！
- * eg:com.kale.share是你的项目包名，那么这个类一定要放在com.kale.share.wxapi中才行。
- * 而且千万不要更改类名，请保持WXEntryActivity不变
- * WTF：真是微信蠢到家的设计，太愚蠢了
- * -----------------------------------------------------------------------
- */
 public class WXEntryActivity extends WeiXinHandlerActivity {}
 ```
 
-#### 3. 在使用lib的module中的build.gradle中配置腾讯的key
+### 3. 在build.gradle中配置QQ的key
 ```JAVA
 defaultConfig {
-        applicationId "com.liulishuo.engzo"
-        minSdkVersion 15
-        targetSdkVersion 23
-        versionCode 1
-        versionName "1.0"
+    // 你的包名
+    applicationId "xxx.xxx.xxx"
+    minSdkVersion 15
+    targetSdkVersion 23
 
-        manifestPlaceholders = [
-                // 这里需要换成:tencent+你的AppId
-                "tencentAuthId": "tencent123456",
-        ]
-    }
+    manifestPlaceholders = [
+            // 这里需要换成:tencent+你的AppId
+            "tencentAuthId": "tencent123456",
+    ]
+}
 ```
+
+### 4. 在gradle.properties中配置常量
+如果你要运行该库的demo，请先在本地建立一个gradle.properties，然后配置下签名信息。如果是在自己项目中用了本lib，只需要保证可签名即可。
+```
+STORE_FILE_PATH xxxxx
+STORE_PASSWORD xxxxx
+KEY_ALIAS xxxxx
+KEY_PASSWORD xxxxx
+```
+### 5. 在使用功能前进行注册  
+```java  
+ShareBlock.Config config = ShareBlock.Config.getInstance()
+                .debug(true)
+                .appName("Test App")
+                .picTempFile(this)
+                .qq(QQ_APPID, QQ_SCOPE)
+                .weiXin(WEIXIN_APPID, WEIXIN_SECRET)
+                .weiBo(WEIBO_APPID, WEIBO_REDIRECT_URL, WEIBO_SCOPE);
+
+ShareBlock.init(config);
+```  
 
 ## 测试用例  
 1. 开启不保留活动
