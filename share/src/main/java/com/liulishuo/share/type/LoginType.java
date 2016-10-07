@@ -13,5 +13,5 @@ import java.lang.annotation.RetentionPolicy;
 @StringDef({LoginType.WEIXIN, LoginType.WEIBO, LoginType.QQ})
 public @interface LoginType {
 
-    String WEIXIN = "WEIXIN", WEIBO = "WEIBO", QQ = "QQ";
+    String QQ = "QQ", WEIBO = "WEIBO", WEIXIN = "WEIXIN";
 }

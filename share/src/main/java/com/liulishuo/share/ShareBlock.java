@@ -60,16 +60,6 @@ public class ShareBlock {
     // 判断第三方客户端是否安装
     ///////////////////////////////////////////////////////////////////////////
 
-    public static boolean isWeiXinInstalled(Context context) {
-        IWXAPI api = WXAPIFactory.createWXAPI(context, Config.weiXinAppId, true);
-        return api.isWXAppInstalled();
-    }
-
-    public static boolean isWeiBoInstalled(@NonNull Context context) {
-        IWeiboShareAPI shareAPI = WeiboShareSDK.createWeiboAPI(context, Config.weiBoAppId);
-        return shareAPI.isWeiboAppInstalled();
-    }
-
     public static boolean isQQInstalled(@NonNull Context context) {
         PackageManager pm = context.getApplicationContext().getPackageManager();
         if (pm == null) {
@@ -83,6 +73,16 @@ public class ShareBlock {
             }
         }
         return false;
+    }
+
+    public static boolean isWeiBoInstalled(@NonNull Context context) {
+        IWeiboShareAPI shareAPI = WeiboShareSDK.createWeiboAPI(context, Config.weiBoAppId);
+        return shareAPI.isWeiboAppInstalled();
+    }
+
+    public static boolean isWeiXinInstalled(Context context) {
+        IWXAPI api = WXAPIFactory.createWXAPI(context, Config.weiXinAppId, true);
+        return api.isWXAppInstalled();
     }
 
     public static class Config {
@@ -135,9 +135,9 @@ public class ShareBlock {
             return this;
         }
 
-        public Config weiXin(@NonNull String weiXinAppId, @NonNull String weiXinSecret) {
-            Config.weiXinAppId = weiXinAppId;
-            Config.weiXinSecret = weiXinSecret;
+        public Config qq(@NonNull String qqAppId, @NonNull String scope) {
+            Config.qqAppId = qqAppId;
+            qqScope = scope;
             return this;
         }
 
@@ -148,9 +148,9 @@ public class ShareBlock {
             return this;
         }
 
-        public Config qq(@NonNull String qqAppId, @NonNull String scope) {
-            Config.qqAppId = qqAppId;
-            qqScope = scope;
+        public Config weiXin(@NonNull String weiXinAppId, @NonNull String weiXinSecret) {
+            Config.weiXinAppId = weiXinAppId;
+            Config.weiXinSecret = weiXinSecret;
             return this;
         }
     }

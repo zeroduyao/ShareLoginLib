@@ -3,8 +3,6 @@ package com.liulishuo.engzo;
 
 import com.liulishuo.share.ShareManager;
 
-import android.content.Context;
-import android.util.Log;
 import android.widget.Toast;
 
 /**
@@ -13,29 +11,30 @@ import android.widget.Toast;
  */
 class ShareListener implements ShareManager.ShareStateListener {
 
-    private String TAG = "ShareListener";
+    private MainActivity activity;
 
-    private Context mContext;
-
-    ShareListener(Context context) {
-        mContext = context;
+    ShareListener(MainActivity context) {
+        activity = context;
     }
 
     @Override
     public void onSuccess() {
-        Log.d(TAG, "分享成功");
-        Toast.makeText(mContext, "分享成功", Toast.LENGTH_SHORT).show();
+        String result = "分享成功";
+        Toast.makeText(activity, result, Toast.LENGTH_SHORT).show();
+        activity.handResult(result);
     }
 
     @Override
     public void onError(String msg) {
-        Log.e(TAG, "分享失败，出错信息：" + msg);
-        Toast.makeText(mContext, "分享失败，出错信息：" + msg, Toast.LENGTH_SHORT).show();
+        String result = "分享失败，出错信息：" + msg;
+        Toast.makeText(activity, result, Toast.LENGTH_SHORT).show();
+        activity.handResult(result);
     }
 
     @Override
     public void onCancel() {
-        Log.d(TAG, "取消分享");
-        Toast.makeText(mContext, "取消分享", Toast.LENGTH_SHORT).show();
+        String result = "取消分享";
+        Toast.makeText(activity, result, Toast.LENGTH_SHORT).show();
+        activity.handResult(result);
     }
 }

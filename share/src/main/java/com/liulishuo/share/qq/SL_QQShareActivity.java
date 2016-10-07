@@ -39,11 +39,11 @@ public class SL_QQShareActivity extends Activity {
         super.onCreate(savedInstanceState);
         // 无论是否是恢复的activity，都要先初始化监听器，否则开启不保留活动后监听器对象就是null
         uiListener = initListener(ShareManager.listener);
-        Intent i = getIntent();
-        isToFriend = i.getBooleanExtra(KEY_TO_FRIEND, true);
+        Intent intent = getIntent();
+        isToFriend = intent.getBooleanExtra(KEY_TO_FRIEND, true);
 
         if (savedInstanceState == null) { // 防止不保留活动情况下activity被重置后直接进行操作的情况
-            ShareContent shareContent = (ShareContent) i.getSerializableExtra(ShareManager.KEY_CONTENT);
+            ShareContent shareContent = (ShareContent) intent.getSerializableExtra(ShareManager.KEY_CONTENT);
             doShare(shareContent);
         }
     }

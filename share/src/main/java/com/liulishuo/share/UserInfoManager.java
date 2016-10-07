@@ -26,14 +26,14 @@ public class UserInfoManager {
     public static void getUserInfo(Context context, @LoginType String type, @NonNull String accessToken, @NonNull String uid,
             @Nullable final UserInfoListener listener) {
         switch (type) {
-            case LoginType.WEIXIN:
-                getWeiXinUserInfo(context, accessToken, uid, listener);
+            case LoginType.QQ:
+                getQQUserInfo(context, accessToken, uid, listener);
                 break;
             case LoginType.WEIBO:
                 getWeiBoUserInfo(context, accessToken, uid, listener);
                 break;
-            case LoginType.QQ:
-                getQQUserInfo(context, accessToken, uid, listener);
+            case LoginType.WEIXIN:
+                getWeiXinUserInfo(context, accessToken, uid, listener);
                 break;
         }
     }
@@ -60,26 +60,32 @@ public class UserInfoManager {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    // 微信
+    // QQ
     ///////////////////////////////////////////////////////////////////////////
 
-    public static void getWeiXinUserInfo(Context context, @NonNull final String accessToken, @NonNull final String uid,
+    /**
+     * 得到用户的信息，是一个静态的基础方法
+     *
+     * @see "http://wiki.open.qq.com/wiki/website/get_simple_userinfo"
+     */
+    public static void getQQUserInfo(Context context, @NonNull final String accessToken, @NonNull final String userId,
             @Nullable final UserInfoListener listener) {
 
         AsyncWeiboRunner runner = new AsyncWeiboRunner(context);
         WeiboParameters params = new WeiboParameters(null);
         params.put("access_token", accessToken);
-        params.put("openid", uid);
+        params.put("openid", userId);
+        params.put("oauth_consumer_key", ShareBlock.Config.qqAppId);
+        params.put("format", "json");
 
-        runner.requestAsync("https://api.weixin.qq.com/sns/userinfo", params, "GET", new UserInfoRequestListener(listener) {
-
+        runner.requestAsync("https://graph.qq.com/user/get_simple_userinfo", params, "GET", new UserInfoRequestListener(listener) {
             @Override
             AuthUserInfo onSuccess(JSONObject jsonObj) throws JSONException {
                 AuthUserInfo userInfo = new AuthUserInfo();
                 userInfo.nickName = jsonObj.getString("nickname");
-                userInfo.sex = jsonObj.getString("sex");
-                userInfo.headImgUrl = jsonObj.getString("headimgurl");
-                userInfo.userId = jsonObj.getString("unionid");
+                userInfo.sex = jsonObj.getString("gender");
+                userInfo.headImgUrl = jsonObj.getString("figureurl_qq_1");
+                userInfo.userId = userId;
                 return userInfo;
             }
         });
@@ -115,36 +121,34 @@ public class UserInfoManager {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    // QQ
+    // 微信
     ///////////////////////////////////////////////////////////////////////////
 
-    /**
-     * 得到用户的信息，是一个静态的基础方法
-     *
-     * @see "http://wiki.open.qq.com/wiki/website/get_simple_userinfo"
-     */
-    public static void getQQUserInfo(Context context, @NonNull final String accessToken, @NonNull final String userId,
+    public static void getWeiXinUserInfo(Context context, @NonNull final String accessToken, @NonNull final String uid,
             @Nullable final UserInfoListener listener) {
 
         AsyncWeiboRunner runner = new AsyncWeiboRunner(context);
         WeiboParameters params = new WeiboParameters(null);
         params.put("access_token", accessToken);
-        params.put("openid", userId);
-        params.put("oauth_consumer_key", ShareBlock.Config.qqAppId);
-        params.put("format", "json");
+        params.put("openid", uid);
 
-        runner.requestAsync("https://graph.qq.com/user/get_simple_userinfo", params, "GET", new UserInfoRequestListener(listener) {
+        runner.requestAsync("https://api.weixin.qq.com/sns/userinfo", params, "GET", new UserInfoRequestListener(listener) {
+
             @Override
             AuthUserInfo onSuccess(JSONObject jsonObj) throws JSONException {
                 AuthUserInfo userInfo = new AuthUserInfo();
                 userInfo.nickName = jsonObj.getString("nickname");
-                userInfo.sex = jsonObj.getString("gender");
-                userInfo.headImgUrl = jsonObj.getString("figureurl_qq_1");
-                userInfo.userId = userId;
+                userInfo.sex = jsonObj.getString("sex");
+                userInfo.headImgUrl = jsonObj.getString("headimgurl");
+                userInfo.userId = jsonObj.getString("unionid");
                 return userInfo;
             }
         });
     }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // Common
+    ///////////////////////////////////////////////////////////////////////////
 
     private abstract static class UserInfoRequestListener implements RequestListener {
 

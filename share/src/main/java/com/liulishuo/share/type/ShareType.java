@@ -14,7 +14,7 @@ import java.lang.annotation.RetentionPolicy;
 public @interface ShareType {
 
     String
-            WEIXIN_FRIEND = "WEIXIN_FRIEND", WEIXIN_FRIEND_ZONE = "WEIXIN_FRIEND_ZONE",
+            QQ_ZONE = "QQ_ZONE", QQ_FRIEND = "QQ_FRIEND",
             WEIBO_TIME_LINE = "WEIBO_TIME_LINE",
-            QQ_ZONE = "QQ_ZONE", QQ_FRIEND = "QQ_FRIEND";
+            WEIXIN_FRIEND = "WEIXIN_FRIEND", WEIXIN_FRIEND_ZONE = "WEIXIN_FRIEND_ZONE";
 }

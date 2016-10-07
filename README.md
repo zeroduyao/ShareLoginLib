@@ -43,27 +43,26 @@ ShareBlock.isWeiBoInstalled(this);
 ShareBlock.isQQInstalled(this);
 ```
 
-### 通过token和id得到用户的详细信息
+### 通过token和id得到用户信息
 ```JAVA
-UserInfoManager.getUserInfo(context, LoginType.【WeiBo,WeiXin,QQ】, accessToken, userId, new UserInfoManager.UserInfoListener() {
-        @Override
+UserInfoManager.getUserInfo(context, LoginType.【WeiBo,WeiXin,QQ】, accessToken, userId,
+    new UserInfoManager.UserInfoListener() {
+
         public void onSuccess(@NonNull AuthUserInfo userInfo) {
             // 可以得到：昵称，性别，头像url，用户id
         }
 
-        @Override
         public void onError(String msg) {
-
         }
     });
 ```  
 
-更多详细的操作请参考项目的源码。
+更多详细的操作请参考项目的demo。
 
 ## 配置工作
-因为本项目需要签名和第三方认证，所以需要使用者在第三方（qq/weibo/weixin）网站进行注册后才可测试。**本库的作者是不会提供任何和签名和密码有关的信息的。**
+因为本项目需要签名和第三方认证，所以使用者要在第三方（qq/weibo/weixin）网站进行注册后才可测试。**本库作者是不会提供任何和签名、密码、AppId等有关信息的。**
 
-注意：第三方的登录和分享功能均需要在已签名的app版本中进行测试
+注意：第三方的登录和分享功能均需要在**已签名**的app中进行测试
 
 ### 1. 添加混淆参数
 ```  
@@ -89,50 +88,80 @@ Activity的写法如下：
 package 你自己的包名.wxapi;
 import com.liulishuo.share.weixin.WeiXinHandlerActivity;
 
+/**
+ * -----------------------------------------------------------------------
+ * 这是微信客户端回调activity.
+ * 必须在项目包名下的wxapi中定义，类名也不能改。奇葩到一定境界了！
+ * eg:com.kale.share是你的项目包名，那么这个类一定要放在com.kale.share.wxapi中才行。
+ * 而且千万不要更改类名，请保持WXEntryActivity不变
+ * WTF：真是微信蠢到家的设计，太愚蠢了
+ * -----------------------------------------------------------------------
+ */
 public class WXEntryActivity extends WeiXinHandlerActivity {}
 ```
 
 ### 3. 在build.gradle中配置QQ的key
 ```JAVA
 defaultConfig {
-    // 你的包名
-    applicationId "xxx.xxx.xxx"
+    applicationId "xxx.xxx.xxx" // 换成你的包名
     minSdkVersion 15
     targetSdkVersion 23
 
     manifestPlaceholders = [
-            // 这里需要换成:tencent+你的AppId
+            // 这里换成:tencent+你的AppId
             "tencentAuthId": "tencent123456",
     ]
 }
 ```
 
 ### 4. 在gradle.properties中配置常量
-如果你要运行该库的demo，请先在本地建立一个gradle.properties，然后配置下签名信息。如果是在自己项目中用了本lib，只需要保证可签名即可。
+这里分两种情况：  
+
+**1.** 如果你要运行该项目给出的demo，那么请先在本地建立一个`gradle.properties`文件，然后配置下下列必要的信息   
+
 ```
 STORE_FILE_PATH xxxxx
 STORE_PASSWORD xxxxx
 KEY_ALIAS xxxxx
 KEY_PASSWORD xxxxx
+TENCENT_AUTHID tencent206120
 ```
+
+**2.** 如果你是在自己项目中通过gradle依赖了本库，只需要保证可签名即可
+```
+signingConfigs {
+    release {
+        // 这里换成你自己的签名等信息
+        storeFile file(STORE_FILE_PATH)
+        storePassword STORE_PASSWORD
+        keyAlias KEY_ALIAS
+        keyPassword KEY_PASSWORD
+    }
+}
+```
+
+最后运行签名后的apk。
+
 ### 5. 在使用功能前进行注册  
 ```java  
-ShareBlock.Config config = ShareBlock.Config.getInstance()
-                .debug(true)
-                .appName("Test App")
-                .picTempFile(this)
-                .qq(QQ_APPID, QQ_SCOPE)
-                .weiXin(WEIXIN_APPID, WEIXIN_SECRET)
-                .weiBo(WEIBO_APPID, WEIBO_REDIRECT_URL, WEIBO_SCOPE);
+Config config = Config.getInstance()
+            .debug(true)
+            .appName("Test App")
+            .picTempFile(this)
+            .qq(QQ_APPID, QQ_SCOPE)
+            .weiXin(WEIXIN_APPID, WEIXIN_SECRET)
+            .weiBo(WEIBO_APPID, WEIBO_REDIRECT_URL, WEIBO_SCOPE);
 
 ShareBlock.init(config);
 ```  
 
-## 测试用例  
+## 测试环境  
 1. 开启不保留活动
 2. 未安装第三方应用  
 3. 安装第三方应用，但第三方应用未登录  
 4. 未开启不保留活动，并且第三方应用已经登录
+
+目前需要在上述四种不同的环境中执行项目的测试用例，以保证整个项目的健壮性。
 
 ## 已知的第三方SDK的bug（本lib无法解决）
 - 首先不能信任第三方的回调，比如你分享到了微信，然后用户停在了微信，那么你就永远接收不到回调了。停留在他们的app一阵后，可能会因为内存不足等奇葩情况，你的应用被杀死。死了后怎么接收回调？  

@@ -27,19 +27,6 @@ public class LoginManager {
     public static void login(@NonNull Activity activity, @LoginType String type, @Nullable LoginListener listener) {
         LoginManager.listener = listener;
         switch (type) {
-            case WEIXIN:
-                if (ShareBlock.isWeiXinInstalled(activity)) {
-                    new WeiXinLoginManager().login(activity.getApplicationContext());
-                } else {
-                    if (listener != null) {
-                        listener.onError("未安装微信");
-                    }
-                }
-                break;
-            case WEIBO:
-                activity.startActivity(new Intent(activity, SL_WeiBoLoginActivity.class));
-                activity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-                break;
             case QQ:
                 if (ShareBlock.isQQInstalled(activity)) {
                     activity.startActivity(new Intent(activity, SL_QQLoginActivity.class));
@@ -47,6 +34,19 @@ public class LoginManager {
                 } else {
                     if (listener != null) {
                         listener.onError("未安装QQ");
+                    }
+                }
+                break;
+            case WEIBO:
+                activity.startActivity(new Intent(activity, SL_WeiBoLoginActivity.class));
+                activity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                break;
+            case WEIXIN:
+                if (ShareBlock.isWeiXinInstalled(activity)) {
+                    new WeiXinLoginManager().login(activity.getApplicationContext());
+                } else {
+                    if (listener != null) {
+                        listener.onError("未安装微信");
                     }
                 }
                 break;

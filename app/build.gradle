@@ -6,20 +6,19 @@ android {
     
     defaultConfig {
         applicationId "com"
-        minSdkVersion 14
+        minSdkVersion 18
         targetSdkVersion 24
         versionCode 1
         versionName "1.0"
 
         manifestPlaceholders = [
                 // 这里需要换成:tencent+你的AppId
-                "tencentAuthId": "tencent123456",
+                "tencentAuthId": TENCENT_AUTHID,
         ]
         testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
     }
 
     signingConfigs {
-
         release {
             // 这里换成你自己的签名等信息
             storeFile file(STORE_FILE_PATH)
@@ -39,6 +38,10 @@ android {
         }
         debug{
             applicationIdSuffix '.liulishuo.engzo'
+            manifestPlaceholders = [
+                    // 这里的tencent123456是暂时测试用的appId
+                    "tencentAuthId": "tencent123456",
+            ]
         }
         
         signed.initWith(buildTypes.release)
@@ -47,6 +50,15 @@ android {
         }
     }
 
+    packagingOptions {
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/LICENSE'
+        exclude 'LICENSE'
+        exclude 'NOTICE'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/ASL2.0'
+    }
 }
 
 dependencies {
@@ -63,7 +75,8 @@ dependencies {
     androidTestCompile 'com.android.support:support-annotations:24.2.1'
     androidTestCompile 'com.android.support.test:runner:0.5'
     androidTestCompile 'com.android.support.test:rules:0.5'
-
+    // UiAutomator
+    androidTestCompile 'com.android.support.test.uiautomator:uiautomator-v18:2.1.2'
     // Espresso UI Testing
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'

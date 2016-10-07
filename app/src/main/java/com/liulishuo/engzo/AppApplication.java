@@ -33,8 +33,8 @@ public class AppApplication extends Application {
                 .appName("test app")
                 .picTempFile(null)
                 .qq(QQ_APPID, QQ_SCOPE)
-                .weiXin(WEIXIN_APPID, WEIXIN_SECRET)
-                .weiBo(WEIBO_APPID, WEIBO_REDIRECT_URL, WEIBO_SCOPE);
+                .weiBo(WEIBO_APPID, WEIBO_REDIRECT_URL, WEIBO_SCOPE)
+                .weiXin(WEIXIN_APPID, WEIXIN_SECRET);
 
         ShareBlock.init(this, config);
     }

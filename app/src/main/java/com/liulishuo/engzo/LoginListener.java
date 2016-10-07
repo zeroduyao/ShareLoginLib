@@ -31,20 +31,25 @@ class LoginListener implements LoginManager.LoginListener {
     @Override
     public void onSuccess(String accessToken, String userId, long expiresIn, String data) {
         Log.d(TAG, "accessToken = " + accessToken + "\nuid = " + userId + "\nexpires_in = " + expiresIn);
-        Toast.makeText(activity, "登录成功", Toast.LENGTH_SHORT).show();
         loadUserInfo(accessToken, userId);
+        
+        String result = "登录成功";
+        Toast.makeText(activity, result, Toast.LENGTH_SHORT).show();
+        activity.handResult(result);
     }
 
     @Override
     public void onError(String msg) {
-        Log.e(TAG, "登录失败,失败信息");
-        Toast.makeText(activity, "登录失败,失败信息：" + msg, Toast.LENGTH_SHORT).show();
+        String result = "登录失败,失败信息：" + msg;
+        Toast.makeText(activity, result, Toast.LENGTH_SHORT).show();
+        activity.handResult(result);
     }
 
     @Override
     public void onCancel() {
-        Log.d(TAG, "取消登录");
-        Toast.makeText(activity, "取消登录", Toast.LENGTH_SHORT).show();
+        String result = "取消登录";
+        Toast.makeText(activity, result, Toast.LENGTH_SHORT).show();
+        activity.handResult(result);
     }
 
     /**

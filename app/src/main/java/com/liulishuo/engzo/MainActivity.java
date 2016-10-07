@@ -51,6 +51,8 @@ public class MainActivity extends AppCompatActivity {
 
     private ImageView userPicIv;
 
+    private TextView resultTv;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
         RadioGroup shareTypeRg = (RadioGroup) findViewById(R.id.share_type_rg);
         userInfoTv = (TextView) findViewById(R.id.user_info_tv);
         userPicIv = (ImageView) findViewById(R.id.user_pic_iv);
+        resultTv = (TextView) findViewById(R.id.result);
 
         assert getResources().getDrawable(R.drawable.kale) != null;
         final Bitmap imageBmp = ((BitmapDrawable) getResources().getDrawable(R.drawable.kale)).getBitmap();
@@ -68,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
         String imagePic = "http://aliimg.changba.com/cache/photo/177593234_200_200.jpg";
 
 //        imagePic = "http://ww1.sinaimg.cn/mw690/854f1e58gw1f8ao1y3xd2j215o15ogrv.jpg";
-        
+
 //        imagePic = "https://ss0.bdstatic.com/5aV1bjqh_Q23odCf/static/superman/img/logo/logo_white_fe6da1ec.png";
 
         final String imageUrl = imagePic; // 仅仅qq分享的sdk支持url，但是竟然不支持https的图片！！！
@@ -109,34 +112,43 @@ public class MainActivity extends AppCompatActivity {
         ShareManager.ShareStateListener mShareListener = new ShareListener(this);
 
         int i = v.getId();
-        if (i == R.id.微信登录) {
-            LoginManager.login(this, LoginType.WEIXIN, new LoginListener(this, LoginType.WEIXIN));
-
-        } else if (i == R.id.微博登录) {
-            LoginManager.login(this, LoginType.WEIBO, new LoginListener(this, LoginType.WEIBO));
-
-        } else if (i == R.id.QQ登录) {
-            LoginManager.login(this, LoginType.QQ, new LoginListener(this, LoginType.QQ));
-
-        } else if (i == R.id.分享给QQ好友) {
-            ShareManager.share(this, ShareType.QQ_FRIEND, mShareContent, mShareListener);
-
-        } else if (i == R.id.分享到QQ空间) {
-            ShareManager.share(this, ShareType.QQ_ZONE, mShareContent, mShareListener);
-
-        } else if (i == R.id.分享给微信好友) {
-            ShareManager.share(this, ShareType.WEIXIN_FRIEND, mShareContent, mShareListener);
-
-        } else if (i == R.id.分享到微信朋友圈) {
-            ShareManager.share(this, ShareType.WEIXIN_FRIEND_ZONE, mShareContent, mShareListener);
-
-        } else if (i == R.id.分享到微博) {
-            ShareManager.share(this, ShareType.WEIBO_TIME_LINE, mShareContent, mShareListener);
+        switch (i) {
+            case R.id.QQ登录:
+                LoginManager.login(this, LoginType.QQ, new LoginListener(this, LoginType.QQ));
+                break;
+            case R.id.微博登录:
+                LoginManager.login(this, LoginType.WEIBO, new LoginListener(this, LoginType.WEIBO));
+                break;
+            case R.id.微信登录:
+                LoginManager.login(this, LoginType.WEIXIN, new LoginListener(this, LoginType.WEIXIN));
+                break;
+            case R.id.分享给QQ好友:
+                ShareManager.share(this, ShareType.QQ_FRIEND, mShareContent, mShareListener);
+                break;
+            case R.id.分享到QQ空间:
+                ShareManager.share(this, ShareType.QQ_ZONE, mShareContent, mShareListener);
+                break;
+            case R.id.分享到微博:
+                ShareManager.share(this, ShareType.WEIBO_TIME_LINE, mShareContent, mShareListener);
+                break;
+            case R.id.分享给微信好友:
+                ShareManager.share(this, ShareType.WEIXIN_FRIEND, mShareContent, mShareListener);
+                break;
+            case R.id.分享到微信朋友圈:
+                ShareManager.share(this, ShareType.WEIXIN_FRIEND_ZONE, mShareContent, mShareListener);
+                break;
         }
+        userInfoTv.setText("");
+        userPicIv.setImageResource(0);
+        resultTv.setText("");
     }
 
     public void onGotUserInfo(@Nullable String text, @Nullable String imageUrl) {
         userInfoTv.setText(text);
         Picasso.with(this).load(imageUrl).into(userPicIv);
+    }
+
+    public void handResult(String result) {
+        resultTv.setText(result);
     }
 }

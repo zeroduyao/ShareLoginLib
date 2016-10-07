@@ -39,12 +39,15 @@ public class ShareManager {
 
         ShareManager.listener = listener;
         switch (shareType) {
-            case WEIXIN_FRIEND:
-            case WEIXIN_FRIEND_ZONE:
-                if (ShareBlock.isWeiXinInstalled(activity)) {
-                    new WeiXinShareManager().sendShareMsg(activity.getApplicationContext(), shareContent, shareType);
+            case QQ_FRIEND:
+            case QQ_ZONE:
+                if (ShareBlock.isQQInstalled(activity)) {
+                    activity.startActivity(new Intent(activity, SL_QQShareActivity.class)
+                            .putExtra(SL_QQShareActivity.KEY_TO_FRIEND, shareType.equals(QQ_FRIEND))
+                            .putExtra(KEY_CONTENT, shareContent));
+                    activity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                 } else if (listener != null) {
-                    listener.onError("未安装微信");
+                    listener.onError("未安装QQ");
                 }
                 break;
             case WEIBO_TIME_LINE:
@@ -56,15 +59,12 @@ public class ShareManager {
                     listener.onError("未安装微博");
                 }
                 break;
-            case QQ_FRIEND:
-            case QQ_ZONE:
-                if (ShareBlock.isQQInstalled(activity)) {
-                    activity.startActivity(new Intent(activity, SL_QQShareActivity.class)
-                            .putExtra(SL_QQShareActivity.KEY_TO_FRIEND, shareType.equals(QQ_FRIEND))
-                            .putExtra(KEY_CONTENT, shareContent));
-                    activity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+            case WEIXIN_FRIEND:
+            case WEIXIN_FRIEND_ZONE:
+                if (ShareBlock.isWeiXinInstalled(activity)) {
+                    new WeiXinShareManager().sendShareMsg(activity.getApplicationContext(), shareContent, shareType);
                 } else if (listener != null) {
-                    listener.onError("未安装QQ");
+                    listener.onError("未安装微信");
                 }
                 break;
         }
