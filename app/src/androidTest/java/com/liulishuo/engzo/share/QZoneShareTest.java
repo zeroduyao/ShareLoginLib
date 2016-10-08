@@ -1,5 +1,6 @@
 package com.liulishuo.engzo.share;
 
+import com.liulishuo.engzo.Constant;
 import com.liulishuo.engzo.utils.TestUtil;
 import com.liulishuo.engzo.utils.With;
 
@@ -15,6 +16,8 @@ import android.support.test.filters.SdkSuppress;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.test.uiautomator.By;
 import android.support.test.uiautomator.UiDevice;
+import android.support.test.uiautomator.UiObject2;
+import android.support.test.uiautomator.Until;
 import android.widget.TextView;
 
 /**
@@ -41,13 +44,20 @@ public class QZoneShareTest {
 
     @Before
     public void clickBtn() throws Exception {
+        TestUtil.initEachTestEnvironment(device);
         device.findObject(With.text("分享到QQ空间")).clickAndWaitForNewWindow();
     }
 
     @Test
     public void testShareSuccess() throws Exception {
-        device.findObject(With.text("发送")).clickAndWaitForNewWindow();
-        device.findObject(By.textContains("返回")).click();
+        UiObject2 send = device.wait(Until.findObject((By.text("发送"))), 500);
+        if (send != null) {
+            send.click();
+            device.wait(Until.findObject(By.textContains("返回")), Constant.MAX_TIMEOUT).click();
+        } else {
+            send = device.findObject(By.res("com.tencent.mobileqq:id/ivTitleBtnRightText"));
+            send.click();
+        }
         TestUtil.assertShareSucceed(device);
     }
 

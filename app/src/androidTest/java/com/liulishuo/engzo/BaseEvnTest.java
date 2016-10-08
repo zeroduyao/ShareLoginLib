@@ -20,6 +20,8 @@ import static org.junit.Assert.assertThat;
  * @date 2016/10/6
  * 
  * https://github.com/googlesamples/android-testing/blob/master/ui/uiautomator/BasicSample/app/src/androidTest/java/com/example/android/testing/uiautomator/BasicSample/ChangeTextBehaviorTest.java
+ * 
+ * adb shell uiautomator events
  */
 @RunWith(AndroidJUnit4.class)
 @LargeTest

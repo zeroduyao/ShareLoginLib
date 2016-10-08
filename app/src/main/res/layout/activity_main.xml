@@ -18,6 +18,37 @@
         tools:background="#aaaaaa"
         />
 
+    <RadioGroup
+        android:id="@+id/share_type_rg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right|top"
+        android:layout_marginTop="20dp"
+        android:orientation="vertical"
+        >
+
+        <RadioButton
+            android:id="@+id/rich_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="图文页"
+            />
+
+        <RadioButton
+            android:id="@+id/only_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="仅文字"
+            />
+
+        <RadioButton
+            android:id="@+id/only_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="仅图片"
+            />
+    </RadioGroup>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -47,7 +78,7 @@
             android:onClick="onClick"
             android:text="分享给QQ好友"
             />
-        
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -69,6 +100,7 @@
             android:onClick="onClick"
             android:text="分享到微博"
             />
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -98,36 +130,6 @@
             android:onClick="onClick"
             android:text="分享到微信朋友圈"
             />
-
-        <RadioGroup
-            android:id="@+id/share_type_rg"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:orientation="horizontal"
-            >
-
-            <RadioButton
-                android:id="@+id/rich_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="图文"
-                />
-
-            <RadioButton
-                android:id="@+id/only_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="仅文字"
-                />
-
-            <RadioButton
-                android:id="@+id/only_image"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="仅图片"
-                />
-        </RadioGroup>
 
         <LinearLayout
             android:layout_width="match_parent"

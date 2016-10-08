@@ -15,8 +15,8 @@ import android.support.test.uiautomator.UiObject2;
 import android.support.test.uiautomator.Until;
 
 import static android.support.test.uiautomator.Until.findObject;
-import static com.liulishuo.engzo.utils.Constant.APPLICATION_PACKAGE;
-import static com.liulishuo.engzo.utils.Constant.MAX_TIMEOUT;
+import static com.liulishuo.engzo.Constant.APPLICATION_PACKAGE;
+import static com.liulishuo.engzo.Constant.MAX_TIMEOUT;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;

@@ -1,6 +1,6 @@
 package com.liulishuo.engzo.login;
 
-import com.liulishuo.engzo.utils.Constant;
+import com.liulishuo.engzo.Constant;
 import com.liulishuo.engzo.utils.TestUtil;
 import com.liulishuo.engzo.utils.With;
 
@@ -16,6 +16,9 @@ import android.support.test.filters.SdkSuppress;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.test.uiautomator.By;
 import android.support.test.uiautomator.UiDevice;
+import android.support.test.uiautomator.UiObject2;
+import android.support.test.uiautomator.UiObjectNotFoundException;
+import android.support.test.uiautomator.Until;
 
 import static android.support.test.uiautomator.Until.findObject;
 
@@ -47,15 +50,24 @@ public class WeiBoLoginTest {
     }
 
     @Test
-    public void testLoginSuccess() throws Exception {
-        device.findObject(By.res("com.sina.weibo", "bnLogin")).click();
+    public void testLoginSuccess() {
+        UiObject2 login = device.findObject(By.res("com.sina.weibo", "bnLogin"));
+        if (login != null) {
+            login.click();
+        }
         TestUtil.assertLoginSucceed(device);
     }
 
     @Test
-    public void testLoginCancelByClient() {
-        device.findObject(By.res("com.sina.weibo:id/titleBack")).click();
-        TestUtil.assertLoginCanceled(device);
+   public void testLoginCancelByClient() throws UiObjectNotFoundException {
+        UiObject2 cancel = device.wait(Until.findObject(By.text("取消")), 1000);
+        if (cancel != null) {
+            cancel.click();
+            TestUtil.assertLoginCanceled(device);
+        } else {
+            // 新版微博登录没办法取消了
+            TestUtil.assertLoginSucceed(device);
+        } 
     }
 
     @Test

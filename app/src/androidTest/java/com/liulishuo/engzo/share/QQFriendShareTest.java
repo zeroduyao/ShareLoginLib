@@ -18,6 +18,7 @@ import android.support.test.uiautomator.UiDevice;
 import android.support.test.uiautomator.UiObjectNotFoundException;
 import android.support.test.uiautomator.UiSelector;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.TextView;
 
 /**
@@ -49,7 +50,11 @@ public class QQFriendShareTest {
 
     @Test
     public void testShareSuccess() throws Exception {
-        UiSelector firstFriendItem = With.clazz(View.class).childSelector(With.index(5));
+        UiSelector firstFriendItem = With.clazz(AbsListView.class).childSelector(With.index(6));
+        firstFriendItem = null;
+        if (firstFriendItem == null) {
+            firstFriendItem = With.clazz(View.class).childSelector(With.index(5));
+        }
         device.findObject(firstFriendItem).click();
         device.findObject(By.res("com.tencent.mobileqq:id/input")).setText("test by kale");
         device.findObject(With.text("发送")).clickAndWaitForNewWindow();

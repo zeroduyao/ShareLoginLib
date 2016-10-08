@@ -18,7 +18,7 @@ import android.support.test.uiautomator.UiDevice;
 import android.widget.ImageView;
 
 import static android.support.test.uiautomator.Until.findObject;
-import static com.liulishuo.engzo.utils.Constant.MAX_TIMEOUT;
+import static com.liulishuo.engzo.Constant.MAX_TIMEOUT;
 
 /**
  * @author Kale

@@ -22,4 +22,12 @@ public final class With {
     public static UiSelector index(int index) {
         return new UiSelector().index(index);
     }
+
+    public static UiSelector res(String id) {
+        return new UiSelector().resourceId(id);
+    }
+
+    public static UiSelector desc(String desc) {
+        return new UiSelector().description(desc);
+    }
 }

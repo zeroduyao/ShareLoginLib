@@ -49,6 +49,7 @@ public class WeiXinLoginTest {
     public void testLoginSuccess() throws Exception {
         device.waitForIdle();
         device.click(427, 789); // WebView
+        device.click(560, 1179); // second click
         TestUtil.assertLoginSucceed(device);
     }
 

@@ -1,4 +1,4 @@
-package com.liulishuo.engzo.utils;
+package com.liulishuo.engzo;
 
 /**
  * @author Kale
