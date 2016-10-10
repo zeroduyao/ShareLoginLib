@@ -169,7 +169,7 @@ ShareBlock.init(config);
 - 当开启不保留活动后，有可能会出现界面的显示异常，这个和第三方的应用有密切关系，微博尤其明显。  
 
 ## LICENCE
--------------------------
+
   The MIT License (MIT)
 
   Copyright (c) 2015 LingoChamp Inc.
