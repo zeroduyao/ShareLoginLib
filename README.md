@@ -8,6 +8,27 @@ ShareLoginLib likes simple sharesdk or umeng in China . It is a tool to help dev
 ## 示例
 ![](./screenshot/login.png) ![](./screenshot/share.png) ![](./screenshot/wechat.png)
 
+## 添加依赖
+
+1.在项目外层的build.gradle中添加JitPack仓库
+
+```
+repositories {
+	maven {
+		url "https://jitpack.io"
+	}
+}
+```
+
+2.在用到的项目中添加依赖  
+>	compile 'com.github.tianzhijiexian:ShareLoginLib:[Latest release](https://github.com/tianzhijiexian/ShareLoginLib/releases)(<-click it)'  
+
+**举例：**
+```
+compile 'com.github.tianzhijiexian:ShareLoginLib:1.3.7'
+```
+
+
 ## 如何使用
 ### 登录、分享  
 ```JAVA  
