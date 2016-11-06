@@ -39,6 +39,7 @@ public class BaseEvnTest {
 
     @Test
     public void checkPreconditions() throws Exception {
+        uiDevice.waitForIdle(6000);//空6s
         assertThat(uiDevice, notNullValue());
     }
 
