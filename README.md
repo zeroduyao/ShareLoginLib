@@ -29,7 +29,21 @@ compile 'com.github.tianzhijiexian:ShareLoginLib:1.3.7'
 ```
 
 
-## 如何使用
+## 使用
+
+### 配置项目参数
+```java  
+Config config = Config.getInstance()
+            .debug(true)
+            .appName("Test App")
+            .picTempFile(this)
+            .qq(QQ_APPID, QQ_SCOPE)
+            .weiXin(WEIXIN_APPID, WEIXIN_SECRET)
+            .weiBo(WEIBO_APPID, WEIBO_REDIRECT_URL, WEIBO_SCOPE);
+
+ShareBlock.init(config);
+```  
+
 ### 登录、分享  
 ```JAVA  
 // 登录
@@ -81,29 +95,8 @@ UserInfoManager.getUserInfo(context, LoginType.【WeiBo,WeiXin,QQ】, accessToke
 更多详细的操作请参考项目的demo。
 
 ## 配置工作
-因为本项目需要签名和第三方认证，所以使用者要在第三方（qq/weibo/weixin）网站进行注册后才可测试。**本库作者是不会提供任何和签名、密码、AppId等有关信息的。**
 
-注意：第三方的登录和分享功能均需要在**已签名**的app中进行测试
-
-### 1. 添加混淆参数
-```  
-# ———————— 微信 ————————
--keep class com.tencent.mm.sdk.** { *;}
-
-# ———————— 微博 ————————   
--keep class com.sina.weibo.sdk.api.* { *; }
-
-# ———————— QQ ————————
--keep class com.tencent.open.TDialog$*
--keep class com.tencent.open.TDialog$* {*;}
--keep class com.tencent.open.PKDialog
--keep class com.tencent.open.PKDialog {*;}
--keep class com.tencent.open.PKDialog$*
--keep class com.tencent.open.PKDialog$* {*;}
-```  
-
-### 2. 在主包名下新建wxapi这个包，然后放入WXEntryActivity  
-Activity的写法如下：  
+### 1. 在主包名下新建wxapi这个包，然后放入WXEntryActivity  
 
 ```JAVA   
 package 你自己的包名.wxapi;
@@ -121,10 +114,10 @@ import com.liulishuo.share.weixin.WeiXinHandlerActivity;
 public class WXEntryActivity extends WeiXinHandlerActivity {}
 ```
 
-### 3. 在build.gradle中配置QQ的key
+### 2. 在build.gradle中配置QQ的key
 ```JAVA
 defaultConfig {
-    applicationId "xxx.xxx.xxx" // 换成你的包名
+    applicationId "xxx.xxx.xxx" // 你的包名
     minSdkVersion 15
     targetSdkVersion 23
 
@@ -135,7 +128,7 @@ defaultConfig {
 }
 ```
 
-### 4. 在gradle.properties中配置常量
+### 3. 在gradle.properties中配置常量
 这里分两种情况：  
 
 **1.** 如果你要运行该项目给出的demo，那么请先在本地建立一个`gradle.properties`文件，然后配置下下列必要的信息   
@@ -145,7 +138,7 @@ STORE_FILE_PATH xxxxx
 STORE_PASSWORD xxxxx
 KEY_ALIAS xxxxx
 KEY_PASSWORD xxxxx
-TENCENT_AUTHID tencent206120
+TENCENT_AUTHID tencentxxxx
 ```
 
 **2.** 如果你是在自己项目中通过gradle依赖了本库，只需要保证可签名即可
@@ -161,20 +154,12 @@ signingConfigs {
 }
 ```
 
-最后运行签名后的apk。
+最后运行签名后的apk即可。
 
-### 5. 在使用功能前进行注册  
-```java  
-Config config = Config.getInstance()
-            .debug(true)
-            .appName("Test App")
-            .picTempFile(this)
-            .qq(QQ_APPID, QQ_SCOPE)
-            .weiXin(WEIXIN_APPID, WEIXIN_SECRET)
-            .weiBo(WEIBO_APPID, WEIBO_REDIRECT_URL, WEIBO_SCOPE);
+## 重要说明
+因为本项目需要签名和第三方认证，所以使用者要在第三方（qq/weibo/weixin）网站进行注册后才可测试。**本库作者是不会提供任何和签名、密码、AppId等有关信息的。**
 
-ShareBlock.init(config);
-```  
+**注意：第三方的登录和分享功能均需要在【已签名】的app中进行测试**
 
 ## 测试环境  
 1. 开启不保留活动
