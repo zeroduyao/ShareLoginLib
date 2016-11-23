@@ -31,7 +31,17 @@ compile 'com.github.tianzhijiexian:ShareLoginLib:1.3.7'
 
 ## 使用
 
-### 配置项目参数
+### 在Application上配置注解
+
+```java
+@ShareLoginApp(packageName = BuildConfig.APPLICATION_ID)
+public class AppApplication extends Application {
+	 // ...
+}
+```
+这里写上你的项目包名或者你可以通过`BuildConfig.APPLICATION_ID`的值来代替。
+
+### 初始化第三方sdk的参数
 ```java  
 Config config = Config.getInstance()
             .debug(true)
@@ -42,7 +52,7 @@ Config config = Config.getInstance()
             .weiBo(WEIBO_APPID, WEIBO_REDIRECT_URL, WEIBO_SCOPE);
 
 ShareBlock.init(config);
-```  
+```
 
 ### 登录、分享  
 ```JAVA  
@@ -96,25 +106,8 @@ UserInfoManager.getUserInfo(context, LoginType.【WeiBo,WeiXin,QQ】, accessToke
 
 ## 配置工作
 
-### 1. 在主包名下新建wxapi这个包，然后放入WXEntryActivity  
+### 1. 在build.gradle中配置QQ的key  
 
-```JAVA   
-package 你自己的包名.wxapi;
-import com.liulishuo.share.weixin.WeiXinHandlerActivity;
-
-/**
- * -----------------------------------------------------------------------
- * 这是微信客户端回调activity.
- * 必须在项目包名下的wxapi中定义，类名也不能改。奇葩到一定境界了！
- * eg:com.kale.share是你的项目包名，那么这个类一定要放在com.kale.share.wxapi中才行。
- * 而且千万不要更改类名，请保持WXEntryActivity不变
- * WTF：真是微信蠢到家的设计，太愚蠢了
- * -----------------------------------------------------------------------
- */
-public class WXEntryActivity extends WeiXinHandlerActivity {}
-```
-
-### 2. 在build.gradle中配置QQ的key
 ```JAVA
 defaultConfig {
     applicationId "xxx.xxx.xxx" // 你的包名
@@ -128,9 +121,9 @@ defaultConfig {
 }
 ```
 
-### 3. 在gradle.properties中配置常量
-这里分两种情况：  
+### 2. 在gradle.properties中配置常量
 
+这里分两种情况：  
 **1.** 如果你要运行该项目给出的demo，那么请先在本地建立一个`gradle.properties`文件，然后配置下下列必要的信息   
 
 ```
@@ -145,7 +138,7 @@ TENCENT_AUTHID tencentxxxx
 ```
 signingConfigs {
     release {
-        // 这里换成你自己的签名等信息
+        // 这里换成你自己的签名、密码等信息
         storeFile file(STORE_FILE_PATH)
         storePassword STORE_PASSWORD
         keyAlias KEY_ALIAS
