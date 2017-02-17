@@ -65,7 +65,8 @@ android {
 
 dependencies {
     compile project(':share')
-
+    annotationProcessor project(':apt')
+    
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.android.support:appcompat-v7:24.2.1'
 
