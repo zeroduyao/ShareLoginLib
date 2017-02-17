@@ -1,15 +1,15 @@
 package com.liulishuo.share;
 
-import com.liulishuo.share.content.ShareContent;
-import com.liulishuo.share.qq.SL_QQShareActivity;
-import com.liulishuo.share.type.ShareType;
-import com.liulishuo.share.weibo.SL_WeiBoShareActivity;
-import com.liulishuo.share.weixin.WeiXinShareManager;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+
+import com.liulishuo.share.activity.SL_QQHandlerActivity;
+import com.liulishuo.share.activity.SL_WeiBoHandlerActivity;
+import com.liulishuo.share.activity.SL_WeiXinHandlerActivity;
+import com.liulishuo.share.content.ShareContent;
+import com.liulishuo.share.type.ShareType;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -42,9 +42,12 @@ public class ShareManager {
             case QQ_FRIEND:
             case QQ_ZONE:
                 if (ShareBlock.isQQInstalled(activity)) {
-                    activity.startActivity(new Intent(activity, SL_QQShareActivity.class)
-                            .putExtra(SL_QQShareActivity.KEY_TO_FRIEND, shareType.equals(QQ_FRIEND))
-                            .putExtra(KEY_CONTENT, shareContent));
+                    activity.startActivity(
+                            new Intent(activity, SL_QQHandlerActivity.class)
+                                    .putExtra(SL_QQHandlerActivity.KEY_TO_FRIEND, shareType.equals(QQ_FRIEND))
+                                    .putExtra(KEY_CONTENT, shareContent)
+                                    .putExtra(ShareBlock.KEY_IS_LOGIN_TYPE, false)
+                    );
                     activity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                 } else if (listener != null) {
                     listener.onError("未安装QQ");
@@ -52,8 +55,11 @@ public class ShareManager {
                 break;
             case WEIBO_TIME_LINE:
                 if (ShareBlock.isWeiBoInstalled(activity)) {
-                    activity.startActivity(new Intent(activity, SL_WeiBoShareActivity.class)
-                            .putExtra(KEY_CONTENT, shareContent));
+                    activity.startActivity(
+                            new Intent(activity, SL_WeiBoHandlerActivity.class)
+                                    .putExtra(KEY_CONTENT, shareContent)
+                                    .putExtra(ShareBlock.KEY_IS_LOGIN_TYPE, false)
+                    );
                     activity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                 } else if (listener != null) {
                     listener.onError("未安装微博");
@@ -62,7 +68,7 @@ public class ShareManager {
             case WEIXIN_FRIEND:
             case WEIXIN_FRIEND_ZONE:
                 if (ShareBlock.isWeiXinInstalled(activity)) {
-                    new WeiXinShareManager().sendShareMsg(activity.getApplicationContext(), shareContent, shareType);
+                    new SL_WeiXinHandlerActivity().sendShareMsg(activity.getApplicationContext(), shareContent, shareType);
                 } else if (listener != null) {
                     listener.onError("未安装微信");
                 }

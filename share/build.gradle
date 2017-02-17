@@ -8,6 +8,10 @@ android {
         minSdkVersion 9
         targetSdkVersion 24
         consumerProguardFiles 'consumer-proguard-rules.pro'
+        manifestPlaceholders = [
+                // 这里的tencent123456是暂时测试用的appId
+                "tencentAuthId": "tencent123456",
+        ]
     }
 
     buildTypes {

@@ -107,7 +107,7 @@ Activity的写法如下：
 
 ```JAVA   
 package 你自己的包名.wxapi;
-import com.liulishuo.share.weixin.WeiXinHandlerActivity;
+import com.liulishuo.share.activity.SL_WeiXinHandlerActivity;
 
 /**
  * -----------------------------------------------------------------------

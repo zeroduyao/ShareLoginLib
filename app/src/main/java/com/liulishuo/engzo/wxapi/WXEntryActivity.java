@@ -5,7 +5,7 @@ package com.liulishuo.engzo.wxapi;
  */
 
 
-import com.liulishuo.share.weixin.WeiXinHandlerActivity;
+import com.liulishuo.share.activity.SL_WeiXinHandlerActivity;
 
 /**
  * -----------------------------------------------------------------------
@@ -16,6 +16,6 @@ import com.liulishuo.share.weixin.WeiXinHandlerActivity;
  * WTF：真是微信蠢到家的设计，太愚蠢了
  * -----------------------------------------------------------------------
  */
-public class WXEntryActivity extends WeiXinHandlerActivity {
+public class WXEntryActivity extends SL_WeiXinHandlerActivity {
 
 }

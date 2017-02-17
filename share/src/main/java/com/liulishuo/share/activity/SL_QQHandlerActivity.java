@@ -1,14 +1,8 @@
-package com.liulishuo.share.qq;
+package com.liulishuo.share.activity;
 
-import com.liulishuo.share.ShareBlock;
-import com.liulishuo.share.ShareManager;
-import com.liulishuo.share.content.ShareContent;
-import com.liulishuo.share.type.ContentType;
-import com.tencent.connect.share.QQShare;
-import com.tencent.connect.share.QzoneShare;
-import com.tencent.tauth.IUiListener;
-import com.tencent.tauth.Tencent;
-import com.tencent.tauth.UiError;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -18,17 +12,31 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
+import com.liulishuo.share.LoginManager;
+import com.liulishuo.share.ShareBlock;
+import com.liulishuo.share.ShareManager;
+import com.liulishuo.share.content.ShareContent;
+import com.liulishuo.share.type.ContentType;
+import com.tencent.connect.common.Constants;
+import com.tencent.connect.share.QQShare;
+import com.tencent.connect.share.QzoneShare;
+import com.tencent.tauth.IUiListener;
+import com.tencent.tauth.Tencent;
+import com.tencent.tauth.UiError;
+
+import org.json.JSONObject;
 
 /**
  * @author Jack Tony
  * @date 2015/10/26
  */
-public class SL_QQShareActivity extends Activity {
+public class SL_QQHandlerActivity extends Activity {
 
     public static final String KEY_TO_FRIEND = "key_to_friend";
+
+    private IUiListener mUiListener;
+
+    private boolean mIsLogin = true;
 
     private boolean isToFriend;
 
@@ -37,28 +45,93 @@ public class SL_QQShareActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // 无论是否是恢复的activity，都要先初始化监听器，否则开启不保留活动后监听器对象就是null
-        uiListener = initListener(ShareManager.listener);
         Intent intent = getIntent();
-        isToFriend = intent.getBooleanExtra(KEY_TO_FRIEND, true);
+        mIsLogin = intent.getBooleanExtra(ShareBlock.KEY_IS_LOGIN_TYPE, true);
 
-        if (savedInstanceState == null) { // 防止不保留活动情况下activity被重置后直接进行操作的情况
-            ShareContent shareContent = (ShareContent) intent.getSerializableExtra(ShareManager.KEY_CONTENT);
-            doShare(shareContent);
+        if (mIsLogin) {
+            String appId = ShareBlock.Config.qqAppId;
+            if (TextUtils.isEmpty(appId)) {
+                throw new NullPointerException("请通过shareBlock初始化appId");
+            }
+
+            if (savedInstanceState == null) { // 防止不保留活动情况下activity被重置后直接进行操作的情况
+                doLogin(this, appId, LoginManager.listener);
+            }
+        } else {
+            // 无论是否是恢复的activity，都要先初始化监听器，否则开启不保留活动后监听器对象就是null
+            uiListener = initListener(ShareManager.listener);
+            isToFriend = intent.getBooleanExtra(KEY_TO_FRIEND, true);
+
+            if (savedInstanceState == null) { // 防止不保留活动情况下activity被重置后直接进行操作的情况
+                doShare((ShareContent) intent.getSerializableExtra(ShareManager.KEY_CONTENT));
+            }
         }
     }
 
     /**
-     * 解析分享的结果
+     * 解析用户登录的结果
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (uiListener != null && data != null) {
-            Tencent.handleResultData(data, uiListener);
+        if (mIsLogin) {
+            Tencent.onActivityResultData(requestCode, resultCode, data, mUiListener);
+            finish();
+        } else {
+            if (uiListener != null && data != null) {
+                Tencent.handleResultData(data, uiListener);
+            }
+            finish();
         }
-        finish();
     }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // login
+    ///////////////////////////////////////////////////////////////////////////
+
+    private void doLogin(Activity activity, String appId, final LoginManager.LoginListener listener) {
+        Tencent tencent = Tencent.createInstance(appId, activity.getApplicationContext());
+        mUiListener = new IUiListener() {
+            @Override
+            public void onComplete(Object object) {
+                if (listener != null) {
+                    JSONObject jsonObject = ((JSONObject) object);
+                    try {
+                        String token = jsonObject.getString(Constants.PARAM_ACCESS_TOKEN);
+                        String openId = jsonObject.getString(Constants.PARAM_OPEN_ID);
+                        String expires = jsonObject.getString(Constants.PARAM_EXPIRES_IN);
+                        listener.onSuccess(token, openId, Long.valueOf(expires), object.toString());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onError(UiError uiError) {
+                if (listener != null) {
+                    listener.onError(uiError.errorCode + " - " + uiError.errorMessage + " - " + uiError.errorDetail);
+                }
+            }
+
+            @Override
+            public void onCancel() {
+                if (listener != null) {
+                    listener.onCancel();
+                }
+            }
+        };
+
+        if (!tencent.isSessionValid()) {
+            tencent.login(activity, ShareBlock.Config.qqScope, mUiListener);
+        } else {
+            tencent.logout(activity);
+        }
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // share
+    ///////////////////////////////////////////////////////////////////////////
 
     private void doShare(ShareContent shareContent) {
         String appId = ShareBlock.Config.qqAppId;
@@ -265,5 +338,4 @@ public class SL_QQShareActivity extends Activity {
             return null;
         }
     }
-
 }

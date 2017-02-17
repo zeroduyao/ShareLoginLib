@@ -1,9 +1,8 @@
 package com.liulishuo.share;
 
-import com.sina.weibo.sdk.api.share.IWeiboShareAPI;
-import com.sina.weibo.sdk.api.share.WeiboShareSDK;
-import com.tencent.mm.sdk.openapi.IWXAPI;
-import com.tencent.mm.sdk.openapi.WXAPIFactory;
+import java.io.File;
+import java.util.List;
+import java.util.Locale;
 
 import android.app.Application;
 import android.content.Context;
@@ -13,9 +12,10 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
-import java.io.File;
-import java.util.List;
-import java.util.Locale;
+import com.sina.weibo.sdk.api.share.IWeiboShareAPI;
+import com.sina.weibo.sdk.api.share.WeiboShareSDK;
+import com.tencent.mm.sdk.openapi.IWXAPI;
+import com.tencent.mm.sdk.openapi.WXAPIFactory;
 
 /**
  * Created by echo on 5/18/15.
@@ -25,6 +25,8 @@ import java.util.Locale;
  * @see :"http://wiki.open.qq.com/wiki/mobile/SDK%E4%B8%8B%E8%BD%BD"
  */
 public class ShareBlock {
+
+    public static final String KEY_IS_LOGIN_TYPE = "action_type";
 
     private static Config config;
 

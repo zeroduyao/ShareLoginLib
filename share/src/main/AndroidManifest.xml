@@ -14,15 +14,7 @@
         <!-- ============================= weibo ============================= -->
 
         <activity
-            android:name=".weibo.SL_WeiBoLoginActivity"
-            android:configChanges="keyboardHidden|orientation"
-            android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar"
-            />
-
-        <!-- 调用微博分享的activity需要按照下方进行设置intent-filter -->
-        <activity
-            android:name=".weibo.SL_WeiBoShareActivity"
+            android:name=".activity.SL_WeiBoHandlerActivity"
             android:configChanges="keyboardHidden|orientation"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Translucent.NoTitleBar"
@@ -44,7 +36,7 @@
         <!-- ============================= qq ============================= -->
 
         <activity
-            android:name=".qq.SL_QQLoginActivity"
+            android:name=".activity.SL_QQHandlerActivity"
             android:configChanges="keyboardHidden|orientation"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Translucent.NoTitleBar"
