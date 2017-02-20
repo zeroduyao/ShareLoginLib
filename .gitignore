@@ -12,3 +12,4 @@ local.properties
 .gradle/
 /build
 app/src/signed/
+signing.properties

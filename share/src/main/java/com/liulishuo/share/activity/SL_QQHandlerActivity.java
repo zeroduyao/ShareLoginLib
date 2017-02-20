@@ -3,6 +3,7 @@ package com.liulishuo.share.activity;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -29,12 +30,13 @@ import org.json.JSONObject;
 /**
  * @author Jack Tony
  * @date 2015/10/26
+ *
+ * http://wiki.connect.qq.com/sdk%E4%B8%8B%E8%BD%BD
+ * http://wiki.open.qq.com/wiki/mobile/API%E8%B0%83%E7%94%A8%E8%AF%B4%E6%98%8E
  */
 public class SL_QQHandlerActivity extends Activity {
 
     public static final String KEY_TO_FRIEND = "key_to_friend";
-
-    private IUiListener mUiListener;
 
     private boolean mIsLogin = true;
 
@@ -54,7 +56,8 @@ public class SL_QQHandlerActivity extends Activity {
                 throw new NullPointerException("请通过shareBlock初始化appId");
             }
 
-            if (savedInstanceState == null) { // 防止不保留活动情况下activity被重置后直接进行操作的情况
+            if (savedInstanceState == null) {
+                // 防止不保留活动情况下activity被重置后直接进行操作的情况
                 doLogin(this, appId, LoginManager.listener);
             }
         } else {
@@ -62,20 +65,20 @@ public class SL_QQHandlerActivity extends Activity {
             uiListener = initListener(ShareManager.listener);
             isToFriend = intent.getBooleanExtra(KEY_TO_FRIEND, true);
 
-            if (savedInstanceState == null) { // 防止不保留活动情况下activity被重置后直接进行操作的情况
+            if (savedInstanceState == null) {
+                // 防止不保留活动情况下activity被重置后直接进行操作的情况
                 doShare((ShareContent) intent.getSerializableExtra(ShareManager.KEY_CONTENT));
             }
         }
     }
 
-    /**
-     * 解析用户登录的结果
-     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (mIsLogin) {
-            Tencent.onActivityResultData(requestCode, resultCode, data, mUiListener);
+            Tencent.handleResultData(data, uiListener);
+
+//            Tencent.onActivityResultData(requestCode, resultCode, data, mUiListener);
             finish();
         } else {
             if (uiListener != null && data != null) {
@@ -91,7 +94,7 @@ public class SL_QQHandlerActivity extends Activity {
 
     private void doLogin(Activity activity, String appId, final LoginManager.LoginListener listener) {
         Tencent tencent = Tencent.createInstance(appId, activity.getApplicationContext());
-        mUiListener = new IUiListener() {
+        uiListener = new IUiListener() {
             @Override
             public void onComplete(Object object) {
                 if (listener != null) {
@@ -123,7 +126,7 @@ public class SL_QQHandlerActivity extends Activity {
         };
 
         if (!tencent.isSessionValid()) {
-            tencent.login(activity, ShareBlock.Config.qqScope, mUiListener);
+            tencent.login(activity, ShareBlock.Config.qqScope, uiListener);
         } else {
             tencent.logout(activity);
         }
@@ -132,21 +135,6 @@ public class SL_QQHandlerActivity extends Activity {
     ///////////////////////////////////////////////////////////////////////////
     // share
     ///////////////////////////////////////////////////////////////////////////
-
-    private void doShare(ShareContent shareContent) {
-        String appId = ShareBlock.Config.qqAppId;
-        if (TextUtils.isEmpty(appId)) {
-            throw new NullPointerException("请通过shareBlock初始化QQAppId");
-        }
-        Tencent tencent = Tencent.createInstance(appId, getApplicationContext());
-        if (isToFriend) {
-            Bundle params = getShareToQQBundle(shareContent);
-            tencent.shareToQQ(this, params, uiListener);
-        } else {
-            Bundle params = getShareToQZoneBundle(shareContent);
-            tencent.shareToQzone(this, params, uiListener);
-        }
-    }
 
     private IUiListener initListener(final ShareManager.ShareStateListener listener) {
         return new IUiListener() {
@@ -175,9 +163,24 @@ public class SL_QQHandlerActivity extends Activity {
         };
     }
 
+    private void doShare(ShareContent shareContent) {
+        String appId = ShareBlock.Config.qqAppId;
+        if (TextUtils.isEmpty(appId)) {
+            throw new NullPointerException("请通过shareBlock初始化QQAppId");
+        }
+        Tencent tencent = Tencent.createInstance(appId, getApplicationContext());
+        if (isToFriend) {
+            Bundle params = createQQBundle(shareContent);
+            tencent.shareToQQ(this, params, uiListener);
+        } else {
+            Bundle params = createQZoneBundle(shareContent);
+            tencent.shareToQzone(this, params, uiListener);
+        }
+    }
+
     private
     @NonNull
-    Bundle getShareToQQBundle(ShareContent shareContent) {
+    Bundle createQQBundle(ShareContent shareContent) {
         Bundle bundle;
         switch (shareContent.getType()) {
             case ContentType.TEXT:
@@ -225,15 +228,6 @@ public class SL_QQHandlerActivity extends Activity {
         params.putString(QQShare.SHARE_TO_QQ_TITLE, shareContent.getTitle()); // 标题
         params.putString(QQShare.SHARE_TO_QQ_SUMMARY, shareContent.getSummary()); // 描述
         params.putString(QQShare.SHARE_TO_QQ_TARGET_URL, shareContent.getURL()); // 这条分享消息被好友点击后的跳转URL
-
-        // 如果是分享纯图片，那么就不多余传递图片url
-        if (!params.containsKey(QQShare.SHARE_TO_QQ_IMAGE_LOCAL_URL)) {
-            String uri = getImageUri(shareContent, false);
-            if (uri != null) {
-                params.putString(QQShare.SHARE_TO_QQ_IMAGE_URL, uri); // 分享图片的URL或者本地路径 (可选)
-            }
-        }
-
         params.putString(QQShare.SHARE_TO_QQ_APP_NAME, ShareBlock.Config.appName); // 手Q客户端顶部，替换“返回”按钮文字，如果为空，用返回代替 (可选)
         return params;
     }
@@ -247,9 +241,13 @@ public class SL_QQHandlerActivity extends Activity {
     private Bundle getImageObj(ShareContent shareContent) {
         final Bundle params = new Bundle();
         params.putInt(QQShare.SHARE_TO_QQ_KEY_TYPE, QQShare.SHARE_TO_QQ_TYPE_IMAGE); // 标识分享的是纯图片 (必填)
-        String uri = getImageUri(shareContent, true);
+        String uri = getImageUri(shareContent);
         if (uri != null) {
-            params.putString(QQShare.SHARE_TO_QQ_IMAGE_LOCAL_URL, uri); // 信息中的图片 (必填)
+            if (uri.startsWith("http")) {
+                params.putString(QQShare.SHARE_TO_QQ_IMAGE_URL, uri); // net uri
+            } else {
+                params.putString(QQShare.SHARE_TO_QQ_IMAGE_LOCAL_URL, uri); // local uri
+            }
         }
         params.putInt(QQShare.SHARE_TO_QQ_EXT_INT, QQShare.SHARE_TO_QQ_FLAG_QZONE_AUTO_OPEN); // (可选)
         return params;
@@ -282,13 +280,13 @@ public class SL_QQHandlerActivity extends Activity {
      *
      * 如果分享的图片url是本地的图片地址那么在分享时会显示图片，如果分享的是图片的网址，那么就不会在分享时显示图片
      */
-    private Bundle getShareToQZoneBundle(ShareContent shareContent) {
+    private Bundle createQZoneBundle(ShareContent shareContent) {
         Bundle params = new Bundle();
         params.putInt(QzoneShare.SHARE_TO_QZONE_KEY_TYPE, QzoneShare.SHARE_TO_QZONE_TYPE_IMAGE_TEXT);
         String title = shareContent.getTitle();
         if (title == null) {
             // 如果没title，说明就是分享的纯文字、纯图片
-            Log.e("Share by qq zone", "QQ空间目前只支持分享图文信息，title is null");
+            Log.e("Share by qq zone", "QQ空间目前只支持分享图文信息");
             finish();
         }
         params.putString(QzoneShare.SHARE_TO_QQ_TITLE, title); // 标题
@@ -296,34 +294,29 @@ public class SL_QQHandlerActivity extends Activity {
         params.putString(QzoneShare.SHARE_TO_QQ_TARGET_URL, shareContent.getURL()); // 点击后跳转的url
 
         // 分享的图片, 以ArrayList<String>的类型传入，以便支持多张图片 （注：图片最多支持9张图片，多余的图片会被丢弃）。
-        String uri = getImageUri(shareContent, false);
-        if (uri != null) {
-            ArrayList<String> uris = new ArrayList<>(); // 图片的ArrayList
-            uris.add(uri);
-            params.putStringArrayList(QzoneShare.SHARE_TO_QQ_IMAGE_URL, uris);
-        }
+        params.putStringArrayList(QzoneShare.SHARE_TO_QQ_IMAGE_URL, new ArrayList<>(Collections.singletonList(getImageUri(shareContent))));
         return params;
     }
 
     @Nullable
-    private String getImageUri(@NonNull ShareContent content, boolean forceUseLocal) {
-        String url = content.getImagePicUrl();
+    private String getImageUri(@NonNull ShareContent content) {
+        String netUrl = content.getImagePicUrl();
         String path = ShareBlock.Config.pathTemp;
         byte[] bytes = content.getImageBmpBytes();
 
-        if (forceUseLocal) {
-            url = null;
-        }
-
-        if (!TextUtils.isEmpty(url)) {
-            if (url.startsWith("https")) {
-                return null;
-            } else if (url.startsWith("http")) {
-                return url;
+        // 优先取网络图片
+        if (!TextUtils.isEmpty(netUrl)) {
+            if (netUrl.startsWith("https")) {
+                return null; // qq不支持https
+            } else if (netUrl.startsWith("http")) {
+                return netUrl;
             } else {
                 return null;
             }
-        } else if (!TextUtils.isEmpty(path) && bytes != null) {
+        }
+
+        // 取本地图片
+        if (!TextUtils.isEmpty(path) && bytes != null) {
             String imagePath = path + "sharePic_temp";
             try {
                 FileOutputStream fos = new FileOutputStream(imagePath);

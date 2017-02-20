@@ -49,6 +49,7 @@ public class LoginManager {
             case WEIXIN:
                 if (ShareBlock.isWeiXinInstalled(activity)) {
                     SL_WeiXinHandlerActivity.login(activity.getApplicationContext());
+                    activity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                 } else {
                     if (listener != null) {
                         listener.onError("未安装微信");

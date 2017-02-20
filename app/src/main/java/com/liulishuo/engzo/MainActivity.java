@@ -1,16 +1,8 @@
 package com.liulishuo.engzo;
 
-import com.liulishuo.demo.R;
-import com.liulishuo.share.LoginManager;
-import com.liulishuo.share.ShareBlock;
-import com.liulishuo.share.ShareManager;
-import com.liulishuo.share.content.ShareContent;
-import com.liulishuo.share.content.ShareContentPic;
-import com.liulishuo.share.content.ShareContentText;
-import com.liulishuo.share.content.ShareContentWebPage;
-import com.liulishuo.share.type.LoginType;
-import com.liulishuo.share.type.ShareType;
-import com.squareup.picasso.Picasso;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -24,9 +16,17 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import com.liulishuo.demo.R;
+import com.liulishuo.share.LoginManager;
+import com.liulishuo.share.ShareBlock;
+import com.liulishuo.share.ShareManager;
+import com.liulishuo.share.content.ShareContent;
+import com.liulishuo.share.content.ShareContentPic;
+import com.liulishuo.share.content.ShareContentText;
+import com.liulishuo.share.content.ShareContentWebPage;
+import com.liulishuo.share.type.LoginType;
+import com.liulishuo.share.type.ShareType;
+import com.squareup.picasso.Picasso;
 
 /**
  * 步骤：

@@ -18,33 +18,31 @@ import com.sina.weibo.sdk.exception.WeiboException;
 import com.sina.weibo.sdk.net.AsyncWeiboRunner;
 import com.sina.weibo.sdk.net.RequestListener;
 import com.sina.weibo.sdk.net.WeiboParameters;
-import com.tencent.mm.sdk.modelbase.BaseReq;
-import com.tencent.mm.sdk.modelbase.BaseResp;
-import com.tencent.mm.sdk.modelmsg.SendAuth;
-import com.tencent.mm.sdk.modelmsg.SendMessageToWX;
-import com.tencent.mm.sdk.modelmsg.WXImageObject;
-import com.tencent.mm.sdk.modelmsg.WXMediaMessage;
-import com.tencent.mm.sdk.modelmsg.WXMusicObject;
-import com.tencent.mm.sdk.modelmsg.WXTextObject;
-import com.tencent.mm.sdk.modelmsg.WXWebpageObject;
-import com.tencent.mm.sdk.openapi.IWXAPI;
-import com.tencent.mm.sdk.openapi.IWXAPIEventHandler;
-import com.tencent.mm.sdk.openapi.WXAPIFactory;
+import com.tencent.mm.opensdk.modelbase.BaseReq;
+import com.tencent.mm.opensdk.modelbase.BaseResp;
+import com.tencent.mm.opensdk.modelmsg.SendAuth;
+import com.tencent.mm.opensdk.modelmsg.SendMessageToWX;
+import com.tencent.mm.opensdk.modelmsg.WXImageObject;
+import com.tencent.mm.opensdk.modelmsg.WXMediaMessage;
+import com.tencent.mm.opensdk.modelmsg.WXMusicObject;
+import com.tencent.mm.opensdk.modelmsg.WXTextObject;
+import com.tencent.mm.opensdk.modelmsg.WXWebpageObject;
+import com.tencent.mm.opensdk.openapi.IWXAPI;
+import com.tencent.mm.opensdk.openapi.IWXAPIEventHandler;
+import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import static com.liulishuo.share.ShareBlock.Config.weiXinAppId;
-
 /**
  * Created by echo on 5/19/15.
  * 用来处理微信登录、微信分享的activity。这里真不知道微信非要个activity干嘛，愚蠢的设计!
- * 参考文档:https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=open1419317853&lang=zh_CN
+ * 参考文档: https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=open1419317853&lang=zh_CN
  */
 public class SL_WeiXinHandlerActivity extends Activity implements IWXAPIEventHandler {
 
     /**
-     * BaseResp的getType函数获得的返回值，1:第三方授权， 2:分享
+     * BaseResp的getType函数获得的返回值。1:第三方授权， 2:分享
      */
     private static final int TYPE_LOGIN = 1;
 
@@ -105,7 +103,7 @@ public class SL_WeiXinHandlerActivity extends Activity implements IWXAPIEventHan
     /**
      * 解析用户登录的结果
      */
-    protected static void parseLoginResp(final Activity activity, SendAuth.Resp resp,
+    protected void parseLoginResp(final Activity activity, SendAuth.Resp resp,
             @Nullable LoginManager.LoginListener listener) {
         // 有可能是listener传入的是null，也可能是调用静态方法前没初始化当前的类
 /*
@@ -116,7 +114,7 @@ public class SL_WeiXinHandlerActivity extends Activity implements IWXAPIEventHan
         if (listener != null) {
             switch (resp.errCode) {
                 case BaseResp.ErrCode.ERR_OK: // 登录成功
-                    handlerLoginResp(activity, resp, listener); // 登录成功后开始通过code换取token
+                    handlerLoginResp(activity, resp.code, listener); // 登录成功后开始通过code换取token
                     break;
                 case BaseResp.ErrCode.ERR_USER_CANCEL:
                     listener.onCancel();
@@ -130,24 +128,34 @@ public class SL_WeiXinHandlerActivity extends Activity implements IWXAPIEventHan
         }
     }
 
-    private static void handlerLoginResp(Context context, SendAuth.Resp resp,
+    /**
+     * 返回：
+     * {
+     * "access_token":"ACCESS_TOKEN", // token
+     * "expires_in":7200,
+     * "refresh_token":"REFRESH_TOKEN",
+     * "openid":"OPENID",
+     * "scope":"SCOPE",
+     * "unionid":"o6_bmasdasdsad6_2sgVt7hMZOPfL"
+     * }
+     */
+    private void handlerLoginResp(Context context, String code,
             final @Nullable LoginManager.LoginListener listener) {
 
-        AsyncWeiboRunner runner = new AsyncWeiboRunner(context);
         WeiboParameters params = new WeiboParameters(null);
-        params.put("appid", weiXinAppId);
+        params.put("appid", ShareBlock.Config.weiXinAppId);
         params.put("secret", ShareBlock.Config.weiXinSecret);
-        params.put("code", resp.code);
         params.put("grant_type", "authorization_code");
+        params.put("code", code);
 
-        runner.requestAsync("https://api.weixin.qq.com/sns/oauth2/access_token", params, "GET", new RequestListener() {
+        new AsyncWeiboRunner(context).requestAsync("https://api.weixin.qq.com/sns/oauth2/access_token", params, "GET", new RequestListener() {
             @Override
             public void onComplete(String s) {
                 try {
                     JSONObject jsonObject = new JSONObject(s);
-                    String token = jsonObject.getString("access_token");
-                    String openid = jsonObject.getString("openid");
-                    long expires_in = jsonObject.getLong("expires_in");
+                    String token = jsonObject.getString("access_token"); // 接口调用凭证
+                    String openid = jsonObject.getString("openid"); // 授权用户唯一标识
+                    long expires_in = jsonObject.getLong("expires_in"); // access_token接口调用凭证超时时间，单位（秒）
 
                     if (listener != null) {
                         listener.onSuccess(token, openid, expires_in, jsonObject.toString());
@@ -188,59 +196,37 @@ public class SL_WeiXinHandlerActivity extends Activity implements IWXAPIEventHan
 
         IWXAPI IWXAPI = WXAPIFactory.createWXAPI(context, weChatAppId, true);
         IWXAPI.registerApp(weChatAppId);
-
-        SendMessageToWX.Req req = getReq(shareContent, shareType);
-        IWXAPI.sendReq(req);
-    }
-
-    /**
-     * 解析分享到微信的结果
-     */
-    protected static void parseShareResp(BaseResp resp, ShareManager.ShareStateListener listener) {
-        if (listener != null) {
-            switch (resp.errCode) {
-                case BaseResp.ErrCode.ERR_OK:
-                    listener.onSuccess();
-                    break;
-                case BaseResp.ErrCode.ERR_USER_CANCEL:
-                    listener.onCancel();
-                    break;
-                case BaseResp.ErrCode.ERR_AUTH_DENIED:
-                    listener.onError("用户拒绝授权");
-                    break;
-                case BaseResp.ErrCode.ERR_SENT_FAILED:
-                    listener.onError("发送失败");
-                    break;
-                case BaseResp.ErrCode.ERR_COMM:
-                    listener.onError("一般错误");
-                    break;
-                default:
-                    listener.onError("未知错误");
-            }
-        }
+        IWXAPI.sendReq(createShareRequest(shareContent, shareType)); // factory
     }
 
     @NonNull
-    private SendMessageToWX.Req getReq(@NonNull ShareContent shareContent, @ShareType String shareType) {
+    private SendMessageToWX.Req createShareRequest(@NonNull ShareContent shareContent, @ShareType String shareType) {
         // 建立信息体
-        WXMediaMessage msg = new WXMediaMessage(getShareObject(shareContent));
+        WXMediaMessage msg = new WXMediaMessage();
         msg.title = shareContent.getTitle();
         msg.description = shareContent.getSummary();
-        msg.thumbData = shareContent.getImageBmpBytes();
+        msg.thumbData = shareContent.getImageBmpBytes(); // 这里没有做缩略图的配置，缩略图和原图是同一个对象
+        msg.mediaObject = createMediaObject(shareContent);
 
         // 发送信息
         SendMessageToWX.Req req = new SendMessageToWX.Req();
         req.transaction = String.valueOf(System.currentTimeMillis());
-        req.message = msg;
-        if (shareType.equals(ShareType.WEIXIN_FRIEND)) {
-            req.scene = SendMessageToWX.Req.WXSceneSession;
-        } else {
-            req.scene = SendMessageToWX.Req.WXSceneTimeline;
+        req.message = msg; // msg
+        switch (shareType) {
+            case ShareType.WEIXIN_FRIEND:
+                req.scene = SendMessageToWX.Req.WXSceneSession;
+                break;
+            case ShareType.WEIXIN_FRIEND_ZONE:
+                req.scene = SendMessageToWX.Req.WXSceneTimeline;
+                break;
+            case ShareType.WEIXIN_FAVORITE:
+                req.scene = SendMessageToWX.Req.WXSceneFavorite;
+                break;
         }
         return req;
     }
 
-    private WXMediaMessage.IMediaObject getShareObject(@NonNull ShareContent shareContent) {
+    private WXMediaMessage.IMediaObject createMediaObject(@NonNull ShareContent shareContent) {
         WXMediaMessage.IMediaObject mediaObject;
         switch (shareContent.getType()) {
             case ContentType.TEXT:
@@ -280,16 +266,45 @@ public class SL_WeiXinHandlerActivity extends Activity implements IWXAPIEventHan
         return image;
     }
 
+    private WXMediaMessage.IMediaObject getMusicObj(ShareContent shareContent) {
+        WXMusicObject music = new WXMusicObject();
+        //Str1+"#wechat_music_url="+str2（str1是跳转的网页地址，str2是音乐地址）
+        music.musicUrl = shareContent.getURL() + "#wechat_music_url=" + shareContent.getMusicUrl();
+        return music;
+    }
+
     private WXMediaMessage.IMediaObject getWebPageObj(ShareContent shareContent) {
         WXWebpageObject webPage = new WXWebpageObject();
         webPage.webpageUrl = shareContent.getURL();
         return webPage;
     }
 
-    private WXMediaMessage.IMediaObject getMusicObj(ShareContent shareContent) {
-        WXMusicObject music = new WXMusicObject();
-        //Str1+"#wechat_music_url="+str2 ;str1是网页地址，str2是音乐地址。
-        music.musicUrl = shareContent.getURL() + "#wechat_music_url=" + shareContent.getMusicUrl();
-        return music;
+    /**
+     * 解析分享到微信的结果
+     * 
+     * https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=open1419318634&token=&lang=zh_CN
+     */
+    private void parseShareResp(BaseResp resp, ShareManager.ShareStateListener listener) {
+        if (listener != null) {
+            switch (resp.errCode) {
+                case BaseResp.ErrCode.ERR_OK:
+                    listener.onSuccess();
+                    break;
+                case BaseResp.ErrCode.ERR_USER_CANCEL:
+                    listener.onCancel();
+                    break;
+                case BaseResp.ErrCode.ERR_AUTH_DENIED:
+                    listener.onError("用户拒绝授权");
+                    break;
+                case BaseResp.ErrCode.ERR_SENT_FAILED:
+                    listener.onError("发送失败");
+                    break;
+                case BaseResp.ErrCode.ERR_COMM:
+                    listener.onError("一般错误");
+                    break;
+                default:
+                    listener.onError("未知错误");
+            }
+        }
     }
 }

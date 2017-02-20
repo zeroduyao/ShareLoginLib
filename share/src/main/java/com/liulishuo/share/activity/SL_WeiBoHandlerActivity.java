@@ -20,6 +20,7 @@ import com.sina.weibo.sdk.api.WeiboMultiMessage;
 import com.sina.weibo.sdk.api.share.BaseResponse;
 import com.sina.weibo.sdk.api.share.IWeiboHandler;
 import com.sina.weibo.sdk.api.share.IWeiboShareAPI;
+import com.sina.weibo.sdk.api.share.SendMessageToWeiboResponse;
 import com.sina.weibo.sdk.api.share.SendMultiMessageToWeiboRequest;
 import com.sina.weibo.sdk.api.share.WeiboShareSDK;
 import com.sina.weibo.sdk.auth.AuthInfo;
@@ -36,6 +37,8 @@ import org.json.JSONObject;
 /**
  * @author Jack Tony
  * @date 2015/10/26
+ *
+ * https://github.com/sinaweibosdk/weibo_android_sdk
  */
 public class SL_WeiBoHandlerActivity extends Activity implements IWeiboHandler.Response {
 
@@ -52,7 +55,7 @@ public class SL_WeiBoHandlerActivity extends Activity implements IWeiboHandler.R
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mIsLogin = getIntent().getBooleanExtra(ShareBlock.KEY_IS_LOGIN_TYPE, true);
-        
+
         if (mIsLogin) {
             ssoHandler = initHandler(this);
             if (savedInstanceState == null) {
@@ -73,8 +76,6 @@ public class SL_WeiBoHandlerActivity extends Activity implements IWeiboHandler.R
                 IWeiboShareAPI API = WeiboShareSDK.createWeiboAPI(getApplicationContext(),
                         ShareBlock.Config.weiBoAppId);
                 boolean success = API.handleWeiboResponse(getIntent(), this);
-                if (success) {
-                }
             }
         }
 
@@ -98,22 +99,11 @@ public class SL_WeiBoHandlerActivity extends Activity implements IWeiboHandler.R
                 finish();
             } else {
                 // 这里处理保存到草稿箱的逻辑
-                parseShareResp(WBConstants.ErrorCode.ERR_CANCEL, "weibo cancel");
+                BaseResponse response = new SendMessageToWeiboResponse();
+                response.errCode = WBConstants.ErrorCode.ERR_CANCEL;
+                response.errMsg = "weibo cancel";
+                onResponse(response);
             }
-        }
-    }
-
-    /**
-     * 解析用户登录的结果
-     * SSO 授权回调   重要：发起 SSO 登陆的 Activity 必须重写 onActivityResult
-     */
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (mIsLogin) {
-            if (ssoHandler != null) {
-                ssoHandler.authorizeCallBack(requestCode, resultCode, data);
-            }
-            finish();
         }
     }
 
@@ -131,6 +121,20 @@ public class SL_WeiBoHandlerActivity extends Activity implements IWeiboHandler.R
         }
     }
 
+    /**
+     * 解析用户【登录】的结果
+     * SSO 授权回调   重要：发起 SSO 登陆的 Activity 必须重写 onActivityResult
+     */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (mIsLogin) {
+            if (ssoHandler != null) {
+                ssoHandler.authorizeCallBack(requestCode, resultCode, data);
+            }
+            finish();
+        }
+    }
+
     ///////////////////////////////////////////////////////////////////////////
     // login
     ///////////////////////////////////////////////////////////////////////////
@@ -138,17 +142,20 @@ public class SL_WeiBoHandlerActivity extends Activity implements IWeiboHandler.R
     private void doLogin(final LoginManager.LoginListener listener) {
         WeiboAuthListener authListener = new WeiboAuthListener() {
             /*
-             * 1. SSO 授权时，需要在 onActivityResult 中调用 {@link SsoHandler#authorizeCallBack} 后，
-             * 该回调才会被执行。
+             * 此种授权方式会根据手机是否安装微博客户端来决定使用sso授权还是网页授权
+             * 1. SSO 授权时，需要在 onActivityResult 中调用 {@link SsoHandler#authorizeCallBack} 后，该回调才会被执行。
              * 2. 非SSO 授权时，当授权结束后，该回调就会被执行
              */
             @Override
             public void onComplete(Bundle values) {
                 final Oauth2AccessToken accessToken = Oauth2AccessToken.parseAccessToken(values);
-                if (accessToken != null && accessToken.isSessionValid()) {
-                    if (listener != null) {
+                if (listener != null && accessToken != null) {
+                    if (accessToken.isSessionValid()) {
                         listener.onSuccess(accessToken.getToken(), accessToken.getUid(),
                                 accessToken.getExpiresTime() / 1000000, oAuthData2Json(accessToken));
+                    } else {
+                        String errorCode = values.getString("code");
+                        listener.onError("签名不正确，error-code = " + errorCode);
                     }
                 }
             }
@@ -181,9 +188,8 @@ public class SL_WeiBoHandlerActivity extends Activity implements IWeiboHandler.R
                 ShareBlock.Config.weiBoScope));
     }
 
-    private
     @Nullable
-    String oAuthData2Json(@NonNull Oauth2AccessToken data) {
+    private String oAuthData2Json(@NonNull Oauth2AccessToken data) {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("uid", data.getUid());
@@ -203,7 +209,27 @@ public class SL_WeiBoHandlerActivity extends Activity implements IWeiboHandler.R
 
     @Override
     public void onResponse(BaseResponse baseResponse) {
-        parseShareResp(baseResponse.errCode, baseResponse.errMsg);
+        ShareManager.ShareStateListener listener = ShareManager.listener;
+        if (listener == null) {
+            return;
+        }
+
+        switch (baseResponse.errCode) {
+            case WBConstants.ErrorCode.ERR_OK:
+                listener.onSuccess();
+                break;
+
+            case WBConstants.ErrorCode.ERR_CANCEL:
+                listener.onCancel();
+                break;
+
+            case WBConstants.ErrorCode.ERR_FAIL:
+                listener.onError(baseResponse.errMsg);
+                break;
+            default:
+                listener.onError("未知错误");
+        }
+        finish();
     }
 
     private void doShare(Activity activity) {
@@ -214,8 +240,8 @@ public class SL_WeiBoHandlerActivity extends Activity implements IWeiboHandler.R
         if (content == null) {
             throw new NullPointerException("ShareContent is null，intent = " + getIntent());
         }
-        request.multiMessage = getShareObject(content);
-        
+        request.multiMessage = createShareObject(content);
+
         String appId = ShareBlock.Config.weiBoAppId;
         if (TextUtils.isEmpty(appId)) {
             throw new NullPointerException("请通过shareBlock初始化weiBoAppId");
@@ -225,34 +251,7 @@ public class SL_WeiBoHandlerActivity extends Activity implements IWeiboHandler.R
         api.sendRequest(activity, request);
     }
 
-    /**
-     * 处理分享的回调
-     */
-    private void parseShareResp(int respCode, String errorMsg) {
-        ShareManager.ShareStateListener listener = ShareManager.listener;
-        if (listener == null) {
-            return;
-        }
-
-        switch (respCode) {
-            case WBConstants.ErrorCode.ERR_OK:
-                listener.onSuccess();
-                break;
-
-            case WBConstants.ErrorCode.ERR_CANCEL:
-                listener.onCancel();
-                break;
-
-            case WBConstants.ErrorCode.ERR_FAIL:
-                listener.onError(errorMsg);
-                break;
-            default:
-                listener.onError("未知错误");
-        }
-        finish();
-    }
-
-    private WeiboMultiMessage getShareObject(@NonNull ShareContent shareContent) {
+    private WeiboMultiMessage createShareObject(@NonNull ShareContent shareContent) {
         WeiboMultiMessage weiboMultiMessage = new WeiboMultiMessage();
         switch (shareContent.getType()) {
             case ContentType.TEXT:

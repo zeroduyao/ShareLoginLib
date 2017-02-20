@@ -42,13 +42,6 @@
             android:theme="@android:style/Theme.Translucent.NoTitleBar"
             />
 
-        <activity
-            android:name=".qq.SL_QQShareActivity"
-            android:configChanges="keyboardHidden|orientation"
-            android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar"
-            />
-
         <!-- 腾讯sdk中增加的帮助activity对象，可以用来查看日志 -->
         <activity
             android:name="com.tencent.connect.common.AssistActivity"
@@ -78,9 +71,17 @@
 
         <!-- 处理微信回调的Activity -->
         <activity
+            android:name=".activity.SL_WeiXinHandlerActivity"
+            android:exported="true"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            />
+
+        <activity-alias
             android:name="${applicationId}.wxapi.WXEntryActivity"
             android:exported="true"
             android:screenOrientation="portrait"
+            android:targetActivity="com.liulishuo.share.activity.SL_WeiXinHandlerActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar"
             />
 
