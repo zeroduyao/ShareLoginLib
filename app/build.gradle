@@ -18,6 +18,7 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
+        manifestPlaceholders = [tencentAuthId: props['TENCENT_AUTHID']]
     }
 
     signingConfigs {
@@ -43,7 +44,6 @@ android {
         signed.initWith(buildTypes.release)
         signed {
             applicationIdSuffix props['PACKAGE_NAME_SUFFIX']
-            manifestPlaceholders = [tencentAuthId: props['TENCENT_AUTHID']]
         }
     }
 }

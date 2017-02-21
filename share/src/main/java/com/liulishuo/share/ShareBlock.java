@@ -30,14 +30,10 @@ public class ShareBlock {
 
     public static final String KEY_IS_LOGIN_TYPE = "action_type";
 
-    private static Config config;
-
     private ShareBlock() {
     }
 
     public static void init(Application application, @NonNull Config cfg) {
-        config = cfg;
-
         if (TextUtils.isEmpty(Config.pathTemp)) {
             if (android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)) {
                 try {
@@ -54,10 +50,6 @@ public class ShareBlock {
                 }
             }
         }
-    }
-
-    public static Config getConfig() {
-        return config;
     }
 
     ///////////////////////////////////////////////////////////////////////////
