@@ -12,6 +12,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.liulishuo.share.LoginManager;
 import com.liulishuo.share.ShareBlock;
@@ -50,12 +51,12 @@ public class SL_QQHandlerActivity extends Activity {
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
         boolean isLogin = intent.getBooleanExtra(ShareBlock.KEY_IS_LOGIN_TYPE, true);
-
+        String appId = ShareBlock.Config.qqAppId;
+        if (TextUtils.isEmpty(appId)) {
+            throw new NullPointerException("请通过shareBlock初始化appId");
+        }
+        
         if (isLogin) {
-            String appId = ShareBlock.Config.qqAppId;
-            if (TextUtils.isEmpty(appId)) {
-                throw new NullPointerException("请通过shareBlock初始化appId");
-            }
             initLoginListener(LoginManager.listener);
 
             if (savedInstanceState == null) {
@@ -68,7 +69,7 @@ public class SL_QQHandlerActivity extends Activity {
 
             if (savedInstanceState == null) {
                 ShareContent shareContent = (ShareContent) intent.getSerializableExtra(ShareManager.KEY_CONTENT);
-                doShare(shareContent);
+                doShare(shareContent, appId);
             }
         }
     }
@@ -120,7 +121,6 @@ public class SL_QQHandlerActivity extends Activity {
     }
 
     private void doLogin(Activity activity, String appId) {
-
         Tencent tencent = Tencent.createInstance(appId, activity.getApplicationContext());
         if (!tencent.isSessionValid()) {
             tencent.login(activity, ShareBlock.Config.qqScope, uiListener);
@@ -133,12 +133,7 @@ public class SL_QQHandlerActivity extends Activity {
     // share
     ///////////////////////////////////////////////////////////////////////////
 
-    private void doShare(ShareContent shareContent) {
-        String appId = ShareBlock.Config.qqAppId;
-        if (TextUtils.isEmpty(appId)) {
-            throw new NullPointerException("请通过shareBlock初始化QQAppId");
-        }
-
+    private void doShare(ShareContent shareContent, String appId) {
         Tencent tencent = Tencent.createInstance(appId, getApplicationContext());
         if (isToFriend) {
             Bundle params = createQQBundle(shareContent);
@@ -184,9 +179,10 @@ public class SL_QQHandlerActivity extends Activity {
             case ContentType.TEXT:
                 // 纯文字
                 // 文档中说： "本接口支持3种模式，每种模式的参数设置不同"，这三种模式中不包含纯文本
-                Log.e("Share by QQ", "目前不支持分享纯文本信息给QQ好友");
+                Toast.makeText(SL_QQHandlerActivity.this, "目前不支持分享纯文本信息给QQ好友", Toast.LENGTH_SHORT).show();
+                Log.e(ShareBlock.TAG, Log.getStackTraceString(new RuntimeException("目前不支持分享纯文本信息给QQ好友")));
+                bundle = getWebPageObj(); // fake bundle
                 finish();
-                bundle = getTextObj();
                 break;
             case ContentType.PIC:
                 // 纯图片
@@ -227,12 +223,6 @@ public class SL_QQHandlerActivity extends Activity {
         params.putString(QQShare.SHARE_TO_QQ_SUMMARY, shareContent.getSummary()); // 描述
         params.putString(QQShare.SHARE_TO_QQ_TARGET_URL, shareContent.getURL()); // 这条分享消息被好友点击后的跳转URL
         params.putString(QQShare.SHARE_TO_QQ_APP_NAME, ShareBlock.Config.appName); // 手Q客户端顶部，替换“返回”按钮文字，如果为空，用返回代替 (可选)
-        return params;
-    }
-
-    private Bundle getTextObj() {
-        final Bundle params = new Bundle();
-        params.putInt(QQShare.SHARE_TO_QQ_KEY_TYPE, QQShare.SHARE_TO_QQ_TYPE_DEFAULT);
         return params;
     }
 
@@ -284,7 +274,8 @@ public class SL_QQHandlerActivity extends Activity {
         String title = shareContent.getTitle();
         if (title == null) {
             // 如果没title，说明就是分享的纯文字、纯图片
-            Log.e("Share by qq zone", "QQ空间目前只支持分享图文信息");
+            Toast.makeText(SL_QQHandlerActivity.this, "目前不支持分享纯文本信息给QQ好友", Toast.LENGTH_SHORT).show();
+            Log.e(ShareBlock.TAG, Log.getStackTraceString(new RuntimeException("QQ空间目前只支持分享图文信息")));
             finish();
         }
         params.putString(QzoneShare.SHARE_TO_QQ_TITLE, title); // 标题

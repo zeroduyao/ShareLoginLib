@@ -26,6 +26,8 @@ import com.tencent.mm.opensdk.openapi.WXAPIFactory;
  */
 public class ShareBlock {
 
+    public static final String TAG = "ShareLoginLib";
+
     public static final String KEY_IS_LOGIN_TYPE = "action_type";
 
     private static Config config;

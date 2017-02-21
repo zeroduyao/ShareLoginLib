@@ -57,8 +57,15 @@ public class SL_WeiBoHandlerActivity extends Activity implements IWeiboHandler.R
         super.onCreate(savedInstanceState);
         mIsLogin = getIntent().getBooleanExtra(ShareBlock.KEY_IS_LOGIN_TYPE, true);
 
+        String appId = ShareBlock.Config.weiBoAppId;
+        if (TextUtils.isEmpty(appId)) {
+            throw new NullPointerException("请通过shareBlock初始化weiBoAppId");
+        }
+
         if (mIsLogin) {
-            ssoHandler = initHandler(this);
+            ssoHandler = new SsoHandler(this, new AuthInfo(this.getApplicationContext(), appId,
+                    ShareBlock.Config.weiBoRedirectUrl,
+                    ShareBlock.Config.weiBoScope));
             if (savedInstanceState == null) {
                 // 防止不保留活动情况下activity被重置后直接进行操作的情况
                 doLogin(LoginManager.listener);
@@ -66,7 +73,7 @@ public class SL_WeiBoHandlerActivity extends Activity implements IWeiboHandler.R
         } else {
             if (savedInstanceState == null) {
                 // 防止不保留活动情况下activity被重置后直接进行操作的情况
-                doShare(this);
+                doShare(this, appId);
             } else {
                 /**
                  * 当 Activity 被重新初始化时（该 Activity 处于后台时，可能会由于内存不足被杀掉了），
@@ -178,17 +185,6 @@ public class SL_WeiBoHandlerActivity extends Activity implements IWeiboHandler.R
         ssoHandler.authorize(authListener); // 启动微博的activity进行微博登录
     }
 
-    private SsoHandler initHandler(Activity activity) {
-        String appId = ShareBlock.Config.weiBoAppId;
-        if (TextUtils.isEmpty(appId)) {
-            throw new NullPointerException("请通过shareBlock初始化weiboAppId");
-        }
-
-        return new SsoHandler(activity, new AuthInfo(activity, appId,
-                ShareBlock.Config.weiBoRedirectUrl,
-                ShareBlock.Config.weiBoScope));
-    }
-
     @Nullable
     private String oAuthData2Json(@NonNull Oauth2AccessToken data) {
         JSONObject jsonObject = new JSONObject();
@@ -233,7 +229,7 @@ public class SL_WeiBoHandlerActivity extends Activity implements IWeiboHandler.R
         finish();
     }
 
-    private void doShare(Activity activity) {
+    private void doShare(Activity activity, String appId) {
         // 建立请求体
         SendMultiMessageToWeiboRequest request = new SendMultiMessageToWeiboRequest();
         request.transaction = String.valueOf(System.currentTimeMillis());// 用transaction唯一标识一个请求
@@ -243,10 +239,6 @@ public class SL_WeiBoHandlerActivity extends Activity implements IWeiboHandler.R
         }
         request.multiMessage = createShareObject(content);
 
-        String appId = ShareBlock.Config.weiBoAppId;
-        if (TextUtils.isEmpty(appId)) {
-            throw new NullPointerException("请通过shareBlock初始化weiBoAppId");
-        }
         IWeiboShareAPI api = WeiboShareSDK.createWeiboAPI(activity, appId);
         api.registerApp();  // 将应用注册到微博客户端
         api.sendRequest(activity, request);

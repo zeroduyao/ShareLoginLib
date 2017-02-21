@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
         final Bitmap imageBmp = ((BitmapDrawable) getResources().getDrawable(R.drawable.kale)).getBitmap();
 
         loadPicFromTempFile();
-        String imagePic = "http://aliimg.changba.com/cache/photo/177593234_200_200.jpg";
+        String imagePic = "http://images.cnitblog.com/blog/651487/201501/292018114419518.png";
 
 //        imagePic = "http://ww1.sinaimg.cn/mw690/854f1e58gw1f8ao1y3xd2j215o15ogrv.jpg";
 
