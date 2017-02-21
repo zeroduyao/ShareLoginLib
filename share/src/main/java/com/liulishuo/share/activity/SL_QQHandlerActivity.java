@@ -56,24 +56,29 @@ public class SL_QQHandlerActivity extends Activity {
             if (TextUtils.isEmpty(appId)) {
                 throw new NullPointerException("请通过shareBlock初始化appId");
             }
+            initLoginListener(LoginManager.listener);
+
             if (savedInstanceState == null) {
-                doLogin(this, appId, LoginManager.listener);
+                doLogin(this, appId);
             }
         } else {
             isToFriend = intent.getBooleanExtra(KEY_TO_FRIEND, true);
+            // 每次进来都初始化一次，保证不保留活动的时候listener也不为null
+            initShareListener(ShareManager.listener);
+
             if (savedInstanceState == null) {
                 ShareContent shareContent = (ShareContent) intent.getSerializableExtra(ShareManager.KEY_CONTENT);
-                doShare(shareContent, ShareManager.listener);
+                doShare(shareContent);
             }
         }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if (uiListener != null) {
             Tencent.handleResultData(data, uiListener);
         }
-        super.onActivityResult(requestCode, resultCode, data);
         finish();
     }
 
@@ -81,7 +86,7 @@ public class SL_QQHandlerActivity extends Activity {
     // login
     ///////////////////////////////////////////////////////////////////////////
 
-    private void doLogin(Activity activity, String appId, final LoginManager.LoginListener listener) {
+    private void initLoginListener(final LoginManager.LoginListener listener) {
         uiListener = new IUiListener() {
             @Override
             public void onComplete(Object object) {
@@ -112,6 +117,9 @@ public class SL_QQHandlerActivity extends Activity {
                 }
             }
         };
+    }
+
+    private void doLogin(Activity activity, String appId) {
 
         Tencent tencent = Tencent.createInstance(appId, activity.getApplicationContext());
         if (!tencent.isSessionValid()) {
@@ -125,11 +133,23 @@ public class SL_QQHandlerActivity extends Activity {
     // share
     ///////////////////////////////////////////////////////////////////////////
 
-    private void doShare(ShareContent shareContent, final ShareManager.ShareStateListener listener) {
+    private void doShare(ShareContent shareContent) {
         String appId = ShareBlock.Config.qqAppId;
         if (TextUtils.isEmpty(appId)) {
             throw new NullPointerException("请通过shareBlock初始化QQAppId");
         }
+
+        Tencent tencent = Tencent.createInstance(appId, getApplicationContext());
+        if (isToFriend) {
+            Bundle params = createQQBundle(shareContent);
+            tencent.shareToQQ(this, params, uiListener);
+        } else {
+            Bundle params = createQZoneBundle(shareContent);
+            tencent.shareToQzone(this, params, uiListener);
+        }
+    }
+
+    private void initShareListener(final ShareManager.ShareStateListener listener) {
         uiListener = new IUiListener() {
 
             @Override
@@ -154,15 +174,6 @@ public class SL_QQHandlerActivity extends Activity {
                 }
             }
         };
-
-        Tencent tencent = Tencent.createInstance(appId, getApplicationContext());
-        if (isToFriend) {
-            Bundle params = createQQBundle(shareContent);
-            tencent.shareToQQ(this, params, uiListener);
-        } else {
-            Bundle params = createQZoneBundle(shareContent);
-            tencent.shareToQzone(this, params, uiListener);
-        }
     }
 
     private
