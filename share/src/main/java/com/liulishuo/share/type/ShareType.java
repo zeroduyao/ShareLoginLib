@@ -10,7 +10,11 @@ import android.support.annotation.StringDef;
  * @date 2016/3/30
  */
 @Retention(RetentionPolicy.SOURCE)
-@StringDef({ShareType.WEIXIN_FRIEND, ShareType.WEIXIN_FRIEND_ZONE, ShareType.WEIBO_TIME_LINE, ShareType.QQ_ZONE, ShareType.QQ_FRIEND})
+@StringDef({ShareType.WEIXIN_FRIEND,
+        ShareType.WEIXIN_FRIEND_ZONE,
+        ShareType.WEIXIN_FAVORITE,
+        ShareType.WEIBO_TIME_LINE,
+        ShareType.QQ_ZONE, ShareType.QQ_FRIEND})
 public @interface ShareType {
 
     String

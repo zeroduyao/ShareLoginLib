@@ -17,6 +17,7 @@ import rx.Subscriber;
 import static com.liulishuo.share.type.ShareType.QQ_FRIEND;
 import static com.liulishuo.share.type.ShareType.QQ_ZONE;
 import static com.liulishuo.share.type.ShareType.WEIBO_TIME_LINE;
+import static com.liulishuo.share.type.ShareType.WEIXIN_FAVORITE;
 import static com.liulishuo.share.type.ShareType.WEIXIN_FRIEND;
 import static com.liulishuo.share.type.ShareType.WEIXIN_FRIEND_ZONE;
 
@@ -67,6 +68,7 @@ public class ShareManager {
                 break;
             case WEIXIN_FRIEND:
             case WEIXIN_FRIEND_ZONE:
+            case WEIXIN_FAVORITE:
                 if (ShareBlock.isWeiXinInstalled(activity)) {
                     new SL_WeiXinHandlerActivity().sendShareMsg(activity.getApplicationContext(), shareContent, shareType);
                 } else if (listener != null) {

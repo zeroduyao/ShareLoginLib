@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 
 Properties props = new Properties()
-File f = file(rootProject.file("signing.properties"))
+File f = file(rootProject.file("signi.properties"))
 if (!f.exists()) {
     f = file(rootProject.file("gradle.properties"))
 }

@@ -38,54 +38,43 @@ public class SL_QQHandlerActivity extends Activity {
 
     public static final String KEY_TO_FRIEND = "key_to_friend";
 
-    private boolean mIsLogin = true;
-
     private boolean isToFriend;
 
     private IUiListener uiListener;
 
+    /**
+     * 防止不保留活动情况下activity被重置后直接进行操作的情况
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
-        mIsLogin = intent.getBooleanExtra(ShareBlock.KEY_IS_LOGIN_TYPE, true);
+        boolean isLogin = intent.getBooleanExtra(ShareBlock.KEY_IS_LOGIN_TYPE, true);
 
-        if (mIsLogin) {
+        if (isLogin) {
             String appId = ShareBlock.Config.qqAppId;
             if (TextUtils.isEmpty(appId)) {
                 throw new NullPointerException("请通过shareBlock初始化appId");
             }
-
             if (savedInstanceState == null) {
-                // 防止不保留活动情况下activity被重置后直接进行操作的情况
                 doLogin(this, appId, LoginManager.listener);
             }
         } else {
-            // 无论是否是恢复的activity，都要先初始化监听器，否则开启不保留活动后监听器对象就是null
-            uiListener = initListener(ShareManager.listener);
             isToFriend = intent.getBooleanExtra(KEY_TO_FRIEND, true);
-
             if (savedInstanceState == null) {
-                // 防止不保留活动情况下activity被重置后直接进行操作的情况
-                doShare((ShareContent) intent.getSerializableExtra(ShareManager.KEY_CONTENT));
+                ShareContent shareContent = (ShareContent) intent.getSerializableExtra(ShareManager.KEY_CONTENT);
+                doShare(shareContent, ShareManager.listener);
             }
         }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (mIsLogin) {
+        if (uiListener != null) {
             Tencent.handleResultData(data, uiListener);
-
-//            Tencent.onActivityResultData(requestCode, resultCode, data, mUiListener);
-            finish();
-        } else {
-            if (uiListener != null && data != null) {
-                Tencent.handleResultData(data, uiListener);
-            }
-            finish();
         }
+        super.onActivityResult(requestCode, resultCode, data);
+        finish();
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -93,7 +82,6 @@ public class SL_QQHandlerActivity extends Activity {
     ///////////////////////////////////////////////////////////////////////////
 
     private void doLogin(Activity activity, String appId, final LoginManager.LoginListener listener) {
-        Tencent tencent = Tencent.createInstance(appId, activity.getApplicationContext());
         uiListener = new IUiListener() {
             @Override
             public void onComplete(Object object) {
@@ -125,6 +113,7 @@ public class SL_QQHandlerActivity extends Activity {
             }
         };
 
+        Tencent tencent = Tencent.createInstance(appId, activity.getApplicationContext());
         if (!tencent.isSessionValid()) {
             tencent.login(activity, ShareBlock.Config.qqScope, uiListener);
         } else {
@@ -136,8 +125,12 @@ public class SL_QQHandlerActivity extends Activity {
     // share
     ///////////////////////////////////////////////////////////////////////////
 
-    private IUiListener initListener(final ShareManager.ShareStateListener listener) {
-        return new IUiListener() {
+    private void doShare(ShareContent shareContent, final ShareManager.ShareStateListener listener) {
+        String appId = ShareBlock.Config.qqAppId;
+        if (TextUtils.isEmpty(appId)) {
+            throw new NullPointerException("请通过shareBlock初始化QQAppId");
+        }
+        uiListener = new IUiListener() {
 
             @Override
             public void onComplete(Object response) {
@@ -161,13 +154,7 @@ public class SL_QQHandlerActivity extends Activity {
                 }
             }
         };
-    }
 
-    private void doShare(ShareContent shareContent) {
-        String appId = ShareBlock.Config.qqAppId;
-        if (TextUtils.isEmpty(appId)) {
-            throw new NullPointerException("请通过shareBlock初始化QQAppId");
-        }
         Tencent tencent = Tencent.createInstance(appId, getApplicationContext());
         if (isToFriend) {
             Bundle params = createQQBundle(shareContent);

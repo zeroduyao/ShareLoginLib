@@ -34,4 +34,10 @@
 
 # ————————  qq start    ————————
 -keep class * extends android.app.Dialog { *; }
+-keep class com.tencent.open.TDialog$*
+-keep class com.tencent.open.TDialog$* {*;}
+-keep class com.tencent.open.PKDialog
+-keep class com.tencent.open.PKDialog {*;}
+-keep class com.tencent.open.PKDialog$*
+-keep class com.tencent.open.PKDialog$* {*;}
 # ————————  qq end    ————————

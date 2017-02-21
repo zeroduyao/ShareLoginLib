@@ -12,6 +12,7 @@ import com.liulishuo.share.ShareBlock;
 import com.liulishuo.share.ShareManager;
 import com.liulishuo.share.content.ShareContent;
 import com.liulishuo.share.type.ContentType;
+import com.sina.weibo.sdk.api.BaseMediaObject;
 import com.sina.weibo.sdk.api.ImageObject;
 import com.sina.weibo.sdk.api.MusicObject;
 import com.sina.weibo.sdk.api.TextObject;
@@ -256,7 +257,7 @@ public class SL_WeiBoHandlerActivity extends Activity implements IWeiboHandler.R
         switch (shareContent.getType()) {
             case ContentType.TEXT:
                 // 纯文字
-                weiboMultiMessage.textObject = getTextObj(shareContent.getSummary());
+                weiboMultiMessage.textObject = getTextObj(shareContent);
                 break;
             case ContentType.PIC:
                 // 纯图片
@@ -266,7 +267,7 @@ public class SL_WeiBoHandlerActivity extends Activity implements IWeiboHandler.R
                 // 网页
                 if (shareContent.getURL() == null) {
                     weiboMultiMessage.imageObject = getImageObj(shareContent);
-                    weiboMultiMessage.textObject = getTextObj(shareContent.getSummary());
+                    weiboMultiMessage.textObject = getTextObj(shareContent);
                 } else {
                     weiboMultiMessage.mediaObject = getWebPageObj(shareContent);
                 }
@@ -287,16 +288,16 @@ public class SL_WeiBoHandlerActivity extends Activity implements IWeiboHandler.R
      *
      * @return 文本消息对象。
      */
-    private TextObject getTextObj(String text) {
+    private TextObject getTextObj(ShareContent shareContent) {
         TextObject textObject = new TextObject();
-        textObject.text = text;
+        textObject.text = shareContent.getSummary();
         return textObject;
     }
 
     /**
      * 创建图片消息对象。
      *
-     * @return 图片消息对象。
+     * @return 图片消息对象。 注意：最终压缩过的缩略图大小不得超过 32kb。
      */
     private ImageObject getImageObj(ShareContent shareContent) {
         byte[] bmpBytes = shareContent.getImageBmpBytes();
@@ -315,14 +316,10 @@ public class SL_WeiBoHandlerActivity extends Activity implements IWeiboHandler.R
      */
     private WebpageObject getWebPageObj(ShareContent shareContent) {
         WebpageObject mediaObject = new WebpageObject();
-        mediaObject.identify = Utility.generateGUID();
-        mediaObject.title = shareContent.getTitle();
-        mediaObject.description = shareContent.getSummary();
-        // 设置 Bitmap 类型的图片到视频对象里        
-        // 设置缩略图。 注意：最终压缩过的缩略图大小不得超过 32kb。
-        mediaObject.thumbData = shareContent.getImageBmpBytes();
-        mediaObject.actionUrl = shareContent.getURL();
+        buildMediaObj(mediaObject, shareContent);
+
         mediaObject.defaultText = shareContent.getSummary();
+        mediaObject.actionUrl = shareContent.getURL();
         return mediaObject;
     }
 
@@ -334,18 +331,21 @@ public class SL_WeiBoHandlerActivity extends Activity implements IWeiboHandler.R
     private MusicObject getMusicObj(ShareContent shareContent) {
         // 创建媒体消息
         MusicObject musicObject = new MusicObject();
-        musicObject.identify = Utility.generateGUID();
-        musicObject.title = shareContent.getTitle();
-        musicObject.description = shareContent.getSummary();
-        // 设置 Bitmap 类型的图片到视频对象里        
-        // 设置缩略图。 注意：最终压缩过的缩略图大小不得超过 32kb。
-        musicObject.thumbData = shareContent.getImageBmpBytes();
+        buildMediaObj(musicObject, shareContent);
+
+        musicObject.defaultText = shareContent.getSummary();
         musicObject.actionUrl = shareContent.getMusicUrl();
         musicObject.dataUrl = ShareBlock.Config.weiBoRedirectUrl;
         musicObject.dataHdUrl = ShareBlock.Config.weiBoRedirectUrl;
         musicObject.duration = 10;
-        musicObject.defaultText = shareContent.getSummary();
         return musicObject;
+    }
+
+    private void buildMediaObj(BaseMediaObject mediaObject, ShareContent shareContent) {
+        mediaObject.identify = Utility.generateGUID();
+        mediaObject.title = shareContent.getTitle();
+        mediaObject.description = shareContent.getSummary();
+        mediaObject.thumbData = shareContent.getImageBmpBytes();
     }
 
    /* *//**

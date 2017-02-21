@@ -137,6 +137,9 @@ public class MainActivity extends AppCompatActivity {
             case R.id.分享到微信朋友圈:
                 ShareManager.share(this, ShareType.WEIXIN_FRIEND_ZONE, mShareContent, mShareListener);
                 break;
+            case R.id.分享到微信收藏:
+                ShareManager.share(this, ShareType.WEIXIN_FAVORITE, mShareContent, mShareListener);
+                break;
         }
         userInfoTv.setText("");
         userPicIv.setImageResource(0);
