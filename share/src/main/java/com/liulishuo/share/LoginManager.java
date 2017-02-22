@@ -24,6 +24,14 @@ public class LoginManager {
     public static LoginListener listener;
 
     public static void login(@NonNull Activity activity, @LoginType String type, @Nullable LoginListener listener) {
+        login(activity, type, listener, null);
+    }
+
+    /**
+     * @param respListener 得到微信code的listener。如果不为空，loginListener将不会被自动调用，必须要手动调用。
+     */
+    public static void login(@NonNull Activity activity, @LoginType String type,
+            @Nullable LoginListener listener, @Nullable LoginRespListener respListener) {
         LoginManager.listener = listener;
         switch (type) {
             case QQ:
@@ -48,6 +56,7 @@ public class LoginManager {
                 break;
             case WEIXIN:
                 if (ShareBlock.isWeiXinInstalled(activity)) {
+                    SL_WeiXinHandlerActivity.respListener = respListener;
                     SL_WeiXinHandlerActivity.login(activity.getApplicationContext());
                     activity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                 } else {
@@ -61,6 +70,7 @@ public class LoginManager {
 
     public static void recycle() {
         listener = null;
+        SL_WeiXinHandlerActivity.respListener = null;
     }
 
     public interface LoginListener {
@@ -70,6 +80,11 @@ public class LoginManager {
         void onError(String msg);
 
         void onCancel();
+    }
+
+    public interface LoginRespListener {
+
+        void onLoginResp(String respCode, LoginManager.LoginListener listener);
     }
 
 }

@@ -48,6 +48,8 @@ public class SL_WeiXinHandlerActivity extends Activity implements IWXAPIEventHan
 
     private IWXAPI api;
 
+    public static LoginManager.LoginRespListener respListener;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -106,15 +108,14 @@ public class SL_WeiXinHandlerActivity extends Activity implements IWXAPIEventHan
     protected void parseLoginResp(final Activity activity, SendAuth.Resp resp,
             @Nullable LoginManager.LoginListener listener) {
         // 有可能是listener传入的是null，也可能是调用静态方法前没初始化当前的类
-/*
-        if (mRespListener != null) {
-            mRespListener.onLoginResp(resp);
-        }
-*/
         if (listener != null) {
             switch (resp.errCode) {
                 case BaseResp.ErrCode.ERR_OK: // 登录成功
-                    handlerLoginResp(activity, resp.code, listener); // 登录成功后开始通过code换取token
+                    if (respListener != null) {
+                        respListener.onLoginResp(resp.code, listener);
+                    } else {
+                        handlerLoginResp(activity, resp.code, listener); // 登录成功后开始通过code换取token
+                    }
                     break;
                 case BaseResp.ErrCode.ERR_USER_CANCEL:
                     listener.onCancel();
@@ -173,15 +174,6 @@ public class SL_WeiXinHandlerActivity extends Activity implements IWXAPIEventHan
             }
         });
     }
-    
-    /*public static void setRespListener(LoginRespListener respListener) {
-        mRespListener = respListener;
-    }*/
-
-   /*public interface LoginRespListener {
-
-        void onLoginResp(SendAuth.Resp resp);
-    }*/
 
     ///////////////////////////////////////////////////////////////////////////
     // share
@@ -281,7 +273,7 @@ public class SL_WeiXinHandlerActivity extends Activity implements IWXAPIEventHan
 
     /**
      * 解析分享到微信的结果
-     * 
+     *
      * https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=open1419318634&token=&lang=zh_CN
      */
     private void parseShareResp(BaseResp resp, ShareManager.ShareStateListener listener) {
