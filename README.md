@@ -44,7 +44,7 @@ LoginManager.login(this, LoginType.XXX, new LoginManager.LoginListener() {
 
 
 // 分享
-ShareManager.share(MainActivity.this，ShareType.【xxxx】
+ShareManager.share(MainActivity.this, ShareType.XXX
         new ShareContentWebpage("title", "hello world!", "http://www.baidu.com", mBitmap),
         new ShareManager.ShareStateListener() {
 
@@ -66,7 +66,7 @@ ShareBlock.isQQInstalled(this);
 
 ### 通过token和id得到用户信息
 ```JAVA
-UserInfoManager.getUserInfo(context, LoginType.【WeiBo,WeiXin,QQ】, accessToken, userId,
+UserInfoManager.getUserInfo(context, LoginType.XXX, accessToken, userId,
     new UserInfoManager.UserInfoListener() {
 
         public void onSuccess(@NonNull AuthUserInfo userInfo) {
@@ -120,10 +120,11 @@ ShareBlock.init(this, config);
 - 未开启不保留活动，并且第三方应用已经登录
 
 ## 已知的第三方SDK的bug（本lib无法解决）
-1. 不能信任第三方的回调。你分享到了微信，用户留在了微信，那么你就永远接收不到回调了
-1. 如果没进行微博的登录，直接调用微博分享，有一定概率出现分享失败
-2. 分享途中通过消息进入别的app一阵后，可能会因为内存不足等奇葩情况，你的应用被杀死，没有回调
-3. 如果你手机中安装了微信，并且微信已经登录。直接从你的应用分享到微信是没有任何回调的，只有在你用微信登录你的应用（无论登录是否成功，取消也行）后，才能有回调   
+1. 不能信任第三方的回调，操作后可能会得不到任何回调
+2. 分享到了微信，用户留在了微信，那么就永远接收不到回调了
+1. 如果没进行微博的登录，直接调用微博分享，有一定概率会出现分享失败
+2. 分享途中通过通知消息进入别的app后，可能会因为内存不足等奇葩情况，你的应用被杀死，没有回调
+3. 如果你手机中安装了微信，并且微信已经登录。直接从你的应用分享到微信是没有任何回调的，只有在你用微信登录你的应用（无论登录是否成功，取消也行）后，才能有回调 
 4. 当开启不保留活动后，有可能会出现界面的显示异常，这个和第三方的应用有密切关系，微博尤其明显
 
 ## 配置运行本demo的环境
@@ -132,12 +133,12 @@ ShareBlock.init(this, config);
 如果你要运行该项目给出的demo，那么可以修改本地的`gradle.properties`文件，填写下列必要的信息：   
 
 ```
-STORE_FILE_PATH	xxxxx
-STORE_PASSWORD	xxxxx
-KEY_ALIAS		xxxxx
-KEY_PASSWORD	xxxxx
-PACKAGE_NAME_SUFFIX xxxx
-TENCENT_AUTHID tencentxxxx
+STORE_FILE_PATH	       xxxxx
+STORE_PASSWORD	       xxxxx
+KEY_ALIAS		       xxxxx
+KEY_PASSWORD	       xxxxx
+PACKAGE_NAME_SUFFIX    xxxxx
+TENCENT_AUTHID tencent xxxxx
 ```
 
 ## LICENCE
