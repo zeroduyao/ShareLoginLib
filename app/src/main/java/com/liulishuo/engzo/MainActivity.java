@@ -65,27 +65,21 @@ public class MainActivity extends AppCompatActivity {
         resultTv = (TextView) findViewById(R.id.result);
 
         assert getResources().getDrawable(R.drawable.kale) != null;
-        final Bitmap imageBmp = ((BitmapDrawable) getResources().getDrawable(R.drawable.kale)).getBitmap();
+        final Bitmap thumbBmp = ((BitmapDrawable) getResources().getDrawable(R.drawable.kale)).getBitmap();
+        final Bitmap largeBmp = ((BitmapDrawable) getResources().getDrawable(R.drawable.large_pic)).getBitmap();
 
         loadPicFromTempFile();
-        String imagePic = "http://images.cnitblog.com/blog/651487/201501/292018114419518.png";
 
-//        imagePic = "http://ww1.sinaimg.cn/mw690/854f1e58gw1f8ao1y3xd2j215o15ogrv.jpg";
-
-//        imagePic = "https://ss0.bdstatic.com/5aV1bjqh_Q23odCf/static/superman/img/logo/logo_white_fe6da1ec.png";
-
-        final String imageUrl = imagePic; // 仅仅qq分享的sdk支持url，但是竟然不支持https的图片！！！
-
-        mShareContent = new ShareContentWebPage(TITLE, MSG, URL, imageBmp, imagePic);
+        mShareContent = new ShareContentWebPage(TITLE, MSG, URL, thumbBmp, largeBmp);
 
         shareTypeRg.check(R.id.rich_text);
         shareTypeRg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 if (checkedId == R.id.rich_text) {
-                    mShareContent = new ShareContentWebPage(TITLE, MSG, URL, imageBmp, imageUrl);
+                    mShareContent = new ShareContentWebPage(TITLE, MSG, URL, thumbBmp, largeBmp);
                 } else if (checkedId == R.id.only_image) {
-                    mShareContent = new ShareContentPic(imageBmp, imageUrl);
+                    mShareContent = new ShareContentPic(thumbBmp, largeBmp);
                 } else if (checkedId == R.id.only_text) {
                     mShareContent = new ShareContentText("share text");
                 }

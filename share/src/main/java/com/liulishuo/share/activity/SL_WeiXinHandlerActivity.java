@@ -197,7 +197,7 @@ public class SL_WeiXinHandlerActivity extends Activity implements IWXAPIEventHan
         WXMediaMessage msg = new WXMediaMessage();
         msg.title = shareContent.getTitle();
         msg.description = shareContent.getSummary();
-        msg.thumbData = shareContent.getImageBmpBytes(); // 这里没有做缩略图的配置，缩略图和原图是同一个对象
+        msg.thumbData = shareContent.getThumbBmpBytes(); // 这里没有做缩略图的配置，缩略图和原图是同一个对象
         msg.mediaObject = createMediaObject(shareContent);
 
         // 发送信息
@@ -254,7 +254,7 @@ public class SL_WeiXinHandlerActivity extends Activity implements IWXAPIEventHan
 
     private WXMediaMessage.IMediaObject getImageObj(ShareContent shareContent) {
         WXImageObject image = new WXImageObject();
-        image.imageData = shareContent.getImageBmpBytes();
+        image.imageData = shareContent.getLargeBmpBytes();
         return image;
     }
 

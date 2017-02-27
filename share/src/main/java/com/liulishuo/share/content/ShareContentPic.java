@@ -1,12 +1,12 @@
 package com.liulishuo.share.content;
 
-import com.liulishuo.share.type.ContentType;
+import java.io.ByteArrayOutputStream;
 
 import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import java.io.ByteArrayOutputStream;
+import com.liulishuo.share.type.ContentType;
 
 /**
  * Created by echo on 5/18/15.
@@ -17,23 +17,20 @@ public class ShareContentPic implements ShareContent {
     /**
      * 图片的byte数组
      */
-    protected byte[] bitmapBytes;
+    private byte[] thumbBmpBytes;
+
+    private byte[] largeBmpBytes;
 
     /**
-     * 图片的url
+     * @param thumbBmp      如果需要分享图片，则必传
      */
-    protected String imageUrl;
-
-    /**
-     * @param bitmap      如果需要分享图片，则必传
-     * @param imagePicUrl 分享图片的url，能传则传，仅供QQ分享使用
-     *                    目前不支持https的图片！
-     */
-    public ShareContentPic(@Nullable Bitmap bitmap, @Nullable String imagePicUrl) {
-        if (bitmap != null) {
-            this.bitmapBytes = getThumbImageByteArr(bitmap);
+    public ShareContentPic(@Nullable Bitmap thumbBmp, @Nullable Bitmap largeBmp) {
+        if (thumbBmp != null) {
+            thumbBmpBytes = getImageByteArr(thumbBmp);
         }
-        this.imageUrl = imagePicUrl;
+        if (largeBmp != null) {
+            largeBmpBytes = getImageByteArr(largeBmp);
+        }
     }
 
     @Override
@@ -52,15 +49,14 @@ public class ShareContentPic implements ShareContent {
     }
 
     @Override
-    public byte[] getImageBmpBytes() {
-        return bitmapBytes;
+    public byte[] getThumbBmpBytes() {
+        return thumbBmpBytes;
     }
 
     @Override
-    public String getImagePicUrl() {
-        return imageUrl;
+    public byte[] getLargeBmpBytes() {
+        return largeBmpBytes;
     }
-
 
     @Override
     public String getMusicUrl() {
@@ -73,13 +69,9 @@ public class ShareContentPic implements ShareContent {
         return ContentType.PIC;
     }
 
-    public void setBitmap(@NonNull Bitmap bitmap) {
-        this.bitmapBytes = getThumbImageByteArr(bitmap);
-    }
-
     private
     @Nullable
-    byte[] getThumbImageByteArr(@NonNull Bitmap bitmap) {
+    byte[] getImageByteArr(@NonNull Bitmap bitmap) {
         byte[] thumbData = null;
         try {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();

@@ -276,9 +276,7 @@ public class SL_WeiBoHandlerActivity extends Activity implements IWeiboHandler.R
     }
 
     /**
-     * 创建文本消息对象。
-     *
-     * @return 文本消息对象。
+     * 创建文本消息对象
      */
     private TextObject getTextObj(ShareContent shareContent) {
         TextObject textObject = new TextObject();
@@ -287,12 +285,10 @@ public class SL_WeiBoHandlerActivity extends Activity implements IWeiboHandler.R
     }
 
     /**
-     * 创建图片消息对象。
-     *
-     * @return 图片消息对象。 注意：最终压缩过的缩略图大小不得超过 32kb。
+     * 创建图片消息对象
      */
     private ImageObject getImageObj(ShareContent shareContent) {
-        byte[] bmpBytes = shareContent.getImageBmpBytes();
+        byte[] bmpBytes = shareContent.getLargeBmpBytes();
         if (bmpBytes != null) {
             ImageObject imageObject = new ImageObject();
             imageObject.imageData = bmpBytes;
@@ -302,9 +298,7 @@ public class SL_WeiBoHandlerActivity extends Activity implements IWeiboHandler.R
     }
 
     /**
-     * 创建多媒体（网页）消息对象。
-     *
-     * @return 多媒体（网页）消息对象。
+     * 创建多媒体（网页）消息对象
      */
     private WebpageObject getWebPageObj(ShareContent shareContent) {
         WebpageObject mediaObject = new WebpageObject();
@@ -337,7 +331,7 @@ public class SL_WeiBoHandlerActivity extends Activity implements IWeiboHandler.R
         mediaObject.identify = Utility.generateGUID();
         mediaObject.title = shareContent.getTitle();
         mediaObject.description = shareContent.getSummary();
-        mediaObject.thumbData = shareContent.getImageBmpBytes();
+        mediaObject.thumbData = shareContent.getThumbBmpBytes();
     }
 
    /* *//**

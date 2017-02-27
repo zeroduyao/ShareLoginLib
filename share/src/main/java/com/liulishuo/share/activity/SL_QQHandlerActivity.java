@@ -34,6 +34,8 @@ import org.json.JSONObject;
  *
  * http://wiki.connect.qq.com/sdk%E4%B8%8B%E8%BD%BD
  * http://wiki.open.qq.com/wiki/mobile/API%E8%B0%83%E7%94%A8%E8%AF%B4%E6%98%8E
+ *
+ *  仅仅qq分享的sdk支持url，但是竟然不支持https的图片！！！
  */
 public class SL_QQHandlerActivity extends Activity {
 
@@ -55,7 +57,7 @@ public class SL_QQHandlerActivity extends Activity {
         if (TextUtils.isEmpty(appId)) {
             throw new NullPointerException("请通过shareBlock初始化appId");
         }
-        
+
         if (isLogin) {
             initLoginListener(LoginManager.listener);
 
@@ -229,7 +231,7 @@ public class SL_QQHandlerActivity extends Activity {
     private Bundle getImageObj(ShareContent shareContent) {
         final Bundle params = new Bundle();
         params.putInt(QQShare.SHARE_TO_QQ_KEY_TYPE, QQShare.SHARE_TO_QQ_TYPE_IMAGE); // 标识分享的是纯图片 (必填)
-        String uri = getImageUri(shareContent);
+        String uri = getImageUri(shareContent, true);
         if (uri != null) {
             if (uri.startsWith("http")) {
                 params.putString(QQShare.SHARE_TO_QQ_IMAGE_URL, uri); // net uri
@@ -237,7 +239,6 @@ public class SL_QQHandlerActivity extends Activity {
                 params.putString(QQShare.SHARE_TO_QQ_IMAGE_LOCAL_URL, uri); // local uri
             }
         }
-        params.putInt(QQShare.SHARE_TO_QQ_EXT_INT, QQShare.SHARE_TO_QQ_FLAG_QZONE_AUTO_OPEN); // (可选)
         return params;
     }
 
@@ -283,26 +284,15 @@ public class SL_QQHandlerActivity extends Activity {
         params.putString(QzoneShare.SHARE_TO_QQ_TARGET_URL, shareContent.getURL()); // 点击后跳转的url
 
         // 分享的图片, 以ArrayList<String>的类型传入，以便支持多张图片 （注：图片最多支持9张图片，多余的图片会被丢弃）。
-        params.putStringArrayList(QzoneShare.SHARE_TO_QQ_IMAGE_URL, new ArrayList<>(Collections.singletonList(getImageUri(shareContent))));
+        ArrayList<String> value = new ArrayList<>(Collections.singletonList(getImageUri(shareContent, false)));
+        params.putStringArrayList(QzoneShare.SHARE_TO_QQ_IMAGE_URL, value);
         return params;
     }
 
     @Nullable
-    private String getImageUri(@NonNull ShareContent content) {
-        String netUrl = content.getImagePicUrl();
+    private String getImageUri(@NonNull ShareContent content, boolean isLargePic) {
         String path = ShareBlock.Config.pathTemp;
-        byte[] bytes = content.getImageBmpBytes();
-
-        // 优先取网络图片
-        if (!TextUtils.isEmpty(netUrl)) {
-            if (netUrl.startsWith("https")) {
-                return null; // qq不支持https
-            } else if (netUrl.startsWith("http")) {
-                return netUrl;
-            } else {
-                return null;
-            }
-        }
+        byte[] bytes = isLargePic ? content.getLargeBmpBytes() : content.getThumbBmpBytes();
 
         // 取本地图片
         if (!TextUtils.isEmpty(path) && bytes != null) {
