@@ -13,7 +13,8 @@ public interface ShareContent extends Serializable {
     /**
      * @return 分享的方式
      */
-    @ContentType int getType();
+    @ContentType
+    int getType();
 
     /**
      * 分享的描述信息(摘要)
@@ -31,11 +32,15 @@ public interface ShareContent extends Serializable {
     String getURL();
 
     /**
-     * 分享的图片
+     * 分享的缩略图片
      */
     byte[] getThumbBmpBytes();
 
-    byte[] getLargeBmpBytes();
+    /**
+     * 分享的大图
+     */
+    String getLargeBmpPath();
+
     /**
      * 音频url
      */

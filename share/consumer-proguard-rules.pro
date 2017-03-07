@@ -29,11 +29,11 @@
 # ————————  微信 end    ————————
 
 # ————————  微博 start    ————————   
--keep class com.sina.weibo.sdk.api.* { *; }
+-keep class com.sina.weibo.sdk.api.* {*;}
 # ————————  微微博 end    ————————
 
 # ————————  qq start    ————————
--keep class * extends android.app.Dialog { *; }
+-keep class * extends android.app.Dialog {*;}
 -keep class com.tencent.open.TDialog$*
 -keep class com.tencent.open.TDialog$* {*;}
 -keep class com.tencent.open.PKDialog

@@ -14,6 +14,7 @@ import android.text.TextUtils;
 
 import com.sina.weibo.sdk.api.share.IWeiboShareAPI;
 import com.sina.weibo.sdk.api.share.WeiboShareSDK;
+import com.sina.weibo.sdk.utils.LogUtil;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 
@@ -34,6 +35,12 @@ public class ShareBlock {
     }
 
     public static void init(Application application, @NonNull Config cfg) {
+        if (cfg.isDebug) {
+            LogUtil.enableLog();
+        } else {
+            LogUtil.disableLog();
+        }
+
         if (TextUtils.isEmpty(Config.pathTemp)) {
             if (android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)) {
                 try {
@@ -118,8 +125,7 @@ public class ShareBlock {
         }
 
         /**
-         * 初始化临时文件地址，这里仅仅是为了qq分享用的。
-         * 这里必须用外部存储器，因为qq会读取这个目录下的图片文件!!!
+         * 这里必须用外部存储器，因为第三方app会读取这个目录下的图片文件!!!
          */
         public Config picTempFile(@Nullable String tempPath) {
             pathTemp = tempPath;

@@ -254,7 +254,7 @@ public class SL_WeiXinHandlerActivity extends Activity implements IWXAPIEventHan
 
     private WXMediaMessage.IMediaObject getImageObj(ShareContent shareContent) {
         WXImageObject image = new WXImageObject();
-        image.imageData = shareContent.getLargeBmpBytes();
+        image.imagePath = shareContent.getLargeBmpPath();
         return image;
     }
 

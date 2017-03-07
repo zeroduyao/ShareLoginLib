@@ -1,11 +1,17 @@
 package com.liulishuo.share.content;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 import android.graphics.Bitmap;
+import android.media.ThumbnailUtils;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
+import com.liulishuo.share.ShareBlock;
 import com.liulishuo.share.type.ContentType;
 
 /**
@@ -19,17 +25,17 @@ public class ShareContentPic implements ShareContent {
      */
     private byte[] thumbBmpBytes;
 
-    private byte[] largeBmpBytes;
+    private String largeBmpPath;
 
     /**
-     * @param thumbBmp      如果需要分享图片，则必传
+     * @param thumbBmp 如果需要分享图片，则必传
      */
     public ShareContentPic(@Nullable Bitmap thumbBmp, @Nullable Bitmap largeBmp) {
         if (thumbBmp != null) {
-            thumbBmpBytes = getImageByteArr(thumbBmp);
+            thumbBmpBytes = getImageThumbByteArr(thumbBmp);
         }
         if (largeBmp != null) {
-            largeBmpBytes = getImageByteArr(largeBmp);
+            largeBmpPath = saveLargeBitmap(largeBmp);
         }
     }
 
@@ -54,8 +60,8 @@ public class ShareContentPic implements ShareContent {
     }
 
     @Override
-    public byte[] getLargeBmpBytes() {
-        return largeBmpBytes;
+    public String getLargeBmpPath() {
+        return largeBmpPath;
     }
 
     @Override
@@ -71,7 +77,9 @@ public class ShareContentPic implements ShareContent {
 
     private
     @Nullable
-    byte[] getImageByteArr(@NonNull Bitmap bitmap) {
+    byte[] getImageThumbByteArr(@NonNull Bitmap bmp) {
+        final Bitmap bitmap = ThumbnailUtils.extractThumbnail(bmp, 250, 250);
+
         byte[] thumbData = null;
         try {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -82,5 +90,33 @@ public class ShareContentPic implements ShareContent {
             e.printStackTrace();
         }
         return thumbData;
+    }
+
+    private String saveLargeBitmap(Bitmap bitmap) {
+        String path = ShareBlock.Config.pathTemp;
+        // 取本地图片
+        if (!TextUtils.isEmpty(path)) {
+            String imagePath = path + "sl_large_pic";
+            FileOutputStream fos = null;
+            try {
+                fos = new FileOutputStream(imagePath);
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } finally {
+                if (fos != null) {
+                    try {
+                        fos.flush();
+                        fos.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+//                    bitmap.recycle();
+                }
+            }
+            return imagePath;
+        } else {
+            return null;
+        }
     }
 }

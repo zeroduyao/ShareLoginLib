@@ -42,10 +42,9 @@ public class ShareContentText implements ShareContent {
     }
 
     @Override
-    public byte[] getLargeBmpBytes() {
+    public String getLargeBmpPath() {
         return null;
     }
-
 
     @Override
     public String getMusicUrl() {

@@ -288,13 +288,9 @@ public class SL_WeiBoHandlerActivity extends Activity implements IWeiboHandler.R
      * 创建图片消息对象
      */
     private ImageObject getImageObj(ShareContent shareContent) {
-        byte[] bmpBytes = shareContent.getLargeBmpBytes();
-        if (bmpBytes != null) {
-            ImageObject imageObject = new ImageObject();
-            imageObject.imageData = bmpBytes;
-            return imageObject;
-        }
-        return null;
+        ImageObject imageObject = new ImageObject();
+        imageObject.imagePath = shareContent.getLargeBmpPath();
+        return imageObject;
     }
 
     /**

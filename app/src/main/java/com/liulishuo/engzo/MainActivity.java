@@ -64,8 +64,7 @@ public class MainActivity extends AppCompatActivity {
         userPicIv = (ImageView) findViewById(R.id.user_pic_iv);
         resultTv = (TextView) findViewById(R.id.result);
 
-        assert getResources().getDrawable(R.drawable.kale) != null;
-        final Bitmap thumbBmp = ((BitmapDrawable) getResources().getDrawable(R.drawable.kale)).getBitmap();
+        final Bitmap thumbBmp = ((BitmapDrawable) getResources().getDrawable(R.drawable.small)).getBitmap();
         final Bitmap largeBmp = ((BitmapDrawable) getResources().getDrawable(R.drawable.large_pic)).getBitmap();
 
         loadPicFromTempFile();

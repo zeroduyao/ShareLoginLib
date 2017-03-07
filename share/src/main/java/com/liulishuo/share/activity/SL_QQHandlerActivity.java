@@ -35,7 +35,7 @@ import org.json.JSONObject;
  * http://wiki.connect.qq.com/sdk%E4%B8%8B%E8%BD%BD
  * http://wiki.open.qq.com/wiki/mobile/API%E8%B0%83%E7%94%A8%E8%AF%B4%E6%98%8E
  *
- *  仅仅qq分享的sdk支持url，但是竟然不支持https的图片！！！
+ * 仅仅qq分享的sdk支持url，但是竟然不支持https的图片！！！
  */
 public class SL_QQHandlerActivity extends Activity {
 
@@ -292,11 +292,18 @@ public class SL_QQHandlerActivity extends Activity {
     @Nullable
     private String getImageUri(@NonNull ShareContent content, boolean isLargePic) {
         String path = ShareBlock.Config.pathTemp;
-        byte[] bytes = isLargePic ? content.getLargeBmpBytes() : content.getThumbBmpBytes();
+        if (isLargePic) {
+            return content.getLargeBmpPath();
+        } else {
+            return saveThumbBmp(path, content.getThumbBmpBytes());
+        }
+    }
 
-        // 取本地图片
+    @Nullable
+    private String saveThumbBmp(String path, byte[] bytes) {
         if (!TextUtils.isEmpty(path) && bytes != null) {
-            String imagePath = path + "sharePic_temp";
+            String imagePath;
+            imagePath = path + "sl_thumb_pic";
             try {
                 FileOutputStream fos = new FileOutputStream(imagePath);
                 fos.write(bytes);
