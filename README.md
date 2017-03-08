@@ -1,7 +1,7 @@
 # ShareLoginLib   
 [![](https://jitpack.io/v/tianzhijiexian/ShareLoginLib.svg)](https://jitpack.io/#tianzhijiexian/ShareLoginLib)  
 
-ShareLoginLib likes simple sharesdk or umeng in China . It is a tool to help developers to share their content (image , text or music ) to WeChat,Weibo and QQ.  
+ShareLoginLib likes simple sharesdk or umeng in China . It is a tool to help developers to share their content (image , text or webpage ) to WeChat,Weibo and QQ.  
 
 ![](./screenshot/logo.png)
 
@@ -14,6 +14,7 @@ ShareLoginLib likes simple sharesdk or umeng in China . It is a tool to help dev
 
 ```
 repositories {
+  // ...
 	maven {
 		url "https://jitpack.io"
 	}
@@ -21,7 +22,7 @@ repositories {
 ```
 
 2.在用到的项目中添加依赖  
->	compile 'com.github.tianzhijiexian:ShareLoginLib:[Latest release](https://github.com/tianzhijiexian/ShareLoginLib/releases)(<-click it)'  
+>	compile 'com.github.tianzhijiexian:ShareLoginLib:[Latest release](https://github.com/tianzhijiexian/ShareLoginLib/releases) (< click it)'  
 
 **举例：**
 ```
@@ -35,9 +36,9 @@ compile 'com.github.tianzhijiexian:ShareLoginLib:1.3.7'
 // 登录
 LoginManager.login(this, LoginType.XXX, new LoginManager.LoginListener() {
 
-      public void onSuccess(String accessToken, String uId, long expiresIn, @Nullable String wholeData) {}
+      public void onSuccess(String accessToken, String uId, long expiresIn, @Nullable String wholeJsonData) {}
 
-      public void onError(String msg) {}
+      public void onError(String errorMsg) {}
 
       public void onCancel() {}
   });
@@ -45,14 +46,14 @@ LoginManager.login(this, LoginType.XXX, new LoginManager.LoginListener() {
 
 // 分享
 ShareManager.share(MainActivity.this, ShareType.XXX
-        new ShareContentWebpage("title", "hello world!", "http://www.baidu.com", mBitmap),
+        new ShareContentWebpage("title", "summary", "http://www.kale.com", mBitmap),
         new ShareManager.ShareStateListener() {
 
                   public void onSuccess() {}
 
                   public void onCancel() {}
 
-                  public void onError(String msg) {}
+                  public void onError(String errorMsg) {}
               });
 
 ```   
@@ -64,16 +65,19 @@ ShareBlock.isWeiBoInstalled(this);
 ShareBlock.isQQInstalled(this);
 ```
 
+部分手机上需要读取手机app列表的权限。
+
+
 ### 通过token和id得到用户信息
 ```JAVA
 UserInfoManager.getUserInfo(context, LoginType.XXX, accessToken, userId,
     new UserInfoManager.UserInfoListener() {
 
         public void onSuccess(@NonNull AuthUserInfo userInfo) {
-            // 可以得到：昵称，性别，头像url，用户id
+            // 可以得到：昵称、性别、头像、用户id
         }
 
-        public void onError(String msg) {
+        public void onError(String errorMsg) {
         }
     });
 ```  
@@ -92,13 +96,13 @@ defaultConfig {
 }
 ```
 
-### 2. 在java代码中配置常量
+### 2. 在使用功能前配置常量
 
 ```java  
 Config config = Config.getInstance()
             .debug(false)
             .appName("Your App Name")
-            .picTempFile(null)
+            .picTempFile(null) // 指定缓存缩略图的目录名字，如无特殊要求可以是null
             .qq(QQ_APPID, QQ_SCOPE)
             .weiXin(WEIXIN_APPID, WEIXIN_SECRET)
             .weiBo(WEIBO_APPID, WEIBO_REDIRECT_URL, WEIBO_SCOPE);
@@ -108,8 +112,9 @@ ShareBlock.init(this, config);
 
 ## 重要说明
 
-- 本项目需要签名和第三方认证，使用者要在第三方网站进行注册后才可测试
-- 本库作者是不会提供任何和签名、密码、AppId等有关信息的
+- 签名后的app才可以进行测试
+- 使用者要在第三方平台进行注册后才可测试
+- 库作者不会提供任何和签名、密码、AppId等有关信息
 - 测试app需要有和第三方sdk约定好的正确签名
 
 ## 推荐的测试环境  
@@ -130,7 +135,7 @@ ShareBlock.init(this, config);
 ## 配置运行本demo的环境
 
 
-如果你要运行该项目给出的demo，那么可以修改本地的`gradle.properties`文件，填写下列必要的信息：   
+如果你要运行该项目给出的demo，那么可以修改本地的`gradle.properties`文件，将下列信息修改成你自己的值。   
 
 ```
 STORE_FILE_PATH	       xxxxx
