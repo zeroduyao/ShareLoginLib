@@ -64,14 +64,9 @@ public class MainActivity extends AppCompatActivity {
         userPicIv = (ImageView) findViewById(R.id.user_pic_iv);
         resultTv = (TextView) findViewById(R.id.result);
 
-        final Bitmap thumbBmp = ((BitmapDrawable) getResources().getDrawable(R.drawable.small)).getBitmap();
+        final Bitmap thumbBmp = ((BitmapDrawable) getResources().getDrawable(R.drawable.kale)).getBitmap();
         final Bitmap largeBmp = ((BitmapDrawable) getResources().getDrawable(R.drawable.large_pic)).getBitmap();
 
-        loadPicFromTempFile();
-
-        mShareContent = new ShareContentWebPage(TITLE, MSG, URL, thumbBmp, largeBmp);
-
-        shareTypeRg.check(R.id.rich_text);
         shareTypeRg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
@@ -84,7 +79,9 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+        shareTypeRg.check(R.id.rich_text);
 
+        loadPicFromTempFile();
         Toast.makeText(MainActivity.this, getPackageName(), Toast.LENGTH_SHORT).show();
     }
 

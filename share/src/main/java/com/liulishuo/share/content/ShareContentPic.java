@@ -78,7 +78,12 @@ public class ShareContentPic implements ShareContent {
     private
     @Nullable
     byte[] getImageThumbByteArr(@NonNull Bitmap bmp) {
-        final Bitmap bitmap = ThumbnailUtils.extractThumbnail(bmp, 250, 250);
+        final Bitmap bitmap;
+        if (bmp.getWidth() > 250 || bmp.getHeight() > 250) {
+            bitmap = ThumbnailUtils.extractThumbnail(bmp, 250, 250);
+        } else {
+            bitmap = bmp;
+        }
 
         byte[] thumbData = null;
         try {
@@ -92,9 +97,11 @@ public class ShareContentPic implements ShareContent {
         return thumbData;
     }
 
+    /**
+     * 此方法是耗时操作，如果对于特别大的图，那么需要做异步
+     */
     private String saveLargeBitmap(Bitmap bitmap) {
         String path = ShareBlock.Config.pathTemp;
-        // 取本地图片
         if (!TextUtils.isEmpty(path)) {
             String imagePath = path + "sl_large_pic";
             FileOutputStream fos = null;
