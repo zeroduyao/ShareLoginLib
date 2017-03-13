@@ -75,32 +75,49 @@ public class ShareContentPic implements ShareContent {
         return ContentType.PIC;
     }
 
+    /**
+     * Note:外部传入的bitmap可能会被用于其他的地方，所以这里不能做recycle()
+     */
     private
     @Nullable
-    byte[] getImageThumbByteArr(@NonNull Bitmap bmp) {
+    byte[] getImageThumbByteArr(@NonNull Bitmap src) {
         final Bitmap bitmap;
-        if (bmp.getWidth() > 250 || bmp.getHeight() > 250) {
-            bitmap = ThumbnailUtils.extractThumbnail(bmp, 250, 250);
+        if (src.getWidth() > 250 || src.getHeight() > 250) {
+            bitmap = ThumbnailUtils.extractThumbnail(src, 250, 250);
         } else {
-            bitmap = bmp;
+            bitmap = src;
         }
 
         byte[] thumbData = null;
+        ByteArrayOutputStream outputStream = null;
         try {
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            outputStream = new ByteArrayOutputStream();
             bitmap.compress(Bitmap.CompressFormat.JPEG, 85, outputStream);
             thumbData = outputStream.toByteArray();
-            outputStream.close();
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            if (outputStream != null) {
+                try {
+                    outputStream.flush();
+                    outputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (bitmap != null && !bitmap.isRecycled()) {
+//                bitmap.recycle();
+            }
         }
         return thumbData;
     }
 
     /**
      * 此方法是耗时操作，如果对于特别大的图，那么需要做异步
+     *
+     * Note:外部传入的bitmap可能会被用于其他的地方，所以这里不能做recycle()
      */
-    private String saveLargeBitmap(Bitmap bitmap) {
+    private String saveLargeBitmap(final Bitmap bitmap) {
         String path = ShareBlock.Config.pathTemp;
         if (!TextUtils.isEmpty(path)) {
             String imagePath = path + "sl_large_pic";
@@ -118,6 +135,8 @@ public class ShareContentPic implements ShareContent {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
+                }
+                if (bitmap != null && !bitmap.isRecycled()) {
 //                    bitmap.recycle();
                 }
             }

@@ -75,11 +75,11 @@ public class SL_WeiBoHandlerActivity extends Activity implements IWeiboHandler.R
                 // 防止不保留活动情况下activity被重置后直接进行操作的情况
                 doShare(this, appId);
             } else {
-                /**
-                 * 当 Activity 被重新初始化时（该 Activity 处于后台时，可能会由于内存不足被杀掉了），
-                 * 需要调用 {@link IWeiboShareAPI#handleWeiboResponse} 来接收微博客户端返回的数据。
-                 * 执行成功，返回 true，并调用 {@link IWeiboHandler.Response#onResponse}；
-                 * 失败返回 false，不调用上述回调
+                /*
+                  当 Activity 被重新初始化时（该 Activity 处于后台时，可能会由于内存不足被杀掉了），
+                  需要调用 {@link IWeiboShareAPI#handleWeiboResponse} 来接收微博客户端返回的数据。
+                  执行成功，返回 true，并调用 {@link IWeiboHandler.Response#onResponse}；
+                  失败返回 false，不调用上述回调
                  */
                 IWeiboShareAPI API = WeiboShareSDK.createWeiboAPI(getApplicationContext(),
                         ShareBlock.Config.weiBoAppId);
@@ -119,10 +119,10 @@ public class SL_WeiBoHandlerActivity extends Activity implements IWeiboHandler.R
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         if (!mIsLogin) {
-            /**
-             * 从当前应用唤起微博并进行分享后，返回到当前应用时，需要在此处调用该函数
-             * 来接收微博客户端返回的数据；执行成功，返回 true，并调用
-             * {@link IWeiboHandler.Response#onResponse}；失败返回 false，不调用上述回调
+            /*
+              从当前应用唤起微博并进行分享后，返回到当前应用时，需要在此处调用该函数
+              来接收微博客户端返回的数据；执行成功，返回 true，并调用
+              {@link IWeiboHandler.Response#onResponse}；失败返回 false，不调用上述回调
              */
             IWeiboShareAPI API = WeiboShareSDK.createWeiboAPI(getApplicationContext(), ShareBlock.Config.weiBoAppId);
             API.handleWeiboResponse(intent, this); // 当前应用唤起微博分享后，返回当前应用

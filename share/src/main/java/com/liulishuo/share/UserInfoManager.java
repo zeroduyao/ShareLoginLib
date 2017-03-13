@@ -13,9 +13,6 @@ import com.sina.weibo.sdk.net.WeiboParameters;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import rx.Observable;
-import rx.Subscriber;
-
 /**
  * @author Kale
  * @date 2016/4/5
@@ -35,27 +32,6 @@ public class UserInfoManager {
                 getWeiXinUserInfo(context, accessToken, uid, listener);
                 break;
         }
-    }
-
-    public static Observable<AuthUserInfo> getUserInfo(final Context context,
-            @LoginType final String type, @NonNull final String accessToken, @NonNull final String uid) {
-
-        return Observable.create(new Observable.OnSubscribe<AuthUserInfo>() {
-            @Override
-            public void call(final Subscriber<? super AuthUserInfo> subscriber) {
-                getUserInfo(context, type, accessToken, uid, new UserInfoListener() {
-                    @Override
-                    public void onSuccess(@NonNull AuthUserInfo userInfo) {
-                        subscriber.onNext(userInfo);
-                    }
-
-                    @Override
-                    public void onError(String msg) {
-                        subscriber.onError(new Throwable(msg));
-                    }
-                });
-            }
-        });
     }
 
     ///////////////////////////////////////////////////////////////////////////

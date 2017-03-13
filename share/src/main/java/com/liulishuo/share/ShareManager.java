@@ -11,9 +11,6 @@ import com.liulishuo.share.activity.SL_WeiXinHandlerActivity;
 import com.liulishuo.share.content.ShareContent;
 import com.liulishuo.share.type.ShareType;
 
-import rx.Observable;
-import rx.Subscriber;
-
 import static com.liulishuo.share.type.ShareType.QQ_FRIEND;
 import static com.liulishuo.share.type.ShareType.QQ_ZONE;
 import static com.liulishuo.share.type.ShareType.WEIBO_TIME_LINE;
@@ -31,13 +28,8 @@ public class ShareManager {
 
     public static ShareStateListener listener;
 
-    public static void share(@NonNull Activity activity, @ShareType String shareType,
-            @NonNull ShareContent shareContent, @Nullable final ShareStateListener listener) {
-
-        if (shareContent == null) {
-            throw new NullPointerException("ShareContent is null!!!");
-        }
-
+    public static void share(@NonNull final Activity activity, @ShareType final String shareType,
+            @NonNull final ShareContent shareContent, @Nullable final ShareStateListener listener) {
         ShareManager.listener = listener;
         switch (shareType) {
             case QQ_FRIEND:
@@ -76,37 +68,6 @@ public class ShareManager {
                 }
                 break;
         }
-    }
-
-    /**
-     * @return 如果返回的是true，表示分享成功了；如果返回false，表示用户取消分享
-     */
-    public static Observable<Boolean> share(@NonNull final Activity activity, @ShareType final String shareType,
-            @NonNull final ShareContent shareContent) {
-        return Observable.create(new Observable.OnSubscribe<Boolean>() {
-            @Override
-            public void call(final Subscriber<? super Boolean> subscriber) {
-                share(activity, shareType, shareContent, new ShareStateListener() {
-                    @Override
-                    public void onSuccess() {
-                        subscriber.onNext(true);
-                        listener = null;
-                    }
-
-                    @Override
-                    public void onCancel() {
-                        subscriber.onNext(false);
-                        listener = null;
-                    }
-
-                    @Override
-                    public void onError(String msg) {
-                        subscriber.onError(new Throwable(msg));
-                        listener = null;
-                    }
-                });
-            }
-        });
     }
 
     public interface ShareStateListener {
