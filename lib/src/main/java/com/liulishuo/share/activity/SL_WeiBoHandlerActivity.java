@@ -7,11 +7,12 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
-import com.liulishuo.share.LoginManager;
-import com.liulishuo.share.ShareBlock;
-import com.liulishuo.share.ShareManager;
+import com.liulishuo.share.ShareLoginSDK;
+import com.liulishuo.share.SlConfig;
+import com.liulishuo.share.SsoLoginManager;
+import com.liulishuo.share.SsoShareManager;
 import com.liulishuo.share.content.ShareContent;
-import com.liulishuo.share.type.ContentType;
+import com.liulishuo.share.type.ShareContentType;
 import com.sina.weibo.sdk.api.BaseMediaObject;
 import com.sina.weibo.sdk.api.ImageObject;
 import com.sina.weibo.sdk.api.MusicObject;
@@ -55,20 +56,25 @@ public class SL_WeiBoHandlerActivity extends Activity implements IWeiboHandler.R
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mIsLogin = getIntent().getBooleanExtra(ShareBlock.KEY_IS_LOGIN_TYPE, true);
+        mIsLogin = getIntent().getBooleanExtra(ShareLoginSDK.KEY_IS_LOGIN_TYPE, true);
 
-        String appId = ShareBlock.Config.weiBoAppId;
+        String appId = SlConfig.weiBoAppId;
         if (TextUtils.isEmpty(appId)) {
             throw new NullPointerException("请通过shareBlock初始化weiBoAppId");
         }
 
         if (mIsLogin) {
-            ssoHandler = new SsoHandler(this, new AuthInfo(this.getApplicationContext(), appId,
-                    ShareBlock.Config.weiBoRedirectUrl,
-                    ShareBlock.Config.weiBoScope));
+            ssoHandler = new SsoHandler(this,
+                    new AuthInfo(
+                            getApplicationContext(),
+                            appId,
+                            SlConfig.weiBoRedirectUrl,
+                            SlConfig.weiBoScope)
+            );
+            
             if (savedInstanceState == null) {
                 // 防止不保留活动情况下activity被重置后直接进行操作的情况
-                doLogin(LoginManager.listener);
+                doLogin(SsoLoginManager.listener);
             }
         } else {
             if (savedInstanceState == null) {
@@ -81,8 +87,7 @@ public class SL_WeiBoHandlerActivity extends Activity implements IWeiboHandler.R
                   执行成功，返回 true，并调用 {@link IWeiboHandler.Response#onResponse}；
                   失败返回 false，不调用上述回调
                  */
-                IWeiboShareAPI API = WeiboShareSDK.createWeiboAPI(getApplicationContext(),
-                        ShareBlock.Config.weiBoAppId);
+                IWeiboShareAPI API = WeiboShareSDK.createWeiboAPI(getApplicationContext(), SlConfig.weiBoAppId);
                 boolean success = API.handleWeiboResponse(getIntent(), this);
             }
         }
@@ -124,7 +129,7 @@ public class SL_WeiBoHandlerActivity extends Activity implements IWeiboHandler.R
               来接收微博客户端返回的数据；执行成功，返回 true，并调用
               {@link IWeiboHandler.Response#onResponse}；失败返回 false，不调用上述回调
              */
-            IWeiboShareAPI API = WeiboShareSDK.createWeiboAPI(getApplicationContext(), ShareBlock.Config.weiBoAppId);
+            IWeiboShareAPI API = WeiboShareSDK.createWeiboAPI(getApplicationContext(), SlConfig.weiBoAppId);
             API.handleWeiboResponse(intent, this); // 当前应用唤起微博分享后，返回当前应用
         }
     }
@@ -147,7 +152,7 @@ public class SL_WeiBoHandlerActivity extends Activity implements IWeiboHandler.R
     // login
     ///////////////////////////////////////////////////////////////////////////
 
-    private void doLogin(final LoginManager.LoginListener listener) {
+    private void doLogin(final SsoLoginManager.LoginListener listener) {
         WeiboAuthListener authListener = new WeiboAuthListener() {
             /*
              * 此种授权方式会根据手机是否安装微博客户端来决定使用sso授权还是网页授权
@@ -206,7 +211,7 @@ public class SL_WeiBoHandlerActivity extends Activity implements IWeiboHandler.R
 
     @Override
     public void onResponse(BaseResponse baseResponse) {
-        ShareManager.ShareStateListener listener = ShareManager.listener;
+        SsoShareManager.ShareStateListener listener = SsoShareManager.listener;
         if (listener == null) {
             return;
         }
@@ -233,7 +238,7 @@ public class SL_WeiBoHandlerActivity extends Activity implements IWeiboHandler.R
         // 建立请求体
         SendMultiMessageToWeiboRequest request = new SendMultiMessageToWeiboRequest();
         request.transaction = String.valueOf(System.currentTimeMillis());// 用transaction唯一标识一个请求
-        ShareContent content = (ShareContent) getIntent().getSerializableExtra(ShareManager.KEY_CONTENT);
+        ShareContent content = (ShareContent) getIntent().getSerializableExtra(SsoShareManager.KEY_CONTENT);
         if (content == null) {
             throw new NullPointerException("ShareContent is null，intent = " + getIntent());
         }
@@ -247,15 +252,15 @@ public class SL_WeiBoHandlerActivity extends Activity implements IWeiboHandler.R
     private WeiboMultiMessage createShareObject(@NonNull ShareContent shareContent) {
         WeiboMultiMessage weiboMultiMessage = new WeiboMultiMessage();
         switch (shareContent.getType()) {
-            case ContentType.TEXT:
+            case ShareContentType.TEXT:
                 // 纯文字
                 weiboMultiMessage.textObject = getTextObj(shareContent);
                 break;
-            case ContentType.PIC:
+            case ShareContentType.PIC:
                 // 纯图片
                 weiboMultiMessage.imageObject = getImageObj(shareContent);
                 break;
-            case ContentType.WEBPAGE:
+            case ShareContentType.WEBPAGE:
                 // 网页
                 if (shareContent.getURL() == null) {
                     weiboMultiMessage.imageObject = getImageObj(shareContent);
@@ -264,7 +269,7 @@ public class SL_WeiBoHandlerActivity extends Activity implements IWeiboHandler.R
                     weiboMultiMessage.mediaObject = getWebPageObj(shareContent);
                 }
                 break;
-            case ContentType.MUSIC:
+            case ShareContentType.MUSIC:
                 // 音乐
                 weiboMultiMessage.mediaObject = getMusicObj(shareContent);
                 break;
@@ -317,8 +322,8 @@ public class SL_WeiBoHandlerActivity extends Activity implements IWeiboHandler.R
 
         musicObject.defaultText = shareContent.getSummary();
         musicObject.actionUrl = shareContent.getMusicUrl();
-        musicObject.dataUrl = ShareBlock.Config.weiBoRedirectUrl;
-        musicObject.dataHdUrl = ShareBlock.Config.weiBoRedirectUrl;
+        musicObject.dataUrl = SlConfig.weiBoRedirectUrl;
+        musicObject.dataHdUrl = SlConfig.weiBoRedirectUrl;
         musicObject.duration = 10;
         return musicObject;
     }
@@ -344,8 +349,8 @@ public class SL_WeiBoHandlerActivity extends Activity implements IWeiboHandler.R
         // 设置缩略图。 注意：最终压缩过的缩略图大小不得超过 32kb。
         videoObject.thumbData = shareContent.getImageBmpBytes();
         videoObject.actionUrl = shareContent.getURL();
-        videoObject.dataUrl = ShareBlock.Config.weiBoRedirectUrl;
-        videoObject.dataHdUrl = ShareBlock.Config.weiBoRedirectUrl;
+        videoObject.dataUrl = ShareLoginSDK.SlConfig.weiBoRedirectUrl;
+        videoObject.dataHdUrl = ShareLoginSDK.SlConfig.weiBoRedirectUrl;
         videoObject.duration = 10;
         videoObject.defaultText = shareContent.getSummary(); // 默认文案
         return videoObject;

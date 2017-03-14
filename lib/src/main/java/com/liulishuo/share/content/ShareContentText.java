@@ -2,7 +2,7 @@ package com.liulishuo.share.content;
 
 import android.support.annotation.NonNull;
 
-import com.liulishuo.share.type.ContentType;
+import com.liulishuo.share.type.ShareContentType;
 
 /**
  * Created by echo on 5/18/15.
@@ -53,7 +53,7 @@ public class ShareContentText implements ShareContent {
 
     @Override
     public int getType() {
-        return ContentType.TEXT;
+        return ShareContentType.TEXT;
     }
 
 }

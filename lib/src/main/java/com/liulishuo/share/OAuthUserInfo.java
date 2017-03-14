@@ -4,7 +4,7 @@ package com.liulishuo.share;
  * @author Jack Tony
  * @date 2015/10/27
  */
-public class AuthUserInfo {
+public class OAuthUserInfo {
 
     public String nickName;
     

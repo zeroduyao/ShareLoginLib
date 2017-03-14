@@ -34,7 +34,7 @@ compile 'com.github.tianzhijiexian:ShareLoginLib:1.3.7'
 ### 登录、分享  
 ```JAVA  
 // 登录
-LoginManager.login(this, LoginType.XXX, new LoginManager.LoginListener() {
+SsoLoginManager.login(this, SsoLoginType.XXX, new LoginListener() {
 
       public void onSuccess(String accessToken, String uId, long expiresIn, @Nullable String wholeJsonData) {}
 
@@ -45,9 +45,9 @@ LoginManager.login(this, LoginType.XXX, new LoginManager.LoginListener() {
 
 
 // 分享
-ShareManager.share(MainActivity.this, ShareType.XXX
+SsoShareManager.share(MainActivity.this, SsoShareType.XXX
         new ShareContentWebpage("title", "summary", "http://www.kale.com", mBitmap),
-        new ShareManager.ShareStateListener() {
+        new ShareStateListener() {
 
                   public void onSuccess() {}
 
@@ -60,9 +60,9 @@ ShareManager.share(MainActivity.this, ShareType.XXX
 
 ### 判断是否已安装第三方客户端  
 ```JAVA
-ShareBlock.isWeiXinInstalled(this);
-ShareBlock.isWeiBoInstalled(this);
-ShareBlock.isQQInstalled(this);
+ShareLoginSDK.isWeiXinInstalled(this);
+ShareLoginSDK.isWeiBoInstalled(this);
+ShareLoginSDK.isQQInstalled(this);
 ```
 
 部分手机上需要读取手机app列表的权限。
@@ -70,10 +70,10 @@ ShareBlock.isQQInstalled(this);
 
 ### 通过token和id得到用户信息
 ```JAVA
-UserInfoManager.getUserInfo(context, LoginType.XXX, accessToken, userId,
-    new UserInfoManager.UserInfoListener() {
+SsoUserInfoManager.getUserInfo(context, LoginType.XXX, accessToken, userId,
+    new UserInfoListener() {
 
-        public void onSuccess(@NonNull AuthUserInfo userInfo) {
+        public void onSuccess(@NonNull OAuthUserInfo userInfo) {
             // 可以得到：昵称、性别、头像、用户id
         }
 
@@ -99,15 +99,15 @@ defaultConfig {
 ### 2. 在使用功能前配置常量
 
 ```java  
-Config config = Config.getInstance()
+SlConfig config = new SlConfig.Builder()
             .debug(false)
             .appName("Your App Name")
             .picTempFile(null) // 指定缓存缩略图的目录名字，如无特殊要求可以是null
             .qq(QQ_APPID, QQ_SCOPE)
             .weiXin(WEIXIN_APPID, WEIXIN_SECRET)
-            .weiBo(WEIBO_APPID, WEIBO_REDIRECT_URL, WEIBO_SCOPE);
+            .weiBo(WEIBO_APPID, WEIBO_REDIRECT_URL, WEIBO_SCOPE).build();
 
-ShareBlock.init(this, config);
+ShareLoginSDK.init(this, config);
 ```
 
 ## 重要说明

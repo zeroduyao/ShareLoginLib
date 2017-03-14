@@ -3,7 +3,8 @@ package com.liulishuo.engzo;
 import android.app.Application;
 import android.util.Log;
 
-import com.liulishuo.share.ShareBlock;
+import com.liulishuo.share.ShareLoginSDK;
+import com.liulishuo.share.SlConfig;
 
 /**
  * @author Kale
@@ -23,19 +24,20 @@ public class AppApplication extends Application {
 
         initConstant();
 
-        Log.d(TAG, "onCreate: weixin:" + ShareBlock.isWeiXinInstalled(this));
-        Log.d(TAG, "onCreate: weibo:" + ShareBlock.isWeiBoInstalled(this));
-        Log.d(TAG, "onCreate: qq:" + ShareBlock.isQQInstalled(this));
+        Log.d(TAG, "onCreate: weixin:" + ShareLoginSDK.isWeiXinInstalled(this));
+        Log.d(TAG, "onCreate: weibo:" + ShareLoginSDK.isWeiBoInstalled(this));
+        Log.d(TAG, "onCreate: qq:" + ShareLoginSDK.isQQInstalled(this));
 
-        ShareBlock.Config config = ShareBlock.Config.getInstance()
+        SlConfig cfg = new SlConfig.Builder()
                 .debug(true)
                 .appName("test app")
                 .picTempFile(null)
                 .qq(QQ_APPID, QQ_SCOPE)
                 .weiBo(WEIBO_APPID, WEIBO_REDIRECT_URL, WEIBO_SCOPE)
-                .weiXin(WEIXIN_APPID, WEIXIN_SECRET);
+                .weiXin(WEIXIN_APPID, WEIXIN_SECRET)
+                .build();
 
-        ShareBlock.init(this, config);
+        ShareLoginSDK.init(this, cfg);
     }
 
     /**

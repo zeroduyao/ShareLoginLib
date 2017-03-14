@@ -11,8 +11,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
-import com.liulishuo.share.ShareBlock;
-import com.liulishuo.share.type.ContentType;
+import com.liulishuo.share.SlConfig;
+import com.liulishuo.share.type.ShareContentType;
 
 /**
  * Created by echo on 5/18/15.
@@ -69,10 +69,10 @@ public class ShareContentPic implements ShareContent {
         return null;
     }
 
-    @ContentType
+    @ShareContentType
     @Override
     public int getType() {
-        return ContentType.PIC;
+        return ShareContentType.PIC;
     }
 
     /**
@@ -118,7 +118,7 @@ public class ShareContentPic implements ShareContent {
      * Note:外部传入的bitmap可能会被用于其他的地方，所以这里不能做recycle()
      */
     private String saveLargeBitmap(final Bitmap bitmap) {
-        String path = ShareBlock.Config.pathTemp;
+        String path = SlConfig.pathTemp;
         if (!TextUtils.isEmpty(path)) {
             String imagePath = path + "sl_large_pic";
             FileOutputStream fos = null;

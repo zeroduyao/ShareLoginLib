@@ -17,15 +17,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.liulishuo.demo.R;
-import com.liulishuo.share.LoginManager;
-import com.liulishuo.share.ShareBlock;
-import com.liulishuo.share.ShareManager;
+import com.liulishuo.share.SlConfig;
+import com.liulishuo.share.SsoLoginManager;
+import com.liulishuo.share.SsoShareManager;
 import com.liulishuo.share.content.ShareContent;
 import com.liulishuo.share.content.ShareContentPic;
 import com.liulishuo.share.content.ShareContentText;
 import com.liulishuo.share.content.ShareContentWebPage;
-import com.liulishuo.share.type.LoginType;
-import com.liulishuo.share.type.ShareType;
+import com.liulishuo.share.type.SsoLoginType;
+import com.liulishuo.share.type.SsoShareType;
 import com.squareup.picasso.Picasso;
 
 /**
@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void loadPicFromTempFile() {
         try {
-            String path = ShareBlock.Config.pathTemp + "sharePic_temp";
+            String path = SlConfig.pathTemp + "sharePic_temp";
             File file = new File(path);
             if (file.exists()) {
                 FileInputStream fis = new FileInputStream(file);
@@ -99,36 +99,36 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onClick(View v) {
-        ShareManager.ShareStateListener mShareListener = new ShareListener(this);
+        SsoShareManager.ShareStateListener mShareListener = new ShareListener(this);
 
         int i = v.getId();
         switch (i) {
             case R.id.QQ登录:
-                LoginManager.login(this, LoginType.QQ, new LoginListener(this, LoginType.QQ));
+                SsoLoginManager.login(this, SsoLoginType.QQ, new LoginListener(this, SsoLoginType.QQ));
                 break;
             case R.id.微博登录:
-                LoginManager.login(this, LoginType.WEIBO, new LoginListener(this, LoginType.WEIBO));
+                SsoLoginManager.login(this, SsoLoginType.WEIBO, new LoginListener(this, SsoLoginType.WEIBO));
                 break;
             case R.id.微信登录:
-                LoginManager.login(this, LoginType.WEIXIN, new LoginListener(this, LoginType.WEIXIN));
+                SsoLoginManager.login(this, SsoLoginType.WEIXIN, new LoginListener(this, SsoLoginType.WEIXIN));
                 break;
             case R.id.分享给QQ好友:
-                ShareManager.share(this, ShareType.QQ_FRIEND, mShareContent, mShareListener);
+                SsoShareManager.share(this, SsoShareType.QQ_FRIEND, mShareContent, mShareListener);
                 break;
             case R.id.分享到QQ空间:
-                ShareManager.share(this, ShareType.QQ_ZONE, mShareContent, mShareListener);
+                SsoShareManager.share(this, SsoShareType.QQ_ZONE, mShareContent, mShareListener);
                 break;
             case R.id.分享到微博:
-                ShareManager.share(this, ShareType.WEIBO_TIME_LINE, mShareContent, mShareListener);
+                SsoShareManager.share(this, SsoShareType.WEIBO_TIME_LINE, mShareContent, mShareListener);
                 break;
             case R.id.分享给微信好友:
-                ShareManager.share(this, ShareType.WEIXIN_FRIEND, mShareContent, mShareListener);
+                SsoShareManager.share(this, SsoShareType.WEIXIN_FRIEND, mShareContent, mShareListener);
                 break;
             case R.id.分享到微信朋友圈:
-                ShareManager.share(this, ShareType.WEIXIN_FRIEND_ZONE, mShareContent, mShareListener);
+                SsoShareManager.share(this, SsoShareType.WEIXIN_FRIEND_ZONE, mShareContent, mShareListener);
                 break;
             case R.id.分享到微信收藏:
-                ShareManager.share(this, ShareType.WEIXIN_FAVORITE, mShareContent, mShareListener);
+                SsoShareManager.share(this, SsoShareType.WEIXIN_FAVORITE, mShareContent, mShareListener);
                 break;
         }
         userInfoTv.setText("");

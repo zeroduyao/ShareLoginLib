@@ -8,12 +8,12 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
-import com.liulishuo.share.LoginManager;
-import com.liulishuo.share.ShareBlock;
-import com.liulishuo.share.ShareManager;
+import com.liulishuo.share.SlConfig;
+import com.liulishuo.share.SsoLoginManager;
+import com.liulishuo.share.SsoShareManager;
 import com.liulishuo.share.content.ShareContent;
-import com.liulishuo.share.type.ContentType;
-import com.liulishuo.share.type.ShareType;
+import com.liulishuo.share.type.ShareContentType;
+import com.liulishuo.share.type.SsoShareType;
 import com.sina.weibo.sdk.exception.WeiboException;
 import com.sina.weibo.sdk.net.AsyncWeiboRunner;
 import com.sina.weibo.sdk.net.RequestListener;
@@ -48,12 +48,12 @@ public class SL_WeiXinHandlerActivity extends Activity implements IWXAPIEventHan
 
     private IWXAPI api;
 
-    public static LoginManager.LoginRespListener respListener;
+    public static SsoLoginManager.LoginRespListener respListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        api = WXAPIFactory.createWXAPI(this, ShareBlock.Config.weiXinAppId, true);
+        api = WXAPIFactory.createWXAPI(this, SlConfig.weiXinAppId, true);
         api.handleIntent(getIntent(), this);
         finish();
     }
@@ -76,9 +76,9 @@ public class SL_WeiXinHandlerActivity extends Activity implements IWXAPIEventHan
     public void onResp(BaseResp resp) {
         if (resp != null) {
             if (resp instanceof SendAuth.Resp && resp.getType() == TYPE_LOGIN) {
-                parseLoginResp(this, (SendAuth.Resp) resp, LoginManager.listener);
+                parseLoginResp(this, (SendAuth.Resp) resp, SsoLoginManager.listener);
             } else {
-                parseShareResp(resp, ShareManager.listener);
+                parseShareResp(resp, SsoShareManager.listener);
             }
         }
         finish();
@@ -89,7 +89,7 @@ public class SL_WeiXinHandlerActivity extends Activity implements IWXAPIEventHan
     ///////////////////////////////////////////////////////////////////////////
 
     public static void login(@NonNull Context context) {
-        String appId = ShareBlock.Config.weiXinAppId;
+        String appId = SlConfig.weiXinAppId;
         if (TextUtils.isEmpty(appId)) {
             throw new NullPointerException("请通过shareBlock初始化WeiXinAppId");
         }
@@ -106,7 +106,7 @@ public class SL_WeiXinHandlerActivity extends Activity implements IWXAPIEventHan
      * 解析用户登录的结果
      */
     protected void parseLoginResp(final Activity activity, SendAuth.Resp resp,
-            @Nullable LoginManager.LoginListener listener) {
+            @Nullable SsoLoginManager.LoginListener listener) {
         // 有可能是listener传入的是null，也可能是调用静态方法前没初始化当前的类
         if (listener != null) {
             switch (resp.errCode) {
@@ -141,11 +141,11 @@ public class SL_WeiXinHandlerActivity extends Activity implements IWXAPIEventHan
      * }
      */
     private void handlerLoginResp(Context context, String code,
-            final @Nullable LoginManager.LoginListener listener) {
+            final @Nullable SsoLoginManager.LoginListener listener) {
 
         WeiboParameters params = new WeiboParameters(null);
-        params.put("appid", ShareBlock.Config.weiXinAppId);
-        params.put("secret", ShareBlock.Config.weiXinSecret);
+        params.put("appid", SlConfig.weiXinAppId);
+        params.put("secret", SlConfig.weiXinSecret);
         params.put("grant_type", "authorization_code");
         params.put("code", code);
 
@@ -180,8 +180,8 @@ public class SL_WeiXinHandlerActivity extends Activity implements IWXAPIEventHan
     ///////////////////////////////////////////////////////////////////////////
 
     public void sendShareMsg(@NonNull Context context, @NonNull ShareContent shareContent,
-            @ShareType String shareType) {
-        String weChatAppId = ShareBlock.Config.weiXinAppId;
+            @SsoShareType String shareType) {
+        String weChatAppId = SlConfig.weiXinAppId;
         if (TextUtils.isEmpty(weChatAppId)) {
             throw new NullPointerException("请通过shareBlock初始化WeChatAppId");
         }
@@ -192,7 +192,7 @@ public class SL_WeiXinHandlerActivity extends Activity implements IWXAPIEventHan
     }
 
     @NonNull
-    private SendMessageToWX.Req createShareRequest(@NonNull ShareContent shareContent, @ShareType String shareType) {
+    private SendMessageToWX.Req createShareRequest(@NonNull ShareContent shareContent, @SsoShareType String shareType) {
         // 建立信息体
         WXMediaMessage msg = new WXMediaMessage();
         msg.title = shareContent.getTitle();
@@ -205,13 +205,13 @@ public class SL_WeiXinHandlerActivity extends Activity implements IWXAPIEventHan
         req.transaction = String.valueOf(System.currentTimeMillis());
         req.message = msg; // msg
         switch (shareType) {
-            case ShareType.WEIXIN_FRIEND:
+            case SsoShareType.WEIXIN_FRIEND:
                 req.scene = SendMessageToWX.Req.WXSceneSession;
                 break;
-            case ShareType.WEIXIN_FRIEND_ZONE:
+            case SsoShareType.WEIXIN_FRIEND_ZONE:
                 req.scene = SendMessageToWX.Req.WXSceneTimeline;
                 break;
-            case ShareType.WEIXIN_FAVORITE:
+            case SsoShareType.WEIXIN_FAVORITE:
                 req.scene = SendMessageToWX.Req.WXSceneFavorite;
                 break;
         }
@@ -221,19 +221,19 @@ public class SL_WeiXinHandlerActivity extends Activity implements IWXAPIEventHan
     private WXMediaMessage.IMediaObject createMediaObject(@NonNull ShareContent shareContent) {
         WXMediaMessage.IMediaObject mediaObject;
         switch (shareContent.getType()) {
-            case ContentType.TEXT:
+            case ShareContentType.TEXT:
                 // 纯文字
                 mediaObject = getTextObj(shareContent);
                 break;
-            case ContentType.PIC:
+            case ShareContentType.PIC:
                 // 纯图片
                 mediaObject = getImageObj(shareContent);
                 break;
-            case ContentType.WEBPAGE:
+            case ShareContentType.WEBPAGE:
                 // 网页
                 mediaObject = getWebPageObj(shareContent);
                 break;
-            case ContentType.MUSIC:
+            case ShareContentType.MUSIC:
                 // 音乐
                 mediaObject = getMusicObj(shareContent);
                 break;
@@ -276,7 +276,7 @@ public class SL_WeiXinHandlerActivity extends Activity implements IWXAPIEventHan
      *
      * https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=open1419318634&token=&lang=zh_CN
      */
-    private void parseShareResp(BaseResp resp, ShareManager.ShareStateListener listener) {
+    private void parseShareResp(BaseResp resp, SsoShareManager.ShareStateListener listener) {
         if (listener != null) {
             switch (resp.errCode) {
                 case BaseResp.ErrCode.ERR_OK:

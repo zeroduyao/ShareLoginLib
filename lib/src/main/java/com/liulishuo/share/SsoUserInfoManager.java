@@ -4,7 +4,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.liulishuo.share.type.LoginType;
+import com.liulishuo.share.type.SsoLoginType;
 import com.sina.weibo.sdk.exception.WeiboException;
 import com.sina.weibo.sdk.net.AsyncWeiboRunner;
 import com.sina.weibo.sdk.net.RequestListener;
@@ -17,18 +17,18 @@ import org.json.JSONObject;
  * @author Kale
  * @date 2016/4/5
  */
-public class UserInfoManager {
+public class SsoUserInfoManager {
 
-    public static void getUserInfo(Context context, @LoginType String type, @NonNull String accessToken, @NonNull String uid,
+    public static void getUserInfo(Context context, @SsoLoginType String type, @NonNull String accessToken, @NonNull String uid,
             @Nullable final UserInfoListener listener) {
         switch (type) {
-            case LoginType.QQ:
+            case SsoLoginType.QQ:
                 getQQUserInfo(context, accessToken, uid, listener);
                 break;
-            case LoginType.WEIBO:
+            case SsoLoginType.WEIBO:
                 getWeiBoUserInfo(context, accessToken, uid, listener);
                 break;
-            case LoginType.WEIXIN:
+            case SsoLoginType.WEIXIN:
                 getWeiXinUserInfo(context, accessToken, uid, listener);
                 break;
         }
@@ -50,13 +50,13 @@ public class UserInfoManager {
         WeiboParameters params = new WeiboParameters(null);
         params.put("access_token", accessToken);
         params.put("openid", userId);
-        params.put("oauth_consumer_key", ShareBlock.Config.qqAppId);
+        params.put("oauth_consumer_key", SlConfig.qqAppId);
         params.put("format", "json");
 
         runner.requestAsync("https://graph.qq.com/user/get_simple_userinfo", params, "GET", new UserInfoRequestListener(listener) {
             @Override
-            AuthUserInfo onSuccess(JSONObject jsonObj) throws JSONException {
-                AuthUserInfo userInfo = new AuthUserInfo();
+            OAuthUserInfo onSuccess(JSONObject jsonObj) throws JSONException {
+                OAuthUserInfo userInfo = new OAuthUserInfo();
                 userInfo.nickName = jsonObj.getString("nickname");
                 userInfo.sex = jsonObj.getString("gender");
                 userInfo.headImgUrl = jsonObj.getString("figureurl_qq_1");
@@ -83,8 +83,8 @@ public class UserInfoManager {
         params.put("uid", uid);
         runner.requestAsync("https://api.weibo.com/2/users/show.json", params, "GET", new UserInfoRequestListener(listener) {
             @Override
-            AuthUserInfo onSuccess(JSONObject jsonObj) throws JSONException {
-                AuthUserInfo userInfo = new AuthUserInfo();
+            OAuthUserInfo onSuccess(JSONObject jsonObj) throws JSONException {
+                OAuthUserInfo userInfo = new OAuthUserInfo();
                 userInfo.nickName = jsonObj.getString("screen_name");
                 userInfo.sex = jsonObj.getString("gender");
                 userInfo.headImgUrl = jsonObj.getString("avatar_large");
@@ -126,8 +126,8 @@ public class UserInfoManager {
         runner.requestAsync("https://api.weixin.qq.com/sns/userinfo", params, "GET", new UserInfoRequestListener(listener) {
 
             @Override
-            AuthUserInfo onSuccess(JSONObject jsonObj) throws JSONException {
-                AuthUserInfo userInfo = new AuthUserInfo();
+            OAuthUserInfo onSuccess(JSONObject jsonObj) throws JSONException {
+                OAuthUserInfo userInfo = new OAuthUserInfo();
                 userInfo.nickName = jsonObj.getString("nickname");
                 userInfo.sex = jsonObj.getString("sex");
                 // 用户头像，最后一个数值代表正方形头像大小（有0、46、64、96、132数值可选，0代表640*640正方形头像），用户没有头像时该项为空
@@ -152,7 +152,7 @@ public class UserInfoManager {
 
         @Override
         public void onComplete(String s) {
-            AuthUserInfo userInfo = null;
+            OAuthUserInfo userInfo = null;
             try {
                 userInfo = onSuccess(new JSONObject(s));
             } catch (JSONException e) {
@@ -166,7 +166,7 @@ public class UserInfoManager {
             }
         }
 
-        abstract AuthUserInfo onSuccess(JSONObject jsonObj) throws JSONException;
+        abstract OAuthUserInfo onSuccess(JSONObject jsonObj) throws JSONException;
 
         @Override
         public void onWeiboException(WeiboException e) {
@@ -179,7 +179,7 @@ public class UserInfoManager {
 
     public interface UserInfoListener {
 
-        void onSuccess(@NonNull AuthUserInfo userInfo);
+        void onSuccess(@NonNull OAuthUserInfo userInfo);
 
         void onError(String msg);
     }

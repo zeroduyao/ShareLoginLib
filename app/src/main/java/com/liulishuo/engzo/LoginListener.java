@@ -1,29 +1,29 @@
 package com.liulishuo.engzo;
 
-import com.liulishuo.share.AuthUserInfo;
-import com.liulishuo.share.LoginManager;
-import com.liulishuo.share.UserInfoManager;
-import com.liulishuo.share.type.LoginType;
-
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
+
+import com.liulishuo.share.OAuthUserInfo;
+import com.liulishuo.share.SsoLoginManager;
+import com.liulishuo.share.SsoUserInfoManager;
+import com.liulishuo.share.type.SsoLoginType;
 
 /**
  * @author Kale
  * @date 2016/4/5
  */
-class LoginListener implements LoginManager.LoginListener {
+class LoginListener implements SsoLoginManager.LoginListener {
 
     private static final String TAG = "LoginListener";
 
     private MainActivity activity;
 
     private
-    @LoginType
+    @SsoLoginType
     String type;
 
-    LoginListener(MainActivity activity, @LoginType String type) {
+    LoginListener(MainActivity activity, @SsoLoginType String type) {
         this.activity = activity;
         this.type = type;
     }
@@ -56,9 +56,9 @@ class LoginListener implements LoginManager.LoginListener {
      * 加载用户的个人信息
      */
     private void loadUserInfo(String accessToken, String userId) {
-        UserInfoManager.getUserInfo(activity, type, accessToken, userId, new UserInfoManager.UserInfoListener() {
+        SsoUserInfoManager.getUserInfo(activity, type, accessToken, userId, new SsoUserInfoManager.UserInfoListener() {
             @Override
-            public void onSuccess(@NonNull final AuthUserInfo userInfo) {
+            public void onSuccess(@NonNull final OAuthUserInfo userInfo) {
                 final String info = " nickname = " + userInfo.nickName + "\n"
                         + " sex = " + userInfo.sex + "\n"
                         + " id = " + userInfo.userId;

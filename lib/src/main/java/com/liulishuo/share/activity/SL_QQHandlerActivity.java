@@ -14,11 +14,12 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.liulishuo.share.LoginManager;
-import com.liulishuo.share.ShareBlock;
-import com.liulishuo.share.ShareManager;
+import com.liulishuo.share.ShareLoginSDK;
+import com.liulishuo.share.SlConfig;
+import com.liulishuo.share.SsoLoginManager;
+import com.liulishuo.share.SsoShareManager;
 import com.liulishuo.share.content.ShareContent;
-import com.liulishuo.share.type.ContentType;
+import com.liulishuo.share.type.ShareContentType;
 import com.tencent.connect.common.Constants;
 import com.tencent.connect.share.QQShare;
 import com.tencent.connect.share.QzoneShare;
@@ -34,6 +35,7 @@ import org.json.JSONObject;
  *
  * http://wiki.connect.qq.com/sdk%E4%B8%8B%E8%BD%BD
  * http://wiki.open.qq.com/wiki/mobile/API%E8%B0%83%E7%94%A8%E8%AF%B4%E6%98%8E
+ * http://wiki.open.qq.com/wiki/mobile/SDK%E4%B8%8B%E8%BD%BD
  *
  * 仅仅qq分享的sdk支持url，但是竟然不支持https的图片！！！
  */
@@ -52,14 +54,14 @@ public class SL_QQHandlerActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
-        boolean isLogin = intent.getBooleanExtra(ShareBlock.KEY_IS_LOGIN_TYPE, true);
-        String appId = ShareBlock.Config.qqAppId;
+        boolean isLogin = intent.getBooleanExtra(ShareLoginSDK.KEY_IS_LOGIN_TYPE, true);
+        String appId = SlConfig.qqAppId;
         if (TextUtils.isEmpty(appId)) {
             throw new NullPointerException("请通过shareBlock初始化appId");
         }
 
         if (isLogin) {
-            initLoginListener(LoginManager.listener);
+            initLoginListener(SsoLoginManager.listener);
 
             if (savedInstanceState == null) {
                 doLogin(this, appId);
@@ -67,10 +69,10 @@ public class SL_QQHandlerActivity extends Activity {
         } else {
             isToFriend = intent.getBooleanExtra(KEY_TO_FRIEND, true);
             // 每次进来都初始化一次，保证不保留活动的时候listener也不为null
-            initShareListener(ShareManager.listener);
+            initShareListener(SsoShareManager.listener);
 
             if (savedInstanceState == null) {
-                ShareContent shareContent = (ShareContent) intent.getSerializableExtra(ShareManager.KEY_CONTENT);
+                ShareContent shareContent = (ShareContent) intent.getSerializableExtra(SsoShareManager.KEY_CONTENT);
                 doShare(shareContent, appId);
             }
         }
@@ -89,7 +91,7 @@ public class SL_QQHandlerActivity extends Activity {
     // login
     ///////////////////////////////////////////////////////////////////////////
 
-    private void initLoginListener(final LoginManager.LoginListener listener) {
+    private void initLoginListener(final SsoLoginManager.LoginListener listener) {
         uiListener = new IUiListener() {
             @Override
             public void onComplete(Object object) {
@@ -125,7 +127,7 @@ public class SL_QQHandlerActivity extends Activity {
     private void doLogin(Activity activity, String appId) {
         Tencent tencent = Tencent.createInstance(appId, activity.getApplicationContext());
         if (!tencent.isSessionValid()) {
-            tencent.login(activity, ShareBlock.Config.qqScope, uiListener);
+            tencent.login(activity, SlConfig.qqScope, uiListener);
         } else {
             tencent.logout(activity);
         }
@@ -146,7 +148,7 @@ public class SL_QQHandlerActivity extends Activity {
         }
     }
 
-    private void initShareListener(final ShareManager.ShareStateListener listener) {
+    private void initShareListener(final SsoShareManager.ShareStateListener listener) {
         uiListener = new IUiListener() {
 
             @Override
@@ -178,23 +180,23 @@ public class SL_QQHandlerActivity extends Activity {
     Bundle createQQBundle(ShareContent shareContent) {
         Bundle bundle;
         switch (shareContent.getType()) {
-            case ContentType.TEXT:
+            case ShareContentType.TEXT:
                 // 纯文字
                 // 文档中说： "本接口支持3种模式，每种模式的参数设置不同"，这三种模式中不包含纯文本
                 Toast.makeText(SL_QQHandlerActivity.this, "目前不支持分享纯文本信息给QQ好友", Toast.LENGTH_SHORT).show();
-                Log.e(ShareBlock.TAG, Log.getStackTraceString(new RuntimeException("目前不支持分享纯文本信息给QQ好友")));
+                Log.e(ShareLoginSDK.TAG, Log.getStackTraceString(new RuntimeException("目前不支持分享纯文本信息给QQ好友")));
                 bundle = getWebPageObj(); // fake bundle
                 finish();
                 break;
-            case ContentType.PIC:
+            case ShareContentType.PIC:
                 // 纯图片
                 bundle = getImageObj(shareContent);
                 break;
-            case ContentType.WEBPAGE:
+            case ShareContentType.WEBPAGE:
                 // 网页
                 bundle = getWebPageObj();
                 break;
-            case ContentType.MUSIC:
+            case ShareContentType.MUSIC:
                 // 音乐
                 bundle = getMusicObj(shareContent);
                 break;
@@ -224,7 +226,7 @@ public class SL_QQHandlerActivity extends Activity {
         params.putString(QQShare.SHARE_TO_QQ_TITLE, shareContent.getTitle()); // 标题
         params.putString(QQShare.SHARE_TO_QQ_SUMMARY, shareContent.getSummary()); // 描述
         params.putString(QQShare.SHARE_TO_QQ_TARGET_URL, shareContent.getURL()); // 这条分享消息被好友点击后的跳转URL
-        params.putString(QQShare.SHARE_TO_QQ_APP_NAME, ShareBlock.Config.appName); // 手Q客户端顶部，替换“返回”按钮文字，如果为空，用返回代替 (可选)
+        params.putString(QQShare.SHARE_TO_QQ_APP_NAME, SlConfig.appName); // 手Q客户端顶部，替换“返回”按钮文字，如果为空，用返回代替 (可选)
         return params;
     }
 
@@ -276,7 +278,7 @@ public class SL_QQHandlerActivity extends Activity {
         if (title == null) {
             // 如果没title，说明就是分享的纯文字、纯图片
             Toast.makeText(SL_QQHandlerActivity.this, "目前不支持分享纯文本信息给QQ好友", Toast.LENGTH_SHORT).show();
-            Log.e(ShareBlock.TAG, Log.getStackTraceString(new RuntimeException("QQ空间目前只支持分享图文信息")));
+            Log.e(ShareLoginSDK.TAG, Log.getStackTraceString(new RuntimeException("QQ空间目前只支持分享图文信息")));
             finish();
         }
         params.putString(QzoneShare.SHARE_TO_QQ_TITLE, title); // 标题
@@ -291,7 +293,7 @@ public class SL_QQHandlerActivity extends Activity {
 
     @Nullable
     private String getImageUri(@NonNull ShareContent content, boolean isLargePic) {
-        String path = ShareBlock.Config.pathTemp;
+        String path = SlConfig.pathTemp;
         if (isLargePic) {
             return content.getLargeBmpPath();
         } else {

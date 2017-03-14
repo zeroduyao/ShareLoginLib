@@ -8,37 +8,37 @@ import android.support.annotation.Nullable;
 import com.liulishuo.share.activity.SL_QQHandlerActivity;
 import com.liulishuo.share.activity.SL_WeiBoHandlerActivity;
 import com.liulishuo.share.activity.SL_WeiXinHandlerActivity;
-import com.liulishuo.share.type.LoginType;
+import com.liulishuo.share.type.SsoLoginType;
 
-import static com.liulishuo.share.type.LoginType.QQ;
-import static com.liulishuo.share.type.LoginType.WEIBO;
-import static com.liulishuo.share.type.LoginType.WEIXIN;
+import static com.liulishuo.share.type.SsoLoginType.QQ;
+import static com.liulishuo.share.type.SsoLoginType.WEIBO;
+import static com.liulishuo.share.type.SsoLoginType.WEIXIN;
 
 /**
  * @author Kale
  * @date 2016/3/30
  */
-public class LoginManager {
+public class SsoLoginManager {
 
     @Nullable
     public static LoginListener listener;
 
-    public static void login(@NonNull Activity activity, @LoginType String type, @Nullable LoginListener listener) {
+    public static void login(@NonNull Activity activity, @SsoLoginType String type, @Nullable LoginListener listener) {
         login(activity, type, listener, null);
     }
 
     /**
      * @param weixinCodeRespListener 得到微信code的listener。如果不为空，loginListener将不会被自动调用，必须要手动调用。
      */
-    public static void login(@NonNull Activity activity, @LoginType String type,
+    public static void login(@NonNull Activity activity, @SsoLoginType String type,
             @Nullable LoginListener listener, @Nullable LoginRespListener weixinCodeRespListener) {
-        LoginManager.listener = listener;
+        SsoLoginManager.listener = listener;
         switch (type) {
             case QQ:
-                if (ShareBlock.isQQInstalled(activity)) {
+                if (ShareLoginSDK.isQQInstalled(activity)) {
                     activity.startActivity(
                             new Intent(activity, SL_QQHandlerActivity.class)
-                                    .putExtra(ShareBlock.KEY_IS_LOGIN_TYPE, true)
+                                    .putExtra(ShareLoginSDK.KEY_IS_LOGIN_TYPE, true)
                     );
                     activity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                 } else {
@@ -50,12 +50,12 @@ public class LoginManager {
             case WEIBO:
                 activity.startActivity(
                         new Intent(activity, SL_WeiBoHandlerActivity.class)
-                                .putExtra(ShareBlock.KEY_IS_LOGIN_TYPE, true)
+                                .putExtra(ShareLoginSDK.KEY_IS_LOGIN_TYPE, true)
                 );
                 activity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                 break;
             case WEIXIN:
-                if (ShareBlock.isWeiXinInstalled(activity)) {
+                if (ShareLoginSDK.isWeiXinInstalled(activity)) {
                     SL_WeiXinHandlerActivity.respListener = weixinCodeRespListener;
                     SL_WeiXinHandlerActivity.login(activity.getApplicationContext());
                     activity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
@@ -84,7 +84,7 @@ public class LoginManager {
 
     public interface LoginRespListener {
 
-        void onLoginResp(String respCode, LoginManager.LoginListener listener);
+        void onLoginResp(String respCode, SsoLoginManager.LoginListener listener);
     }
 
 }

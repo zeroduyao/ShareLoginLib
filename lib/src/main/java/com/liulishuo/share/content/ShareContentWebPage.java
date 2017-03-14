@@ -4,7 +4,7 @@ import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.liulishuo.share.type.ContentType;
+import com.liulishuo.share.type.ShareContentType;
 
 /**
  * Created by echo on 5/18/15.
@@ -50,7 +50,7 @@ public class ShareContentWebPage extends ShareContentPic {
 
     @Override
     public int getType() {
-        return ContentType.WEBPAGE;
+        return ShareContentType.WEBPAGE;
     }
 
 }

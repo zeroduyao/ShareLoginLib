@@ -2,7 +2,7 @@ package com.liulishuo.share.content;
 
 import java.io.Serializable;
 
-import com.liulishuo.share.type.ContentType;
+import com.liulishuo.share.type.ShareContentType;
 
 /**
  * Created by echo on 5/18/15.
@@ -13,7 +13,7 @@ public interface ShareContent extends Serializable {
     /**
      * @return 分享的方式
      */
-    @ContentType
+    @ShareContentType
     int getType();
 
     /**

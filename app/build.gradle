@@ -9,7 +9,7 @@ props.load(new FileInputStream(f))
 
 android {
     compileSdkVersion 24
-    buildToolsVersion "24.0.2"
+    buildToolsVersion '25.0.0'
 
     defaultConfig {
         applicationId "com"
@@ -49,7 +49,7 @@ android {
 }
 
 dependencies {
-    compile project(':share')
+    compile project(':lib')
 
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.android.support:appcompat-v7:24.2.1'

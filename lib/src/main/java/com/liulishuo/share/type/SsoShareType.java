@@ -10,12 +10,12 @@ import android.support.annotation.StringDef;
  * @date 2016/3/30
  */
 @Retention(RetentionPolicy.SOURCE)
-@StringDef({ShareType.WEIXIN_FRIEND,
-        ShareType.WEIXIN_FRIEND_ZONE,
-        ShareType.WEIXIN_FAVORITE,
-        ShareType.WEIBO_TIME_LINE,
-        ShareType.QQ_ZONE, ShareType.QQ_FRIEND})
-public @interface ShareType {
+@StringDef({SsoShareType.WEIXIN_FRIEND,
+        SsoShareType.WEIXIN_FRIEND_ZONE,
+        SsoShareType.WEIXIN_FAVORITE,
+        SsoShareType.WEIBO_TIME_LINE,
+        SsoShareType.QQ_ZONE, SsoShareType.QQ_FRIEND})
+public @interface SsoShareType {
 
     String
             QQ_ZONE = "QQ_ZONE", QQ_FRIEND = "QQ_FRIEND",

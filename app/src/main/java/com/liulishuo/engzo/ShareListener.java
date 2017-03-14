@@ -1,15 +1,15 @@
 package com.liulishuo.engzo;
 
 
-import com.liulishuo.share.ShareManager;
-
 import android.widget.Toast;
+
+import com.liulishuo.share.SsoShareManager;
 
 /**
  * @author Jack Tony
  * @date 2015/10/23
  */
-class ShareListener implements ShareManager.ShareStateListener {
+class ShareListener implements SsoShareManager.ShareStateListener {
 
     private MainActivity activity;
 
