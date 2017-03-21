@@ -72,7 +72,7 @@ public class SL_QQHandlerActivity extends Activity {
             initShareListener(SsoShareManager.listener);
 
             if (savedInstanceState == null) {
-                ShareContent shareContent = (ShareContent) intent.getSerializableExtra(SsoShareManager.KEY_CONTENT);
+                ShareContent shareContent = intent.getParcelableExtra(SsoShareManager.KEY_CONTENT);
                 doShare(shareContent, appId);
             }
         }

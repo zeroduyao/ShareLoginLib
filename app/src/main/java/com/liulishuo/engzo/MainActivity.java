@@ -121,6 +121,13 @@ public class MainActivity extends AppCompatActivity {
             case R.id.分享到微博:
                 SsoShareManager.share(this, SsoShareType.WEIBO_TIME_LINE, mShareContent, mShareListener);
                 break;
+            case R.id.分享到微博_不带跳转链接:
+                // 解开注释即可测试
+                if (mShareContent instanceof ShareContentWebPage) {
+//                    ((ShareContentWebPage) mShareContent).setUrl(null);
+                }
+                SsoShareManager.share(this, SsoShareType.WEIBO_TIME_LINE, mShareContent, mShareListener);
+                break;
             case R.id.分享给微信好友:
                 SsoShareManager.share(this, SsoShareType.WEIXIN_FRIEND, mShareContent, mShareListener);
                 break;

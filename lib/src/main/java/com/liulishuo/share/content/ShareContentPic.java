@@ -1,17 +1,9 @@
 package com.liulishuo.share.content;
 
-import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-
 import android.graphics.Bitmap;
-import android.media.ThumbnailUtils;
-import android.support.annotation.NonNull;
+import android.os.Parcel;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
 
-import com.liulishuo.share.SlConfig;
 import com.liulishuo.share.type.ShareContentType;
 
 /**
@@ -20,9 +12,8 @@ import com.liulishuo.share.type.ShareContentType;
  */
 public class ShareContentPic implements ShareContent {
 
-    /**
-     * 图片的byte数组
-     */
+    private Bitmap thumbBmp, largeBmp;
+    
     private byte[] thumbBmpBytes;
 
     private String largeBmpPath;
@@ -31,12 +22,8 @@ public class ShareContentPic implements ShareContent {
      * @param thumbBmp 如果需要分享图片，则必传
      */
     public ShareContentPic(@Nullable Bitmap thumbBmp, @Nullable Bitmap largeBmp) {
-        if (thumbBmp != null) {
-            thumbBmpBytes = getImageThumbByteArr(thumbBmp);
-        }
-        if (largeBmp != null) {
-            largeBmpPath = saveLargeBitmap(largeBmp);
-        }
+        this.thumbBmp = thumbBmp;
+        this.largeBmp = largeBmp;
     }
 
     @Override
@@ -75,74 +62,47 @@ public class ShareContentPic implements ShareContent {
         return ShareContentType.PIC;
     }
 
-    /**
-     * Note:外部传入的bitmap可能会被用于其他的地方，所以这里不能做recycle()
-     */
-    private
-    @Nullable
-    byte[] getImageThumbByteArr(@NonNull Bitmap src) {
-        final Bitmap bitmap;
-        if (src.getWidth() > 250 || src.getHeight() > 250) {
-            bitmap = ThumbnailUtils.extractThumbnail(src, 250, 250);
-        } else {
-            bitmap = src;
-        }
-
-        byte[] thumbData = null;
-        ByteArrayOutputStream outputStream = null;
-        try {
-            outputStream = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 85, outputStream);
-            thumbData = outputStream.toByteArray();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (outputStream != null) {
-                try {
-                    outputStream.flush();
-                    outputStream.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (bitmap != null && !bitmap.isRecycled()) {
-//                bitmap.recycle();
-            }
-        }
-        return thumbData;
+    public Bitmap getThumbBmp() {
+        return thumbBmp;
     }
 
-    /**
-     * 此方法是耗时操作，如果对于特别大的图，那么需要做异步
-     *
-     * Note:外部传入的bitmap可能会被用于其他的地方，所以这里不能做recycle()
-     */
-    private String saveLargeBitmap(final Bitmap bitmap) {
-        String path = SlConfig.pathTemp;
-        if (!TextUtils.isEmpty(path)) {
-            String imagePath = path + "sl_large_pic";
-            FileOutputStream fos = null;
-            try {
-                fos = new FileOutputStream(imagePath);
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } finally {
-                if (fos != null) {
-                    try {
-                        fos.flush();
-                        fos.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-                if (bitmap != null && !bitmap.isRecycled()) {
-//                    bitmap.recycle();
-                }
-            }
-            return imagePath;
-        } else {
-            return null;
-        }
+    public Bitmap getLargeBmp() {
+        return largeBmp;
     }
+
+    public void setThumbBmpBytes(byte[] thumbBmpBytes) {
+        this.thumbBmpBytes = thumbBmpBytes;
+    }
+
+    public void setLargeBmpPath(String largeBmpPath) {
+        this.largeBmpPath = largeBmpPath;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeByteArray(this.thumbBmpBytes);
+        dest.writeString(this.largeBmpPath);
+    }
+
+    ShareContentPic(Parcel in) {
+        this.thumbBmpBytes = in.createByteArray();
+        this.largeBmpPath = in.readString();
+    }
+
+    public static final Creator<ShareContentPic> CREATOR = new Creator<ShareContentPic>() {
+        @Override
+        public ShareContentPic createFromParcel(Parcel source) {
+            return new ShareContentPic(source);
+        }
+
+        @Override
+        public ShareContentPic[] newArray(int size) {
+            return new ShareContentPic[size];
+        }
+    };
 }

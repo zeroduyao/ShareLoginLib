@@ -1,6 +1,7 @@
 package com.liulishuo.share.content;
 
 import android.graphics.Bitmap;
+import android.os.Parcel;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -12,11 +13,7 @@ import com.liulishuo.share.type.ShareContentType;
  */
 public class ShareContentWebPage extends ShareContentPic {
 
-    protected final String title;
-
-    private final String summary;
-
-    private final String url;
+    private String title, summary, url; 
 
     /**
      * @param title   标题
@@ -48,9 +45,44 @@ public class ShareContentWebPage extends ShareContentPic {
         return url;
     }
 
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
     @Override
     public int getType() {
         return ShareContentType.WEBPAGE;
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        super.writeToParcel(dest, flags);
+        dest.writeString(this.title);
+        dest.writeString(this.summary);
+        dest.writeString(this.url);
+    }
+
+    private ShareContentWebPage(Parcel in) {
+        super(in);
+        this.title = in.readString();
+        this.summary = in.readString();
+        this.url = in.readString();
+    }
+
+    public static final Creator<ShareContentWebPage> CREATOR = new Creator<ShareContentWebPage>() {
+        @Override
+        public ShareContentWebPage createFromParcel(Parcel source) {
+            return new ShareContentWebPage(source);
+        }
+
+        @Override
+        public ShareContentWebPage[] newArray(int size) {
+            return new ShareContentWebPage[size];
+        }
+    };
 }

@@ -1,5 +1,6 @@
 package com.liulishuo.share.content;
 
+import android.os.Parcel;
 import android.support.annotation.NonNull;
 
 import com.liulishuo.share.type.ShareContentType;
@@ -56,4 +57,29 @@ public class ShareContentText implements ShareContent {
         return ShareContentType.TEXT;
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.summary);
+    }
+
+    private ShareContentText(Parcel in) {
+        this.summary = in.readString();
+    }
+
+    public static final Creator<ShareContentText> CREATOR = new Creator<ShareContentText>() {
+        @Override
+        public ShareContentText createFromParcel(Parcel source) {
+            return new ShareContentText(source);
+        }
+
+        @Override
+        public ShareContentText[] newArray(int size) {
+            return new ShareContentText[size];
+        }
+    };
 }

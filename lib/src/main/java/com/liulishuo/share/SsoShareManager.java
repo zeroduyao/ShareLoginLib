@@ -9,6 +9,7 @@ import com.liulishuo.share.activity.SL_QQHandlerActivity;
 import com.liulishuo.share.activity.SL_WeiBoHandlerActivity;
 import com.liulishuo.share.activity.SL_WeiXinHandlerActivity;
 import com.liulishuo.share.content.ShareContent;
+import com.liulishuo.share.content.ShareContentPic;
 import com.liulishuo.share.type.SsoShareType;
 
 import static com.liulishuo.share.type.SsoShareType.QQ_FRIEND;
@@ -31,6 +32,27 @@ public class SsoShareManager {
     public static void share(@NonNull final Activity activity, @SsoShareType final String shareType,
             @NonNull final ShareContent shareContent, @Nullable final ShareStateListener listener) {
         SsoShareManager.listener = listener;
+
+        if (shareContent instanceof ShareContentPic) {
+            final ShareContentPic content = (ShareContentPic) shareContent;
+
+            new Thread() {
+                @Override
+                public void run() {
+                    super.run();
+                    content.setThumbBmpBytes(SlUtils.getImageThumbByteArr(content.getThumbBmp()));
+                    content.setLargeBmpPath(SlUtils.saveLargeBitmap(content.getLargeBmp()));
+                    activity.runOnUiThread(() -> doShareSync(activity, shareType, shareContent, listener));
+                }
+            }.start();
+        } else {
+            doShareSync(activity, shareType, shareContent, listener);
+        }
+    }
+
+    private static void doShareSync(@NonNull Activity activity, @SsoShareType String shareType,
+            @NonNull ShareContent shareContent, @Nullable ShareStateListener listener) {
+
         switch (shareType) {
             case QQ_FRIEND:
             case QQ_ZONE:

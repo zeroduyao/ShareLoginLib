@@ -1,6 +1,6 @@
 package com.liulishuo.share.content;
 
-import java.io.Serializable;
+import android.os.Parcelable;
 
 import com.liulishuo.share.type.ShareContentType;
 
@@ -8,7 +8,7 @@ import com.liulishuo.share.type.ShareContentType;
  * Created by echo on 5/18/15.
  */
 
-public interface ShareContent extends Serializable {
+public interface ShareContent extends Parcelable {
 
     /**
      * @return 分享的方式
