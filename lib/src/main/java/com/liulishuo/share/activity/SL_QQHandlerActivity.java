@@ -277,7 +277,7 @@ public class SL_QQHandlerActivity extends Activity {
         String title = shareContent.getTitle();
         if (title == null) {
             // 如果没title，说明就是分享的纯文字、纯图片
-            Toast.makeText(SL_QQHandlerActivity.this, "目前不支持分享纯文本信息给QQ好友", Toast.LENGTH_SHORT).show();
+            Toast.makeText(SL_QQHandlerActivity.this, "目前不支持分享纯文本/图片到QQ空间", Toast.LENGTH_SHORT).show();
             Log.e(ShareLoginSDK.TAG, Log.getStackTraceString(new RuntimeException("QQ空间目前只支持分享图文信息")));
             finish();
         }

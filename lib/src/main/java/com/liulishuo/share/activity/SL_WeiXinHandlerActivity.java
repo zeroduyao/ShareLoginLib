@@ -48,7 +48,7 @@ public class SL_WeiXinHandlerActivity extends Activity implements IWXAPIEventHan
 
     private IWXAPI api;
 
-    public static SsoLoginManager.LoginRespListener respListener;
+    public static SsoLoginManager.WXLoginRespListener wxrespListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,8 +111,8 @@ public class SL_WeiXinHandlerActivity extends Activity implements IWXAPIEventHan
         if (listener != null) {
             switch (resp.errCode) {
                 case BaseResp.ErrCode.ERR_OK: // 登录成功
-                    if (respListener != null) {
-                        respListener.onLoginResp(resp.code, listener);
+                    if (wxrespListener != null) {
+                        wxrespListener.onLoginResp(resp.code, listener);
                     } else {
                         handlerLoginResp(activity, resp.code, listener); // 登录成功后开始通过code换取token
                     }

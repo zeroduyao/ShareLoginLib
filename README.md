@@ -26,7 +26,7 @@ repositories {
 
 **举例：**
 ```
-compile 'com.github.tianzhijiexian:ShareLoginLib:1.3.7'
+compile 'com.github.tianzhijiexian:ShareLoginLib:1.3.8'
 ```
 
 ## 使用
@@ -70,7 +70,7 @@ ShareLoginSDK.isQQInstalled(this);
 
 ### 通过token和id得到用户信息
 ```JAVA
-SsoUserInfoManager.getUserInfo(context, LoginType.XXX, accessToken, userId,
+SsoUserInfoManager.getUserInfo(context, SsoLoginType.XXX, accessToken, userId,
     new UserInfoListener() {
 
         public void onSuccess(@NonNull OAuthUserInfo userInfo) {
