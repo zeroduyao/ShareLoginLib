@@ -52,7 +52,7 @@ public class SsoLoginManager {
                 break;
             case WEIXIN:
                 if (ShareLoginSDK.isWeiXinInstalled(activity)) {
-                    SL_WeiXinHandlerActivity.wxrespListener = weixinCodeRespListener;
+                    SL_WeiXinHandlerActivity.wxRespListener = weixinCodeRespListener;
                     SL_WeiXinHandlerActivity.login(activity.getApplicationContext());
                     activity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                 } else {
@@ -66,7 +66,7 @@ public class SsoLoginManager {
 
     public static void recycle() {
         listener = null;
-        SL_WeiXinHandlerActivity.wxrespListener = null;
+        SL_WeiXinHandlerActivity.wxRespListener = null;
     }
 
     public interface LoginListener {
