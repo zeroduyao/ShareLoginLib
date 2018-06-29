@@ -1,7 +1,10 @@
 package com.liulishuo.share;
 
+import java.io.ByteArrayOutputStream;
+
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -43,7 +46,12 @@ public class SsoShareManager {
                     super.run();
                     content.setThumbBmpBytes(SlUtils.getImageThumbByteArr(content.getThumbBmp()));
                     content.setLargeBmpPath(SlUtils.saveLargeBitmap(content.getLargeBmp()));
-                    activity.runOnUiThread(() -> doShareSync(activity, shareType, shareContent, listener));
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            doShareSync(activity, shareType, shareContent, listener);
+                        }
+                    });
                 }
             }.start();
         } else {
@@ -119,4 +127,29 @@ public class SsoShareManager {
     public static void recycle() {
         listener = null;
     }
+
+    @Nullable
+    static byte[] getImageThumbByteArr(@Nullable Bitmap bitmap) {
+        if (bitmap == null) {
+            return null;
+        }
+
+        final long size = '耀';
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream(bitmap.getWidth() * bitmap.getHeight());
+
+        int options = 100;
+        bitmap.compress(Bitmap.CompressFormat.JPEG, options, outputStream);
+
+        while (outputStream.size() > size && options > 6) {
+            outputStream.reset();
+            options -= 6;
+            bitmap.compress(Bitmap.CompressFormat.JPEG, options, outputStream);
+        }
+
+//        bitmap.recycle();
+
+        return outputStream.toByteArray();
+    }
+    
 }
