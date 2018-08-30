@@ -29,6 +29,32 @@ repositories {
 compile 'com.github.tianzhijiexian:ShareLoginLib:1.3.8'
 ```
 
+## 配置工作
+
+### 1. 在build.gradle中配置QQ的key  
+
+```java
+defaultConfig {
+	// ...
+    applicationId "xxx.xxx.xxx" // 你的app包名
+    manifestPlaceholders = ["tencentAuthId": "tencent123456"]   // tencent+你的AppId
+}
+```
+
+### 2. 在使用功能前配置常量
+
+```java  
+SlConfig config = new SlConfig.Builder()
+            .debug(false)
+            .appName("Your App Name")
+            .picTempFile(null) // 指定缓存缩略图的目录名字，如无特殊要求可以是null
+            .qq(QQ_APPID, QQ_SCOPE)
+            .weiXin(WEIXIN_APPID, WEIXIN_SECRET)
+            .weiBo(WEIBO_APPID, WEIBO_REDIRECT_URL, WEIBO_SCOPE).build();
+
+ShareLoginSDK.init(this, config);
+```
+
 ## 使用
 
 ### 登录、分享  
@@ -99,32 +125,6 @@ SsoUserInfoManager.getUserInfo(context, SsoLoginType.XXX, accessToken, userId,
 ```  
 
 更多详细的操作请参考项目的demo。
-
-## 配置工作
-
-### 1. 在build.gradle中配置QQ的key  
-
-```java
-defaultConfig {
-	// ...
-    applicationId "xxx.xxx.xxx" // 你的app包名
-    manifestPlaceholders = ["tencentAuthId": "tencent123456"]   // tencent+你的AppId
-}
-```
-
-### 2. 在使用功能前配置常量
-
-```java  
-SlConfig config = new SlConfig.Builder()
-            .debug(false)
-            .appName("Your App Name")
-            .picTempFile(null) // 指定缓存缩略图的目录名字，如无特殊要求可以是null
-            .qq(QQ_APPID, QQ_SCOPE)
-            .weiXin(WEIXIN_APPID, WEIXIN_SECRET)
-            .weiBo(WEIBO_APPID, WEIBO_REDIRECT_URL, WEIBO_SCOPE).build();
-
-ShareLoginSDK.init(this, config);
-```
 
 ## 重要说明
 
