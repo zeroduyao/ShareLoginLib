@@ -2,7 +2,6 @@ package com.liulishuo.share;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import android.app.Activity;
@@ -47,6 +46,8 @@ public class ShareLoginLib {
     private static Class<? extends IPlatform>[] supportPlatforms;
 
     public static IPlatform curPlatform;
+
+    public static EventHandlerActivity.OnCreateListener onCreateListener;
 
     public static void initParams(Application application, @Nullable String appName, @Nullable String tempPicPath) {
         APP_NAME = appName;
@@ -121,15 +122,17 @@ public class ShareLoginLib {
             }
         }
 
+        onCreateListener = (eventAct) -> {
+            if (login) {
+                curPlatform.doLogin(eventAct, loginListener);
+            } else {
+                assert content != null;
+                curPlatform.doShare(eventAct, type, content, shareListener);
+            }
+        };
+
         activity.startActivity(new Intent(activity, EventHandlerActivity.class));
         activity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-
-        if (login) {
-            curPlatform.doLogin(activity, loginListener);
-        } else {
-            assert content != null;
-            curPlatform.doShare(activity, type, content, shareListener);
-        }
     }
 
     public static String getValue(String key) {

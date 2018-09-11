@@ -26,6 +26,8 @@ public class EventHandlerActivity extends Activity {
         // 内存不足杀死后重建时的onCreate
         if (savedInstanceState != null) {
             handleResp(getIntent());
+        } else {
+            ShareLoginLib.onCreateListener.onCreate(this);
         }
     }
 
@@ -38,25 +40,35 @@ public class EventHandlerActivity extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        
+
         data.putExtra(KEY_REQUEST_CODE, requestCode);
         data.putExtra(KEY_RESULT_CODE, resultCode);
 
         handleResp(data);
-        
+
         finish();
     }
 
     @Override
     protected void onDestroy() {
         ShareLoginLib.curPlatform = null;
+        ShareLoginLib.onCreateListener = null;
+        
+        ShareLoginLib.printLog("event activity onDestroy");
         super.onDestroy();
     }
 
     private void handleResp(Intent data) {
         if (ShareLoginLib.curPlatform != null) {
             ShareLoginLib.curPlatform.onResponse(this, data);
+        } else {
+            ShareLoginLib.printLog("ShareLoginLib.curPlatform is null");
         }
+    }
+
+    public interface OnCreateListener {
+
+        void onCreate(EventHandlerActivity activity);
     }
 
 }

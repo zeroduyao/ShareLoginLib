@@ -147,5 +147,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void handResult(String result) {
         resultTv.setText(result);
+        Toast.makeText(this, result, Toast.LENGTH_SHORT).show();
     }
 }
