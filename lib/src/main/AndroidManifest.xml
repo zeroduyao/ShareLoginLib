@@ -9,15 +9,16 @@
     <!-- 外部存储的权限，分享的图片会先存放在本地，把图片地址交给第三方，第三方最后会进行读取 -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="android.permission.INTERACT_ACROSS_USERS_FULL" />
 
     <application android:allowBackup="true">
 
-        <!-- ============================= weibo ============================= -->
-
         <activity
-            android:name=".activity.SL_WeiBoHandlerActivity"
+            android:name=".utils.EventHandlerActivity"
             android:configChanges="keyboardHidden|orientation"
+            android:exported="true"
+            android:launchMode="singleInstance"
+            android:noHistory="true"
+
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Translucent.NoTitleBar"
             >
@@ -26,6 +27,8 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+
+        <!-- ============================= weibo ============================= -->
 
         <!-- 必须注册在微博授权，分享微博时候用到 -->
         <activity
@@ -37,14 +40,7 @@
 
         <!-- ============================= qq ============================= -->
 
-        <activity
-            android:name=".activity.SL_QQHandlerActivity"
-            android:configChanges="keyboardHidden|orientation"
-            android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar"
-            />
-
-        <!-- 腾讯sdk中增加的帮助activity对象，可以用来查看日志 -->
+        <!-- 腾讯sdk中增加的activity对象，用来在控制台打印日志 -->
         <activity
             android:name="com.tencent.connect.common.AssistActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
@@ -71,19 +67,11 @@
 
         <!-- ============================= 微信 ============================= -->
 
-        <!-- 处理微信回调的Activity -->
-        <activity
-            android:name=".activity.SL_WeiXinHandlerActivity"
-            android:exported="true"
-            android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar"
-            />
-
         <activity-alias
             android:name="${applicationId}.wxapi.WXEntryActivity"
             android:exported="true"
             android:screenOrientation="portrait"
-            android:targetActivity="com.liulishuo.share.activity.SL_WeiXinHandlerActivity"
+            android:targetActivity=".utils.EventHandlerActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar"
             />
 

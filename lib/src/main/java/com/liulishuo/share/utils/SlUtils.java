@@ -1,4 +1,4 @@
-package com.liulishuo.share;
+package com.liulishuo.share.utils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
@@ -10,17 +10,43 @@ import android.media.ThumbnailUtils;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
+import com.liulishuo.share.ShareLoginLib;
+
 /**
  * @author Kale
  * @date 2017/3/21
  */
-class SlUtils {
+public class SlUtils {
+    
+    @Nullable
+    static byte[] getImageThumbByteAr1r(@Nullable Bitmap bitmap) {
+        if (bitmap == null) {
+            return null;
+        }
+
+        final long size = '耀';
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream(bitmap.getWidth() * bitmap.getHeight());
+
+        int options = 100;
+        bitmap.compress(Bitmap.CompressFormat.JPEG, options, outputStream);
+
+        while (outputStream.size() > size && options > 6) {
+            outputStream.reset();
+            options -= 6;
+            bitmap.compress(Bitmap.CompressFormat.JPEG, options, outputStream);
+        }
+
+//        bitmap.recycle();
+
+        return outputStream.toByteArray();
+    }
 
     /**
      * Note:外部传入的bitmap可能会被用于其他的地方，所以这里不能做recycle()
      */
     @Nullable
-    static byte[] getImageThumbByteArr(@Nullable Bitmap src) {
+    public static byte[] getImageThumbByteArr(@Nullable Bitmap src) {
         if (src == null) {
             return null;
         }
@@ -61,12 +87,12 @@ class SlUtils {
      *
      * Note:外部传入的bitmap可能会被用于其他的地方，所以这里不能做recycle()
      */
-    static String saveLargeBitmap(final Bitmap bitmap) {
+    public static String saveLargeBitmap(final Bitmap bitmap) {
         if (bitmap == null) {
             return null;
         }
 
-        String path = SlConfig.pathTemp;
+        String path = ShareLoginLib.TEMP_PIC_PATH;
         if (!TextUtils.isEmpty(path)) {
             String imagePath = path + "sl_large_pic";
             FileOutputStream fos = null;

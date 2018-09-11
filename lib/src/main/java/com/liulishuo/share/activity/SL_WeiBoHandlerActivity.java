@@ -1,40 +1,8 @@
 package com.liulishuo.share.activity;
 
 import android.app.Activity;
-import android.content.Intent;
-import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.text.TextUtils;
 
-import com.liulishuo.share.ShareLoginSDK;
-import com.liulishuo.share.SlConfig;
-import com.liulishuo.share.SsoLoginManager;
-import com.liulishuo.share.SsoShareManager;
-import com.liulishuo.share.content.ShareContent;
-import com.liulishuo.share.type.ShareContentType;
-import com.sina.weibo.sdk.api.BaseMediaObject;
-import com.sina.weibo.sdk.api.ImageObject;
-import com.sina.weibo.sdk.api.MusicObject;
-import com.sina.weibo.sdk.api.TextObject;
-import com.sina.weibo.sdk.api.WebpageObject;
-import com.sina.weibo.sdk.api.WeiboMultiMessage;
-import com.sina.weibo.sdk.api.share.BaseResponse;
-import com.sina.weibo.sdk.api.share.IWeiboHandler;
-import com.sina.weibo.sdk.api.share.IWeiboShareAPI;
-import com.sina.weibo.sdk.api.share.SendMessageToWeiboResponse;
-import com.sina.weibo.sdk.api.share.SendMultiMessageToWeiboRequest;
-import com.sina.weibo.sdk.api.share.WeiboShareSDK;
-import com.sina.weibo.sdk.auth.AuthInfo;
-import com.sina.weibo.sdk.auth.Oauth2AccessToken;
-import com.sina.weibo.sdk.auth.WeiboAuthListener;
 import com.sina.weibo.sdk.auth.sso.SsoHandler;
-import com.sina.weibo.sdk.constant.WBConstants;
-import com.sina.weibo.sdk.exception.WeiboException;
-import com.sina.weibo.sdk.utils.Utility;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 /**
  * @author Jack Tony
@@ -42,7 +10,7 @@ import org.json.JSONObject;
  *
  * https://github.com/sinaweibosdk/weibo_android_sdk
  */
-public class SL_WeiBoHandlerActivity extends Activity implements IWeiboHandler.Response {
+public class SL_WeiBoHandlerActivity extends Activity {
 
     /**
      * 注意：SsoHandler 仅当 SDK 支持 SSO 时有效
@@ -53,7 +21,7 @@ public class SL_WeiBoHandlerActivity extends Activity implements IWeiboHandler.R
 
     private boolean mIsLogin = true;
 
-    @Override
+    /*@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mIsLogin = getIntent().getBooleanExtra(ShareLoginSDK.KEY_IS_LOGIN_TYPE, true);
@@ -81,12 +49,12 @@ public class SL_WeiBoHandlerActivity extends Activity implements IWeiboHandler.R
                 // 防止不保留活动情况下activity被重置后直接进行操作的情况
                 doShare(this, appId);
             } else {
-                /*
+                *//*
                   当 Activity 被重新初始化时（该 Activity 处于后台时，可能会由于内存不足被杀掉了），
                   需要调用 {@link IWeiboShareAPI#handleWeiboResponse} 来接收微博客户端返回的数据。
                   执行成功，返回 true，并调用 {@link IWeiboHandler.Response#onResponse}；
                   失败返回 false，不调用上述回调
-                 */
+                 *//*
                 IWeiboShareAPI API = WeiboShareSDK.createWeiboAPI(getApplicationContext(), SlConfig.weiBoAppId);
                 boolean success = API.handleWeiboResponse(getIntent(), this);
             }
@@ -97,10 +65,10 @@ public class SL_WeiBoHandlerActivity extends Activity implements IWeiboHandler.R
         }
     }
 
-    /**
+    *//**
      * 因为微博客户端在用户取消分享后，用户点击保存到草稿箱后就不能接收到回调。
      * 因此，在这里必须进行强制关闭，不能依赖回调来关闭。
-     */
+     *//*
     @Override
     protected void onResume() {
         super.onResume();
@@ -124,20 +92,20 @@ public class SL_WeiBoHandlerActivity extends Activity implements IWeiboHandler.R
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         if (!mIsLogin) {
-            /*
+            *//*
               从当前应用唤起微博并进行分享后，返回到当前应用时，需要在此处调用该函数
               来接收微博客户端返回的数据；执行成功，返回 true，并调用
               {@link IWeiboHandler.Response#onResponse}；失败返回 false，不调用上述回调
-             */
+             *//*
             IWeiboShareAPI API = WeiboShareSDK.createWeiboAPI(getApplicationContext(), SlConfig.weiBoAppId);
             API.handleWeiboResponse(intent, this); // 当前应用唤起微博分享后，返回当前应用
         }
     }
 
-    /**
+    *//**
      * 解析用户【登录】的结果
      * SSO 授权回调   重要：发起 SSO 登陆的 Activity 必须重写 onActivityResult
-     */
+     *//*
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (mIsLogin) {
@@ -149,16 +117,16 @@ public class SL_WeiBoHandlerActivity extends Activity implements IWeiboHandler.R
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    // login
+    // doLogin
     ///////////////////////////////////////////////////////////////////////////
 
     private void doLogin(final SsoLoginManager.LoginListener listener) {
         WeiboAuthListener authListener = new WeiboAuthListener() {
-            /*
+            *//*
              * 此种授权方式会根据手机是否安装微博客户端来决定使用sso授权还是网页授权
              * 1. SSO 授权时，需要在 onActivityResult 中调用 {@link SsoHandler#authorizeCallBack} 后，该回调才会被执行。
              * 2. 非SSO 授权时，当授权结束后，该回调就会被执行
-             */
+             *//*
             @Override
             public void onComplete(Bundle values) {
                 final Oauth2AccessToken accessToken = Oauth2AccessToken.parseAccessToken(values);
@@ -206,7 +174,7 @@ public class SL_WeiBoHandlerActivity extends Activity implements IWeiboHandler.R
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    // share
+    // doShare
     ///////////////////////////////////////////////////////////////////////////
 
     @Override
@@ -280,27 +248,27 @@ public class SL_WeiBoHandlerActivity extends Activity implements IWeiboHandler.R
         return weiboMultiMessage;
     }
 
-    /**
+    *//**
      * 创建文本消息对象
-     */
+     *//*
     private TextObject getTextObj(ShareContent shareContent) {
         TextObject textObject = new TextObject();
         textObject.text = shareContent.getSummary();
         return textObject;
     }
 
-    /**
+    *//**
      * 创建图片消息对象
-     */
+     *//*
     private ImageObject getImageObj(ShareContent shareContent) {
         ImageObject imageObject = new ImageObject();
         imageObject.imagePath = shareContent.getLargeBmpPath();
         return imageObject;
     }
 
-    /**
+    *//**
      * 创建多媒体（网页）消息对象
-     */
+     *//*
     private WebpageObject getWebPageObj(ShareContent shareContent) {
         WebpageObject mediaObject = new WebpageObject();
         buildMediaObj(mediaObject, shareContent);
@@ -310,11 +278,11 @@ public class SL_WeiBoHandlerActivity extends Activity implements IWeiboHandler.R
         return mediaObject;
     }
 
-    /**
+    *//**
      * 创建多媒体（音乐）消息对象。
      *
      * @return 多媒体（音乐）消息对象。
-     */
+     *//*
     private MusicObject getMusicObj(ShareContent shareContent) {
         // 创建媒体消息
         MusicObject musicObject = new MusicObject();
@@ -333,7 +301,7 @@ public class SL_WeiBoHandlerActivity extends Activity implements IWeiboHandler.R
         mediaObject.title = shareContent.getTitle();
         mediaObject.description = shareContent.getSummary();
         mediaObject.thumbData = shareContent.getThumbBmpBytes();
-    }
+    }*/
 
    /* *//**
      * 创建多媒体（视频）消息对象。

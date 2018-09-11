@@ -4,8 +4,6 @@ import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.support.annotation.Nullable;
 
-import com.liulishuo.share.type.ShareContentType;
-
 /**
  * Created by echo on 5/18/15.
  * 分享图片模式

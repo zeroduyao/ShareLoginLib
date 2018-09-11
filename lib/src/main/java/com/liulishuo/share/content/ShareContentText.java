@@ -3,8 +3,6 @@ package com.liulishuo.share.content;
 import android.os.Parcel;
 import android.support.annotation.NonNull;
 
-import com.liulishuo.share.type.ShareContentType;
-
 /**
  * Created by echo on 5/18/15.
  * 分享文本内容

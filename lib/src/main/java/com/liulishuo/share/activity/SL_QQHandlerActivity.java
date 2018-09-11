@@ -14,12 +14,8 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.liulishuo.share.ShareLoginSDK;
-import com.liulishuo.share.SlConfig;
-import com.liulishuo.share.SsoLoginManager;
-import com.liulishuo.share.SsoShareManager;
 import com.liulishuo.share.content.ShareContent;
-import com.liulishuo.share.type.ShareContentType;
+import com.liulishuo.share.content.ShareContentType;
 import com.tencent.connect.common.Constants;
 import com.tencent.connect.share.QQShare;
 import com.tencent.connect.share.QzoneShare;
@@ -41,15 +37,15 @@ import org.json.JSONObject;
  */
 public class SL_QQHandlerActivity extends Activity {
 
-    public static final String KEY_TO_FRIEND = "key_to_friend";
+   /* public static final String KEY_TO_FRIEND = "key_to_friend";
 
     private boolean isToFriend;
 
     private IUiListener uiListener;
 
-    /**
+    *//**
      * 防止不保留活动情况下activity被重置后直接进行操作的情况
-     */
+     *//*
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,7 +84,7 @@ public class SL_QQHandlerActivity extends Activity {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    // login
+    // doLogin
     ///////////////////////////////////////////////////////////////////////////
 
     private void initLoginListener(final SsoLoginManager.LoginListener listener) {
@@ -134,7 +130,7 @@ public class SL_QQHandlerActivity extends Activity {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    // share
+    // doShare
     ///////////////////////////////////////////////////////////////////////////
 
     private void doShare(ShareContent shareContent, String appId) {
@@ -206,7 +202,7 @@ public class SL_QQHandlerActivity extends Activity {
         return getQQFriendParams(bundle, shareContent);
     }
 
-    /**
+    *//**
      * @see "http://wiki.open.qq.com/wiki/mobile/API%E8%B0%83%E7%94%A8%E8%AF%B4%E6%98%8E#1.13_.E5.88.86.E4.BA.AB.E6.B6.88.E6.81.AF.E5.88.B0QQ.EF.BC.88.E6.97.A0.E9.9C.80QQ.E7.99.BB.E5.BD.95.EF.BC.89"
      * QQShare.PARAM_TITLE 	        必填 	String 	分享的标题, 最长30个字符。
      * QQShare.SHARE_TO_QQ_KEY_TYPE 	必填 	Int 	分享的类型。图文分享(普通分享)填Tencent.SHARE_TO_QQ_TYPE_DEFAULT
@@ -221,7 +217,7 @@ public class SL_QQHandlerActivity extends Activity {
      * target必须是真实的可跳转链接才能跳到QQ = =！
      *
      * 发送给QQ好友
-     */
+     *//*
     private Bundle getQQFriendParams(Bundle params, ShareContent shareContent) {
         params.putString(QQShare.SHARE_TO_QQ_TITLE, shareContent.getTitle()); // 标题
         params.putString(QQShare.SHARE_TO_QQ_SUMMARY, shareContent.getSummary()); // 描述
@@ -257,7 +253,7 @@ public class SL_QQHandlerActivity extends Activity {
         return params;
     }
 
-    /**
+    *//**
      * 分享到QQ空间（目前支持图文分享）
      *
      * @see "http://wiki.open.qq.com/wiki/Android_API%E8%B0%83%E7%94%A8%E8%AF%B4%E6%98%8E#1.14_.E5.88.86.E4.BA.AB.E5.88.B0QQ.E7.A9.BA.E9.97.B4.EF.BC.88.E6.97.A0.E9.9C.80QQ.E7.99.BB.E5.BD.95.EF.BC.89"
@@ -270,7 +266,7 @@ public class SL_QQHandlerActivity extends Activity {
      * 注意:QZone接口暂不支持发送多张图片的能力，若传入多张图片，则会自动选入第一张图片作为预览图。多图的能力将会在以后支持。
      *
      * 如果分享的图片url是本地的图片地址那么在分享时会显示图片，如果分享的是图片的网址，那么就不会在分享时显示图片
-     */
+     *//*
     private Bundle createQZoneBundle(ShareContent shareContent) {
         Bundle params = new Bundle();
         params.putInt(QzoneShare.SHARE_TO_QZONE_KEY_TYPE, QzoneShare.SHARE_TO_QZONE_TYPE_IMAGE_TEXT);
@@ -318,5 +314,5 @@ public class SL_QQHandlerActivity extends Activity {
         } else {
             return null;
         }
-    }
+    }*/
 }

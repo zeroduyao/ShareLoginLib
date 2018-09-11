@@ -2,8 +2,6 @@ package com.liulishuo.share.content;
 
 import android.os.Parcelable;
 
-import com.liulishuo.share.type.ShareContentType;
-
 /**
  * Created by echo on 5/18/15.
  */

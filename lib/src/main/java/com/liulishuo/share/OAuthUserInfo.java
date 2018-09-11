@@ -13,4 +13,5 @@ public class OAuthUserInfo {
     public String headImgUrl;
     
     public String userId;
+    
 }

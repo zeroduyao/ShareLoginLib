@@ -1,45 +1,15 @@
 package com.liulishuo.share.activity;
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.text.TextUtils;
 
-import com.liulishuo.share.SlConfig;
-import com.liulishuo.share.SsoLoginManager;
-import com.liulishuo.share.SsoShareManager;
-import com.liulishuo.share.content.ShareContent;
-import com.liulishuo.share.type.ShareContentType;
-import com.liulishuo.share.type.SsoShareType;
-import com.sina.weibo.sdk.exception.WeiboException;
-import com.sina.weibo.sdk.net.AsyncWeiboRunner;
-import com.sina.weibo.sdk.net.RequestListener;
-import com.sina.weibo.sdk.net.WeiboParameters;
-import com.tencent.mm.opensdk.modelbase.BaseReq;
-import com.tencent.mm.opensdk.modelbase.BaseResp;
-import com.tencent.mm.opensdk.modelmsg.SendAuth;
-import com.tencent.mm.opensdk.modelmsg.SendMessageToWX;
-import com.tencent.mm.opensdk.modelmsg.WXImageObject;
-import com.tencent.mm.opensdk.modelmsg.WXMediaMessage;
-import com.tencent.mm.opensdk.modelmsg.WXMusicObject;
-import com.tencent.mm.opensdk.modelmsg.WXTextObject;
-import com.tencent.mm.opensdk.modelmsg.WXWebpageObject;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
-import com.tencent.mm.opensdk.openapi.IWXAPIEventHandler;
-import com.tencent.mm.opensdk.openapi.WXAPIFactory;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 /**
  * Created by echo on 5/19/15.
  * 用来处理微信登录、微信分享的activity。这里真不知道微信非要个activity干嘛，愚蠢的设计!
  * 参考文档: https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=open1419317853&lang=zh_CN
  */
-public class SL_WeiXinHandlerActivity extends Activity implements IWXAPIEventHandler {
+public class SL_WeiXinHandlerActivity extends Activity  {
 
     /**
      * BaseResp的getType函数获得的返回值。1:第三方授权， 2:分享
@@ -48,7 +18,7 @@ public class SL_WeiXinHandlerActivity extends Activity implements IWXAPIEventHan
 
     private IWXAPI api;
 
-    public static SsoLoginManager.WXLoginRespListener wxRespListener;
+    /*public static SsoLoginManager.WXLoginRespListener wxRespListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,7 +55,7 @@ public class SL_WeiXinHandlerActivity extends Activity implements IWXAPIEventHan
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    // login
+    // doLogin
     ///////////////////////////////////////////////////////////////////////////
 
     public static void login(@NonNull Context context) {
@@ -102,9 +72,9 @@ public class SL_WeiXinHandlerActivity extends Activity implements IWXAPIEventHan
         api.sendReq(req); // 这里的请求的回调会在activity中收到，然后通过parseLoginResp方法解析
     }
 
-    /**
+    *//**
      * 解析用户登录的结果
-     */
+     *//*
     protected void parseLoginResp(final Activity activity, SendAuth.Resp resp,
             @Nullable SsoLoginManager.LoginListener listener) {
         // 有可能是listener传入的是null，也可能是调用静态方法前没初始化当前的类
@@ -129,7 +99,7 @@ public class SL_WeiXinHandlerActivity extends Activity implements IWXAPIEventHan
         }
     }
 
-    /**
+    *//**
      * 返回：
      * {
      * "access_token":"ACCESS_TOKEN", // token
@@ -139,7 +109,7 @@ public class SL_WeiXinHandlerActivity extends Activity implements IWXAPIEventHan
      * "scope":"SCOPE",
      * "unionid":"o6_bmasdasdsad6_2sgVt7hMZOPfL"
      * }
-     */
+     *//*
     private void handlerLoginResp(Context context, String code,
             final @Nullable SsoLoginManager.LoginListener listener) {
 
@@ -176,11 +146,11 @@ public class SL_WeiXinHandlerActivity extends Activity implements IWXAPIEventHan
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    // share
+    // doShare
     ///////////////////////////////////////////////////////////////////////////
 
     public void sendShareMsg(@NonNull Context context, @NonNull ShareContent shareContent,
-            @SsoShareType String shareType) {
+            String shareType) {
         String weChatAppId = SlConfig.weiXinAppId;
         if (TextUtils.isEmpty(weChatAppId)) {
             throw new NullPointerException("请通过shareBlock初始化WeChatAppId");
@@ -192,7 +162,7 @@ public class SL_WeiXinHandlerActivity extends Activity implements IWXAPIEventHan
     }
 
     @NonNull
-    private SendMessageToWX.Req createShareRequest(@NonNull ShareContent shareContent, @SsoShareType String shareType) {
+    private SendMessageToWX.Req createShareRequest(@NonNull ShareContent shareContent, String shareType) {
         // 建立信息体
         WXMediaMessage msg = new WXMediaMessage();
         msg.title = shareContent.getTitle();
@@ -271,11 +241,11 @@ public class SL_WeiXinHandlerActivity extends Activity implements IWXAPIEventHan
         return webPage;
     }
 
-    /**
+    *//**
      * 解析分享到微信的结果
      *
      * https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=open1419318634&token=&lang=zh_CN
-     */
+     *//*
     private void parseShareResp(BaseResp resp, SsoShareManager.ShareStateListener listener) {
         if (listener != null) {
             switch (resp.errCode) {
@@ -298,5 +268,5 @@ public class SL_WeiXinHandlerActivity extends Activity implements IWXAPIEventHan
                     listener.onError("未知错误");
             }
         }
-    }
+    }*/
 }

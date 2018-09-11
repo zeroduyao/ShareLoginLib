@@ -17,15 +17,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.liulishuo.demo.R;
-import com.liulishuo.share.SlConfig;
-import com.liulishuo.share.SsoLoginManager;
-import com.liulishuo.share.SsoShareManager;
+import com.liulishuo.share.ShareListener;
+import com.liulishuo.share.ShareLoginLib;
 import com.liulishuo.share.content.ShareContent;
 import com.liulishuo.share.content.ShareContentPic;
 import com.liulishuo.share.content.ShareContentText;
 import com.liulishuo.share.content.ShareContentWebPage;
-import com.liulishuo.share.type.SsoLoginType;
-import com.liulishuo.share.type.SsoShareType;
+import com.liulishuo.share.qq.QQPlatform;
+import com.liulishuo.share.weibo.WeiBoPlatform;
+import com.liulishuo.share.weixin.WeiXinPlatform;
 import com.squareup.picasso.Picasso;
 
 /**
@@ -58,25 +58,22 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        tempPicIv = (ImageView) findViewById(R.id.temp_pic_iv);
-        RadioGroup shareTypeRg = (RadioGroup) findViewById(R.id.share_type_rg);
-        userInfoTv = (TextView) findViewById(R.id.user_info_tv);
-        userPicIv = (ImageView) findViewById(R.id.user_pic_iv);
-        resultTv = (TextView) findViewById(R.id.result);
+        tempPicIv = findViewById(R.id.temp_pic_iv);
+        RadioGroup shareTypeRg = findViewById(R.id.share_type_rg);
+        userInfoTv = findViewById(R.id.user_info_tv);
+        userPicIv = findViewById(R.id.user_pic_iv);
+        resultTv = findViewById(R.id.result);
 
         final Bitmap thumbBmp = ((BitmapDrawable) getResources().getDrawable(R.drawable.kale)).getBitmap();
         final Bitmap largeBmp = ((BitmapDrawable) getResources().getDrawable(R.drawable.large_pic)).getBitmap();
 
-        shareTypeRg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if (checkedId == R.id.rich_text) {
-                    mShareContent = new ShareContentWebPage(TITLE, MSG, URL, thumbBmp, largeBmp);
-                } else if (checkedId == R.id.only_image) {
-                    mShareContent = new ShareContentPic(thumbBmp, largeBmp);
-                } else if (checkedId == R.id.only_text) {
-                    mShareContent = new ShareContentText("share text");
-                }
+        shareTypeRg.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId == R.id.rich_text) {
+                mShareContent = new ShareContentWebPage(TITLE, MSG, URL, thumbBmp, largeBmp);
+            } else if (checkedId == R.id.only_image) {
+                mShareContent = new ShareContentPic(thumbBmp, largeBmp);
+            } else if (checkedId == R.id.only_text) {
+                mShareContent = new ShareContentText("doShare text");
             }
         });
         shareTypeRg.check(R.id.rich_text);
@@ -87,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void loadPicFromTempFile() {
         try {
-            String path = SlConfig.pathTemp + "sharePic_temp";
+            String path = ShareLoginLib.TEMP_PIC_PATH + "sharePic_temp";
             File file = new File(path);
             if (file.exists()) {
                 FileInputStream fis = new FileInputStream(file);
@@ -99,47 +96,43 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onClick(View v) {
-        SsoShareManager.ShareStateListener mShareListener = new ShareListener(this);
+        ShareListener shareListener = new MyShareListener(this);
 
-        if (SsoLoginManager.listener != null || SsoShareManager.listener != null) {
-            throw new RuntimeException("static listener leaked");
-        }
-        
         int i = v.getId();
         switch (i) {
             case R.id.QQ登录:
-                SsoLoginManager.login(this, SsoLoginType.QQ, new LoginListener(this, SsoLoginType.QQ));
+                ShareLoginLib.doLogin(this, QQPlatform.LOGIN, new MyLoginListener(this));
                 break;
             case R.id.微博登录:
-                SsoLoginManager.login(this, SsoLoginType.WEIBO, new LoginListener(this, SsoLoginType.WEIBO));
+                ShareLoginLib.doLogin(this, WeiBoPlatform.LOGIN, new MyLoginListener(this));
                 break;
             case R.id.微信登录:
-                SsoLoginManager.login(this, SsoLoginType.WEIXIN, new LoginListener(this, SsoLoginType.WEIXIN));
+                ShareLoginLib.doLogin(this, WeiXinPlatform.LOGIN, new MyLoginListener(this));
                 break;
             case R.id.分享给QQ好友:
-                SsoShareManager.share(this, SsoShareType.QQ_FRIEND, mShareContent, mShareListener);
+                ShareLoginLib.doShare(this, QQPlatform.FRIEND, mShareContent, shareListener);
                 break;
             case R.id.分享到QQ空间:
-                SsoShareManager.share(this, SsoShareType.QQ_ZONE, mShareContent, mShareListener);
+                ShareLoginLib.doShare(this, QQPlatform.ZONE, mShareContent, shareListener);
                 break;
             case R.id.分享到微博:
-                SsoShareManager.share(this, SsoShareType.WEIBO_TIME_LINE, mShareContent, mShareListener);
+                ShareLoginLib.doShare(this, WeiBoPlatform.TIME_LINE, mShareContent, shareListener);
                 break;
             case R.id.分享到微博_不带跳转链接:
                 // 解开注释即可测试
                 if (mShareContent instanceof ShareContentWebPage) {
 //                    ((ShareContentWebPage) mShareContent).setUrl(null);
                 }
-                SsoShareManager.share(this, SsoShareType.WEIBO_TIME_LINE, mShareContent, mShareListener);
+                ShareLoginLib.doShare(this, WeiBoPlatform.TIME_LINE, mShareContent, shareListener);
                 break;
             case R.id.分享给微信好友:
-                SsoShareManager.share(this, SsoShareType.WEIXIN_FRIEND, mShareContent, mShareListener);
+                ShareLoginLib.doShare(this, WeiXinPlatform.FRIEND, mShareContent, shareListener);
                 break;
             case R.id.分享到微信朋友圈:
-                SsoShareManager.share(this, SsoShareType.WEIXIN_FRIEND_ZONE, mShareContent, mShareListener);
+                ShareLoginLib.doShare(this, WeiXinPlatform.FRIEND_ZONE, mShareContent, shareListener);
                 break;
             case R.id.分享到微信收藏:
-                SsoShareManager.share(this, SsoShareType.WEIXIN_FAVORITE, mShareContent, mShareListener);
+                ShareLoginLib.doShare(this, WeiXinPlatform.FAVORITE, mShareContent, shareListener);
                 break;
         }
         userInfoTv.setText("");

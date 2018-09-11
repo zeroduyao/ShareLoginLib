@@ -1,4 +1,4 @@
-package com.liulishuo.share.type;
+package com.liulishuo.share.content;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

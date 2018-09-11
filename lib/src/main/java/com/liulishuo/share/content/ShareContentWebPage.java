@@ -5,8 +5,6 @@ import android.os.Parcel;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.liulishuo.share.type.ShareContentType;
-
 /**
  * Created by echo on 5/18/15.
  * 分享网页模式
