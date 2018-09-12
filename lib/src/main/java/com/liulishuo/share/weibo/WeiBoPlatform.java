@@ -73,15 +73,7 @@ public class WeiBoPlatform implements IPlatform {
             WbSdk.install(context, authInfo);
         }
 
-        // 3. 检测分享的目标渠道是否合法
-        if (!type.equals(LOGIN)) {
-            // 是分享操作
-            if (!type.equals(TIME_LINE) && !type.equals(STORY)) {
-                throw new UnsupportedOperationException("不支持的分享渠道");
-            }
-        }
-
-        // 4. 微博不支持分享音乐
+        // 3. 微博不支持分享音乐
         if (contentType == ShareContentType.MUSIC) {
             throw new UnsupportedOperationException("目前不能向微博分享音乐");
         }

@@ -31,7 +31,7 @@ class LoginHelper {
                 // 保存 Token 到 SharedPreferences
                 AccessTokenKeeper.writeAccessToken(activity, accessToken);
 
-                listener.onSuccess(token, uid, accessToken.getExpiresTime() / 1000000, data2Json(accessToken));
+                listener.onReceiveToken(token, uid, accessToken.getExpiresTime() / 1000000, data2Json(accessToken));
                 
                 getUserInfo(activity, token, uid, listener);
             } else {

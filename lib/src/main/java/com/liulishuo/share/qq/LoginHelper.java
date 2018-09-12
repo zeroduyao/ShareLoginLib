@@ -30,7 +30,7 @@ class LoginHelper {
             String openId = jsonObject.getString(Constants.PARAM_OPEN_ID);
             String expires = jsonObject.getString(Constants.PARAM_EXPIRES_IN);
             
-            listener.onSuccess(token, openId, Long.valueOf(expires), object.toString());
+            listener.onReceiveToken(token, openId, Long.valueOf(expires), object.toString());
 
             getUserInfo(activity.getApplicationContext(), token, openId, listener);
         } catch (Exception e) {

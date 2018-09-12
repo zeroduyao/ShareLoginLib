@@ -61,14 +61,6 @@ public class WeiXinPlatform implements IPlatform {
         if (!isAppInstalled(context)) {
             throw new IllegalArgumentException("当设备上未安装微信");
         }
-
-        // 3. 检测分享的目标渠道是否合法
-        if (!type.equals(LOGIN)) {
-            // 是分享操作
-            if (!type.equals(FRIEND) && !type.equals(FRIEND_ZONE)) {
-                throw new UnsupportedOperationException("不支持的分享渠道");
-            }
-        }
     }
 
     @Override

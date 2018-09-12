@@ -22,12 +22,11 @@ public class EventHandlerActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         // 内存不足杀死后重建时的onCreate()
         if (savedInstanceState != null) {
             handleResp(getIntent());
         } else {
-            ShareLoginLib.onCreateListener.onCreate(this);
+            ShareLoginLib.onActivityCreate(this);
         }
     }
 
@@ -55,16 +54,14 @@ public class EventHandlerActivity extends Activity {
 
     @Override
     protected void onDestroy() {
-        ShareLoginLib.curPlatform = null;
-        ShareLoginLib.onCreateListener = null;
-
         ShareLoginLib.printLog("event activity onDestroy");
+        ShareLoginLib.destroy();
         super.onDestroy();
     }
 
     private void handleResp(Intent data) {
-        if (ShareLoginLib.curPlatform != null) {
-            ShareLoginLib.curPlatform.onResponse(this, data);
+        if (ShareLoginLib.getCurPlatform() != null) {
+            ShareLoginLib.getCurPlatform().onResponse(this, data);
         } else {
             ShareLoginLib.printLog("ShareLoginLib.curPlatform is null");
         }

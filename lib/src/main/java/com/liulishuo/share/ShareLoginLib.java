@@ -45,9 +45,9 @@ public class ShareLoginLib {
 
     private static Class<? extends IPlatform>[] supportPlatforms;
 
-    public static IPlatform curPlatform;
+    private static EventHandlerActivity.OnCreateListener onCreateListener;
 
-    public static EventHandlerActivity.OnCreateListener onCreateListener;
+    private static IPlatform curPlatform;
 
     public static void initParams(Application application, @Nullable String appName, @Nullable String tempPicPath) {
         APP_NAME = appName;
@@ -89,9 +89,10 @@ public class ShareLoginLib {
         doAction(activity, false, type, shareContent, null, listener);
     }
 
-    private static void doAction(Activity activity, boolean login, String type, @Nullable ShareContent content,
+    private static void doAction(Activity activity, boolean isLoginAction, String type, @Nullable ShareContent content,
             LoginListener loginListener, ShareListener shareListener) {
 
+        // 1. 得到目前支持的平台列表
         ArrayList<IPlatform> platforms = new ArrayList<>();
 
         for (Class<? extends IPlatform> platformClz : supportPlatforms) {
@@ -104,6 +105,7 @@ public class ShareLoginLib {
             }
         }
 
+        // 2. 根据type匹配出一个目标平台
         for (IPlatform platform : platforms) {
             for (String s : platform.getSupportedTypes()) {
                 if (s.equals(type)) {
@@ -113,6 +115,7 @@ public class ShareLoginLib {
             }
         }
 
+        // 3. 初始化监听器
         if (loginListener == null) {
             loginListener = new LoginListener();
         }
@@ -121,27 +124,46 @@ public class ShareLoginLib {
             shareListener = new ShareListener();
         }
 
+        // 4. 检测当前运行环境，看是否正常
         try {
             curPlatform.checkEnvironment(activity, type, content != null ? content.getType() : -1);
         } catch (Throwable throwable) {
-            loginListener.onError(throwable.getMessage());
+            if (isLoginAction) {
+                loginListener.onError(throwable.getMessage());
+            } else {
+                shareListener.onError(throwable.getMessage());
+            }
             return;
         }
 
         LoginListener finalLoginListener = loginListener;
         ShareListener finalShareListener = shareListener;
 
-        onCreateListener = (eventAct) -> {
-            if (login) {
-                curPlatform.doLogin(eventAct, finalLoginListener);
+        // 5. 执行具体的操作
+        onCreateListener = (eventActivity) -> {
+            if (isLoginAction) {
+                curPlatform.doLogin(eventActivity, finalLoginListener);
             } else {
                 assert content != null;
-                curPlatform.doShare(eventAct, type, content, finalShareListener);
+                curPlatform.doShare(eventActivity, type, content, finalShareListener);
             }
         };
 
         activity.startActivity(new Intent(activity, EventHandlerActivity.class));
         activity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+    }
+
+    public static void onActivityCreate(EventHandlerActivity activity) {
+        onCreateListener.onCreate(activity);
+    }
+
+    public static IPlatform getCurPlatform() {
+        return curPlatform;
+    }
+
+    public static void destroy() {
+        curPlatform = null;
+        onCreateListener = null;
     }
 
     public static String getValue(String key) {
@@ -170,7 +192,6 @@ public class ShareLoginLib {
         }
     }
 
-
     public static boolean isQQInstalled(Context context) {
         return new QQPlatform().isAppInstalled(context);
     }
@@ -187,7 +208,7 @@ public class ShareLoginLib {
 
         private LoginListener listener;
 
-        public UserInfoListener(LoginListener listener) {
+        protected UserInfoListener(LoginListener listener) {
             this.listener = listener;
         }
 

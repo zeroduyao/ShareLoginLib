@@ -19,9 +19,8 @@ public class LoginListener implements ISsoListener {
      * @param wholeData   第三方本身返回的全部json数据
      */
     @CallSuper
-    public void onSuccess(String accessToken, String uId, long expiresIn, @Nullable String wholeData) {
+    public void onReceiveToken(String accessToken, String uId, long expiresIn, @Nullable String wholeData) {
         ShareLoginLib.printLog("login success \naccessToken = " + accessToken + "\nuserId = " + uId + "\nexpires_in = " + expiresIn);
-        onComplete();
     }
 
     /**
@@ -32,17 +31,21 @@ public class LoginListener implements ISsoListener {
                 + "\nsex = " + userInfo.sex
                 + "\nid = " + userInfo.userId;
         ShareLoginLib.printLog(info);
+
+        onComplete();
     }
 
     @CallSuper
     public void onError(String errorMsg) {
-        ShareLoginLib.printErr("login error:"+errorMsg);
+        ShareLoginLib.printErr("login error:" + errorMsg);
+
         onComplete();
     }
 
     @CallSuper
     public void onCancel() {
         ShareLoginLib.printLog("login cancel");
+
         onComplete();
     }
 

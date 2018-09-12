@@ -13,18 +13,21 @@ public class ShareListener implements ISsoListener {
     @CallSuper
     public void onSuccess() {
         ShareLoginLib.printLog("share success");
+        
         onComplete();
     }
 
     @CallSuper
     public void onCancel() {
         ShareLoginLib.printLog("share cancel");
+        
         onComplete();
     }
 
     @CallSuper
     public void onError(String err) {
-        ShareLoginLib.printErr("share err:" + err);
+        ShareLoginLib.printErr("share error:" + err);
+        
         onComplete();
     }
 

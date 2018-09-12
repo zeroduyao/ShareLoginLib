@@ -23,16 +23,16 @@ class MyShareListener extends ShareListener {
     }
 
     @Override
-    public void onError(String msg) {
-        super.onError(msg);
-        String result = "分享失败，出错信息：" + msg;
+    public void onCancel() {
+        super.onCancel();
+        String result = "取消分享";
         activity.handResult(result);
     }
 
     @Override
-    public void onCancel() {
-        super.onCancel();
-        String result = "取消分享";
+    public void onError(String msg) {
+        super.onError(msg);
+        String result = "分享失败，出错信息：" + msg;
         activity.handResult(result);
     }
     

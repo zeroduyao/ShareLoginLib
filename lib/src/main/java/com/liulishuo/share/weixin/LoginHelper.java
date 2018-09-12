@@ -81,7 +81,7 @@ class LoginHelper {
                     String openid = jsonObject.getString("openid"); // 授权用户唯一标识
                     long expires_in = jsonObject.getLong("expires_in"); // access_token接口调用凭证超时时间，单位（秒）
 
-                    listener.onSuccess(token, openid, expires_in, jsonObject.toString());
+                    listener.onReceiveToken(token, openid, expires_in, jsonObject.toString());
                     
                     getUserInfo(context, token, openid, listener);
                 } catch (JSONException e) {
