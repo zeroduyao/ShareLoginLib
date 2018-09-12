@@ -1,16 +1,16 @@
 package com.liulishuo.engzo;
 
-import com.liulishuo.engzo.utils.TestUtil;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
 import android.support.test.InstrumentationRegistry;
 import android.support.test.filters.LargeTest;
 import android.support.test.filters.SdkSuppress;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.test.uiautomator.UiDevice;
+
+import com.liulishuo.engzo.utils.TestUtil;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -38,9 +38,8 @@ public class BaseEvnTest {
     }
 
     @Test
-    public void checkPreconditions() throws Exception {
-        uiDevice.waitForIdle(6000);//空6s
-        assertThat(uiDevice, notNullValue());
+    public void checkPreconditions() {
+        assertThat("uiDevice should exist",uiDevice, notNullValue());
     }
 
 }

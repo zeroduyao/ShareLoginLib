@@ -1,11 +1,16 @@
 package com.liulishuo.share.utils;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import android.app.Activity;
+import android.app.Application;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.media.ThumbnailUtils;
+import android.os.Environment;
 import android.support.annotation.Nullable;
 
 import com.liulishuo.share.ShareLoginLib;
@@ -16,32 +21,35 @@ import com.liulishuo.share.ShareLoginLib;
  */
 public class SlUtils {
 
-    @Nullable
-    static byte[] getImageThumbByteAr1r(@Nullable Bitmap bitmap) {
-        if (bitmap == null) {
-            return null;
+    public static String generateTempPicDir(Application application) {
+        String tempPicDir = null;
+
+        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+            try {
+                tempPicDir = application.getExternalCacheDir() + File.separator;
+                File dir = new File(tempPicDir);
+                if (!dir.exists()) {
+                    dir.mkdirs();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                tempPicDir = null;
+            }
         }
+        return tempPicDir;
+    }
 
-        final long size = '耀';
-
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream(bitmap.getWidth() * bitmap.getHeight());
-
-        int options = 100;
-        bitmap.compress(Bitmap.CompressFormat.JPEG, options, outputStream);
-
-        while (outputStream.size() > size && options > 6) {
-            outputStream.reset();
-            options -= 6;
-            bitmap.compress(Bitmap.CompressFormat.JPEG, options, outputStream);
-        }
-
-//        bitmap.recycle();
-
-        return outputStream.toByteArray();
+    public static String getTempPicFilePath() {
+        return ShareLoginLib.TEMP_PIC_DIR + "share_login_lib_large_pic.jpg";
     }
 
     /**
+     * 将bitmap缩小到可以分享的大小，并变为byte数组
+     *
      * Note:外部传入的bitmap可能会被用于其他的地方，所以这里不能做recycle()
+     *
+     * https://juejin.im/post/5b0bad475188251545422199
+     * https://juejin.im/post/5b1a6b035188257d7102591a
      */
     @Nullable
     public static byte[] getImageThumbByteArr(@Nullable Bitmap src) {
@@ -49,35 +57,32 @@ public class SlUtils {
             return null;
         }
 
+        final int WIDTH = 500;
+
         final Bitmap bitmap;
-        if (src.getWidth() > 250 || src.getHeight() > 250) {
-            bitmap = ThumbnailUtils.extractThumbnail(src, 250, 250);
+        if (src.getWidth() > WIDTH || src.getHeight() > WIDTH) {
+            // 裁剪为正方形的图片
+            bitmap = ThumbnailUtils.extractThumbnail(src, WIDTH, WIDTH);
         } else {
             bitmap = src;
         }
 
-        byte[] thumbData = null;
-        ByteArrayOutputStream outputStream = null;
-        try {
-            outputStream = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 85, outputStream);
-            thumbData = outputStream.toByteArray();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (outputStream != null) {
-                try {
-                    outputStream.flush();
-                    outputStream.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            /*if (bitmap != null && !bitmap.isRecycled()) {
-                bitmap.recycle();
-            }*/
+        final long SIZE = '耀'; // 最大的大小
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream(bitmap.getWidth() * bitmap.getHeight());
+
+        int options = 100;
+        bitmap.compress(Bitmap.CompressFormat.JPEG, options, outputStream);
+
+        while (outputStream.size() > SIZE && options > 6) {
+            outputStream.reset();
+            options -= 6; // 不断的压缩图片的质量
+            bitmap.compress(Bitmap.CompressFormat.JPEG, options, outputStream);
         }
-        return thumbData;
+
+//        bitmap.recycle();
+
+        return outputStream.toByteArray();
     }
 
     /**
@@ -120,6 +125,12 @@ public class SlUtils {
             ShareLoginLib.printErr("save bitmap picture error");
             return null;
         }
+    }
+
+    public static void startActivity(Activity activity, Intent intent,EventHandlerActivity.OnCreateListener listener) {
+        ShareLoginLib.onCreateListener = listener;
+        activity.startActivity(intent);
+        activity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 
 }

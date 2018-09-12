@@ -1,14 +1,13 @@
 package com.liulishuo.share;
 
-import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -43,32 +42,29 @@ public class ShareLoginLib {
 
     public static String APP_NAME, TEMP_PIC_DIR;
 
-    private static Class<? extends IPlatform>[] supportPlatforms;
+    private static List<Class<? extends IPlatform>> supportPlatforms;
 
-    private static EventHandlerActivity.OnCreateListener onCreateListener;
+    public static EventHandlerActivity.OnCreateListener onCreateListener;
 
     private static IPlatform curPlatform;
 
-    public static void initParams(Application application, @Nullable String appName, @Nullable String tempPicDir) {
-        APP_NAME = appName;
+    public static void init(Application application, @Nullable String curAppName, @Nullable String tempPicDir, boolean debug) {
+        APP_NAME = curAppName;
 
         if (TextUtils.isEmpty(tempPicDir)) {
-            if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-                try {
-                    TEMP_PIC_DIR = application.getExternalCacheDir() + File.separator;
-                    File dir = new File(TEMP_PIC_DIR);
-                    if (!dir.exists()) {
-                        dir.mkdirs();
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    TEMP_PIC_DIR = null;
-                }
-            }
+            TEMP_PIC_DIR = SlUtils.generateTempPicDir(application);
+        }
+
+        DEBUG = debug;
+
+        if (DEBUG) {
+            LogUtil.enableLog();
+        } else {
+            LogUtil.disableLog();
         }
     }
 
-    public static void initPlatforms(Map<String, String> keyValue, Class<? extends IPlatform>... platforms) {
+    public static void initPlatforms(Map<String, String> keyValue, List<Class<? extends IPlatform>> platforms) {
         sMap = keyValue;
         supportPlatforms = platforms;
     }
@@ -84,7 +80,7 @@ public class ShareLoginLib {
             // 压缩图片大小至符合要求的size
             content.setThumbBmpBytes(SlUtils.getImageThumbByteArr(content.getThumbBmp()));
             // 将大图保存到磁盘中，供第三方app进行读取
-            content.setLargeBmpPath(SlUtils.saveBitmapToFile(content.getLargeBmp(), ShareLoginLib.getTempPicFilePath()));
+            content.setLargeBmpPath(SlUtils.saveBitmapToFile(content.getLargeBmp(), SlUtils.getTempPicFilePath()));
 
             shareContent = content;
         }
@@ -143,21 +139,19 @@ public class ShareLoginLib {
             return;
         }
 
-        LoginListener finalLoginListener = loginListener;
-        ShareListener finalShareListener = shareListener;
+        // 5. 启动辅助的activity，最终执行具体的操作
 
-        // 5. 执行具体的操作
-        onCreateListener = (eventActivity) -> {
+        final LoginListener finalLoginListener = loginListener;
+        final ShareListener finalShareListener = shareListener;
+
+        SlUtils.startActivity(activity, new Intent(activity, EventHandlerActivity.class), eventActivity -> {
             if (isLoginAction) {
                 curPlatform.doLogin(eventActivity, finalLoginListener);
             } else {
                 assert content != null;
                 curPlatform.doShare(eventActivity, type, content, finalShareListener);
             }
-        };
-
-        activity.startActivity(new Intent(activity, EventHandlerActivity.class));
-        activity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+        });
     }
 
     public static void onActivityCreate(EventHandlerActivity activity) {
@@ -177,16 +171,6 @@ public class ShareLoginLib {
         return sMap.get(key);
     }
 
-    public static void debug(boolean debug) {
-        DEBUG = debug;
-
-        if (DEBUG) {
-            LogUtil.enableLog();
-        } else {
-            LogUtil.disableLog();
-        }
-    }
-
     public static void printLog(String message) {
         if (DEBUG) {
             Log.i(TAG, message);
@@ -197,10 +181,6 @@ public class ShareLoginLib {
         if (DEBUG) {
             Log.e(TAG, message);
         }
-    }
-
-    public static String getTempPicFilePath() {
-        return ShareLoginLib.TEMP_PIC_DIR  + "share_login_lib_large_pic.jpg";
     }
 
     public static boolean isQQInstalled(Context context) {

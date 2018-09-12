@@ -1,7 +1,5 @@
 package com.liulishuo.engzo.utils;
 
-import com.liulishuo.demo.R;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -13,6 +11,8 @@ import android.support.test.uiautomator.SearchCondition;
 import android.support.test.uiautomator.UiDevice;
 import android.support.test.uiautomator.UiObject2;
 import android.support.test.uiautomator.Until;
+
+import com.liulishuo.demo.R;
 
 import static android.support.test.uiautomator.Until.findObject;
 import static com.liulishuo.engzo.Constant.APPLICATION_PACKAGE;
@@ -30,7 +30,7 @@ import static org.junit.Assert.assertThat;
 
 public class TestUtil {
 
-    private static final int LAUNCH_TIMEOUT = 5000;
+    private static final int LAUNCH_TIMEOUT = 2000;
 
     public static void maybeStartTestApp(UiDevice uiDevice) {
         if (uiDevice.getCurrentPackageName().equals(APPLICATION_PACKAGE)) {

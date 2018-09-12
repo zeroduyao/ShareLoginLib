@@ -12,13 +12,13 @@
 
     <application android:allowBackup="true">
 
+        <!-- Only fullscreen opaque activities can request orientation 8.0不能加这个属性-->
         <activity
             android:name=".utils.EventHandlerActivity"
             android:configChanges="keyboardHidden|orientation"
             android:exported="true"
             android:launchMode="singleInstance"
 
-            android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Translucent.NoTitleBar"
             >
         </activity>

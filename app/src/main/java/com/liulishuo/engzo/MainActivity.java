@@ -25,6 +25,7 @@ import com.liulishuo.share.content.ShareContentPic;
 import com.liulishuo.share.content.ShareContentText;
 import com.liulishuo.share.content.ShareContentWebPage;
 import com.liulishuo.share.qq.QQPlatform;
+import com.liulishuo.share.utils.SlUtils;
 import com.liulishuo.share.weibo.WeiBoPlatform;
 import com.liulishuo.share.weixin.WeiXinPlatform;
 import com.squareup.picasso.Picasso;
@@ -66,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
         resultTv = findViewById(R.id.result);
 
         final Bitmap thumbBmp = ((BitmapDrawable) getResources().getDrawable(R.drawable.kale)).getBitmap();
-        final Bitmap largeBmp = ((BitmapDrawable) getResources().getDrawable(R.drawable.pic_large_02)).getBitmap();
+        final Bitmap largeBmp = ((BitmapDrawable) getResources().getDrawable(R.drawable.pic_large_01)).getBitmap();
 
         shareTypeRg.setOnCheckedChangeListener((group, checkedId) -> {
             if (checkedId == R.id.rich_text) {
@@ -79,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
         });
         shareTypeRg.check(R.id.rich_text);
 
-        Toast.makeText(MainActivity.this, getPackageName(), Toast.LENGTH_SHORT).show();
+        getSupportActionBar().setTitle(getPackageName());
     }
 
     @Override
@@ -150,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void loadPicFromTempFile() {
         try {
-            File file = new File(ShareLoginLib.getTempPicFilePath());
+            File file = new File(SlUtils.getTempPicFilePath());
             if (file.exists()) {
                 FileInputStream fis = new FileInputStream(file);
                 tempPicIv.setImageBitmap(BitmapFactory.decodeStream(fis));
