@@ -77,6 +77,17 @@ public class WeiBoPlatform implements IPlatform {
         if (contentType == ShareContentType.MUSIC) {
             throw new UnsupportedOperationException("目前不能向微博分享音乐");
         }
+
+        // 4. 必须安装微博才能分享到微博故事
+        if (type.equals(STORY)) {
+            if (!isAppInstalled(context)) {
+                throw new UnsupportedOperationException("必须安装微博后才能分享微博故事");
+            }
+
+            if (contentType != ShareContentType.PIC) {
+                throw new UnsupportedOperationException("微博故事只能分享单个图片和视频");
+            }
+        }
     }
 
     @Override
