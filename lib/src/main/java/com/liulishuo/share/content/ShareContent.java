@@ -8,6 +8,8 @@ import android.os.Parcelable;
 
 public interface ShareContent extends Parcelable {
 
+    int NO_CONTENT = 31415926;
+    
     /**
      * @return 分享的方式
      */

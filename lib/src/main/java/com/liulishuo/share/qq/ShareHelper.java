@@ -1,18 +1,16 @@
 package com.liulishuo.share.qq;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
 
 import com.liulishuo.share.ShareLoginLib;
 import com.liulishuo.share.content.ShareContent;
 import com.liulishuo.share.content.ShareContentType;
+import com.liulishuo.share.utils.SlUtils;
 import com.tencent.connect.share.QQShare;
 import com.tencent.connect.share.QzoneShare;
 
@@ -126,30 +124,10 @@ class ShareHelper {
 
     @Nullable
     private String getImageUri(@NonNull ShareContent content, boolean isLargePic) {
-        String path = ShareLoginLib.TEMP_PIC_PATH;
         if (isLargePic) {
             return content.getLargeBmpPath();
         } else {
-            return saveThumbBmp(path, content.getThumbBmpBytes());
-        }
-    }
-
-    @Nullable
-    private String saveThumbBmp(String path, byte[] bytes) {
-        if (!TextUtils.isEmpty(path) && bytes != null) {
-            String imagePath;
-            imagePath = path + "sl_thumb_pic";
-            try {
-                FileOutputStream fos = new FileOutputStream(imagePath);
-                fos.write(bytes);
-                fos.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-                return null;
-            }
-            return imagePath;
-        } else {
-            return null;
+            return SlUtils.saveBytesToFile(content.getThumbBmpBytes(), ShareLoginLib.TEMP_PIC_DIR + "share_login_lib_thumb_pic");
         }
     }
 

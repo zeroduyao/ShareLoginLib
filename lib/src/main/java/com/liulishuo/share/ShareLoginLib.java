@@ -41,7 +41,7 @@ public class ShareLoginLib {
 
     private static boolean DEBUG = false;
 
-    public static String APP_NAME, TEMP_PIC_PATH;
+    public static String APP_NAME, TEMP_PIC_DIR;
 
     private static Class<? extends IPlatform>[] supportPlatforms;
 
@@ -49,20 +49,20 @@ public class ShareLoginLib {
 
     private static IPlatform curPlatform;
 
-    public static void initParams(Application application, @Nullable String appName, @Nullable String tempPicPath) {
+    public static void initParams(Application application, @Nullable String appName, @Nullable String tempPicDir) {
         APP_NAME = appName;
 
-        if (TextUtils.isEmpty(tempPicPath)) {
+        if (TextUtils.isEmpty(tempPicDir)) {
             if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
                 try {
-                    TEMP_PIC_PATH = application.getExternalCacheDir() + File.separator;
-                    File dir = new File(TEMP_PIC_PATH);
+                    TEMP_PIC_DIR = application.getExternalCacheDir() + File.separator;
+                    File dir = new File(TEMP_PIC_DIR);
                     if (!dir.exists()) {
                         dir.mkdirs();
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                    TEMP_PIC_PATH = null;
+                    TEMP_PIC_DIR = null;
                 }
             }
         }
@@ -79,9 +79,12 @@ public class ShareLoginLib {
 
     public static void doShare(@NonNull final Activity activity, String type, @NonNull ShareContent shareContent, @Nullable ShareListener listener) {
         if (shareContent instanceof ShareContentPic) {
-            final ShareContentPic content = (ShareContentPic) shareContent;
+            // 针对小图和大图做针对性的处理
+            ShareContentPic content = (ShareContentPic) shareContent;
+            // 压缩图片大小至符合要求的size
             content.setThumbBmpBytes(SlUtils.getImageThumbByteArr(content.getThumbBmp()));
-            content.setLargeBmpPath(SlUtils.saveLargeBitmap(content.getLargeBmp()));
+            // 将大图保存到磁盘中，供第三方app进行读取
+            content.setLargeBmpPath(SlUtils.saveBitmapToFile(content.getLargeBmp(), ShareLoginLib.getTempPicFilePath()));
 
             shareContent = content;
         }
@@ -129,7 +132,7 @@ public class ShareLoginLib {
             if (curPlatform == null) {
                 throw new UnsupportedOperationException("未找到支持该操作的平台");
             } else {
-                curPlatform.checkEnvironment(activity, type, content != null ? content.getType() : -1);
+                curPlatform.checkEnvironment(activity, type, content != null ? content.getType() : ShareContent.NO_CONTENT);
             }
         } catch (Throwable throwable) {
             if (isLoginAction) {
@@ -194,6 +197,10 @@ public class ShareLoginLib {
         if (DEBUG) {
             Log.e(TAG, message);
         }
+    }
+
+    public static String getTempPicFilePath() {
+        return ShareLoginLib.TEMP_PIC_DIR  + "share_login_lib_large_pic.jpg";
     }
 
     public static boolean isQQInstalled(Context context) {

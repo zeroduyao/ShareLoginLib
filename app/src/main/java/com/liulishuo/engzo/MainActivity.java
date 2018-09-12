@@ -10,6 +10,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RadioGroup;
@@ -65,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
         resultTv = findViewById(R.id.result);
 
         final Bitmap thumbBmp = ((BitmapDrawable) getResources().getDrawable(R.drawable.kale)).getBitmap();
-        final Bitmap largeBmp = ((BitmapDrawable) getResources().getDrawable(R.drawable.large_pic)).getBitmap();
+        final Bitmap largeBmp = ((BitmapDrawable) getResources().getDrawable(R.drawable.pic_large_02)).getBitmap();
 
         shareTypeRg.setOnCheckedChangeListener((group, checkedId) -> {
             if (checkedId == R.id.rich_text) {
@@ -78,21 +79,13 @@ public class MainActivity extends AppCompatActivity {
         });
         shareTypeRg.check(R.id.rich_text);
 
-        loadPicFromTempFile();
         Toast.makeText(MainActivity.this, getPackageName(), Toast.LENGTH_SHORT).show();
     }
 
-    private void loadPicFromTempFile() {
-        try {
-            String path = ShareLoginLib.TEMP_PIC_PATH + "sharePic_temp";
-            File file = new File(path);
-            if (file.exists()) {
-                FileInputStream fis = new FileInputStream(file);
-                tempPicIv.setImageBitmap(BitmapFactory.decodeStream(fis));
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadPicFromTempFile();
     }
 
     public void onClick(View v) {
@@ -153,5 +146,20 @@ public class MainActivity extends AppCompatActivity {
             resultTv.setText(result);
             Toast.makeText(MainActivity.this, result, Toast.LENGTH_SHORT).show();
         }, 100);
+    }
+
+    private void loadPicFromTempFile() {
+        try {
+            File file = new File(ShareLoginLib.getTempPicFilePath());
+            if (file.exists()) {
+                FileInputStream fis = new FileInputStream(file);
+                tempPicIv.setImageBitmap(BitmapFactory.decodeStream(fis));
+            } else {
+                Log.e(TAG, "loadPicFromTempFile: no file");
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            Log.e(TAG, "loadPicFromTempFile: FileNotFoundException" + e.getMessage());
+        }
     }
 }
