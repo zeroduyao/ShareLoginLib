@@ -118,10 +118,13 @@ public class MainActivity extends AppCompatActivity {
             case R.id.分享到微博:
                 ShareLoginLib.doShare(this, WeiBoPlatform.TIME_LINE, mShareContent, shareListener);
                 break;
+            case R.id.分享到微博故事:
+                ShareLoginLib.doShare(this, WeiBoPlatform.STORY, mShareContent, shareListener);
+                break;
             case R.id.分享到微博_不带跳转链接:
-                // 解开注释即可测试
+                // 如果不带外链则会变成单图的分享
                 if (mShareContent instanceof ShareContentWebPage) {
-//                    ((ShareContentWebPage) mShareContent).setUrl(null);
+                    ((ShareContentWebPage) mShareContent).setUrl(null);
                 }
                 ShareLoginLib.doShare(this, WeiBoPlatform.TIME_LINE, mShareContent, shareListener);
                 break;

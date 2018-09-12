@@ -126,7 +126,11 @@ public class ShareLoginLib {
 
         // 4. 检测当前运行环境，看是否正常
         try {
-            curPlatform.checkEnvironment(activity, type, content != null ? content.getType() : -1);
+            if (curPlatform == null) {
+                throw new UnsupportedOperationException("未找到支持该操作的平台");
+            } else {
+                curPlatform.checkEnvironment(activity, type, content != null ? content.getType() : -1);
+            }
         } catch (Throwable throwable) {
             if (isLoginAction) {
                 loginListener.onError(throwable.getMessage());

@@ -48,7 +48,7 @@ public class WeiBoPlatform implements IPlatform {
 
     @Override
     public String[] getSupportedTypes() {
-        return new String[]{LOGIN, TIME_LINE};
+        return new String[]{LOGIN, TIME_LINE, STORY};
     }
 
     @Override
@@ -91,6 +91,7 @@ public class WeiBoPlatform implements IPlatform {
             @Override
             public void cancel() {
                 listener.onCancel();
+                activity.finish();
             }
 
             @Override
@@ -133,12 +134,20 @@ public class WeiBoPlatform implements IPlatform {
     public void onResponse(Activity activity, Intent data) {
         if (shareCallback != null) {
             // 分享
-            new WbShareHandler(activity).doResultIntent(data, shareCallback);
+            if (data == null) {
+                shareCallback.onWbShareFail();
+            } else {
+                new WbShareHandler(activity).doResultIntent(data, shareCallback);
+            }
         } else {
             // 登录
-            int requestCode = data.getIntExtra(EventHandlerActivity.KEY_REQUEST_CODE, -1);
-            int resultCode = data.getIntExtra(EventHandlerActivity.KEY_RESULT_CODE, -1);
-            ssoHandler.authorizeCallBack(requestCode, resultCode, data);
+            if (data == null) {
+                ssoHandler.authorizeCallBack(32973, 0, null);
+            } else {
+                int requestCode = data.getIntExtra(EventHandlerActivity.KEY_REQUEST_CODE, -1);
+                int resultCode = data.getIntExtra(EventHandlerActivity.KEY_RESULT_CODE, -1);
+                ssoHandler.authorizeCallBack(requestCode, resultCode, data);
+            }
         }
     }
 

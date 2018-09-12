@@ -102,6 +102,14 @@
             />
 
         <Button
+            android:id="@+id/分享到微博故事"
+            android:layout_width="180dp"
+            android:layout_height="40dp"
+            android:onClick="onClick"
+            android:text="分享到微博故事"
+            />
+
+        <Button
             android:id="@+id/分享到微博_不带跳转链接"
             android:layout_width="180dp"
             android:layout_height="40dp"

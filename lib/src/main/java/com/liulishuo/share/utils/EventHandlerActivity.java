@@ -24,6 +24,7 @@ public class EventHandlerActivity extends Activity {
         super.onCreate(savedInstanceState);
         // 内存不足杀死后重建时的onCreate()
         if (savedInstanceState != null) {
+            ShareLoginLib.printLog("EventHandlerActivity:onCreate(2) intent:" + getIntent());
             handleResp(getIntent());
         } else {
             ShareLoginLib.onActivityCreate(this);
@@ -33,28 +34,31 @@ public class EventHandlerActivity extends Activity {
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+
+        ShareLoginLib.printLog("EventHandlerActivity:onNewIntent() intent:" + intent);
+
         handleResp(intent);
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
 
-        if (data != null) {
-            data.putExtra(KEY_REQUEST_CODE, requestCode);
-            data.putExtra(KEY_RESULT_CODE, resultCode);
+        if (intent != null) {
+            intent.putExtra(KEY_REQUEST_CODE, requestCode);
+            intent.putExtra(KEY_RESULT_CODE, resultCode);
         }
 
-        ShareLoginLib.printLog("onActivityResult data:" + data);
+        ShareLoginLib.printLog("EventHandlerActivity:onActivityResult() intent:" + intent);
 
-        handleResp(data);
+        handleResp(intent);
 
         finish();
     }
 
     @Override
     protected void onDestroy() {
-        ShareLoginLib.printLog("event activity onDestroy");
+        ShareLoginLib.printLog("EventHandlerActivity:onDestroy()");
         ShareLoginLib.destroy();
         super.onDestroy();
     }
