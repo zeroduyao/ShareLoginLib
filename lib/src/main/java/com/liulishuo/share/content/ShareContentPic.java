@@ -11,7 +11,7 @@ import android.support.annotation.Nullable;
 public class ShareContentPic implements ShareContent {
 
     private Bitmap thumbBmp, largeBmp;
-    
+
     private byte[] thumbBmpBytes;
 
     private String largeBmpPath;
