@@ -2,7 +2,7 @@ package com.liulishuo.share.qq;
 
 import android.app.Activity;
 import android.content.Context;
-import android.support.annotation.Nullable;
+import android.support.annotation.NonNull;
 
 import com.liulishuo.share.LoginListener;
 import com.liulishuo.share.OAuthUserInfo;
@@ -23,19 +23,18 @@ import org.json.JSONObject;
  */
 class LoginHelper {
 
-    static void parseLoginResp(Activity activity, Object object, @Nullable LoginListener listener) {
-        if (listener != null) {
-            JSONObject jsonObject = ((JSONObject) object);
-            try {
-                String token = jsonObject.getString(Constants.PARAM_ACCESS_TOKEN);
-                String openId = jsonObject.getString(Constants.PARAM_OPEN_ID);
-                String expires = jsonObject.getString(Constants.PARAM_EXPIRES_IN);
-                listener.onSuccess(token, openId, Long.valueOf(expires), object.toString());
+    static void parseLoginResp(Activity activity, Object object, @NonNull LoginListener listener) {
+        JSONObject jsonObject = ((JSONObject) object);
+        try {
+            String token = jsonObject.getString(Constants.PARAM_ACCESS_TOKEN);
+            String openId = jsonObject.getString(Constants.PARAM_OPEN_ID);
+            String expires = jsonObject.getString(Constants.PARAM_EXPIRES_IN);
+            
+            listener.onSuccess(token, openId, Long.valueOf(expires), object.toString());
 
-                getUserInfo(activity.getApplicationContext(), token, openId, listener);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            getUserInfo(activity.getApplicationContext(), token, openId, listener);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -56,7 +55,7 @@ class LoginHelper {
                 new ShareLoginLib.UserInfoListener(listener) {
 
                     @Override
-                    public OAuthUserInfo onSuccess(JSONObject jsonObj) throws JSONException {
+                    public OAuthUserInfo json2UserInfo(JSONObject jsonObj) throws JSONException {
                         OAuthUserInfo userInfo = new OAuthUserInfo();
                         userInfo.nickName = jsonObj.getString("nickname");
                         userInfo.sex = jsonObj.getString("gender");
@@ -77,16 +76,12 @@ class LoginHelper {
 
         @Override
         public void onCancel() {
-            if (listener != null) {
-                listener.onCancel();
-            }
+            listener.onCancel();
         }
 
         @Override
         public void onError(UiError resp) {
-            if (listener != null) {
-                listener.onError(resp.errorCode + " - " + resp.errorMessage + " - " + resp.errorDetail);
-            }
+            listener.onError(resp.errorCode + " - " + resp.errorMessage + " - " + resp.errorDetail);
         }
 
     }

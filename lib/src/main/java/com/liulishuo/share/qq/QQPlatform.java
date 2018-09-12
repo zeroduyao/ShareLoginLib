@@ -10,15 +10,14 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
-import com.liulishuo.share.utils.IPlatform;
 import com.liulishuo.share.LoginListener;
 import com.liulishuo.share.ShareListener;
 import com.liulishuo.share.ShareLoginLib;
 import com.liulishuo.share.content.ShareContent;
 import com.liulishuo.share.content.ShareContentType;
+import com.liulishuo.share.utils.IPlatform;
 import com.tencent.tauth.IUiListener;
 import com.tencent.tauth.Tencent;
 
@@ -63,10 +62,12 @@ public class QQPlatform implements IPlatform {
 
     @Override
     public void checkEnvironment(Context context, String type, @ShareContentType int contentType) {
+        // 1. 检测是否已经初始化
         if (TextUtils.isEmpty(ShareLoginLib.getValue(KEY_APP_ID))) {
             throw new IllegalArgumentException("appId未被初始化");
         }
 
+        // 2. 检测分享的内容是否合法
         if (!type.equals(LOGIN)) {
             // 如果是分享到qq好友
             if (type.equals(FRIEND) && contentType == ShareContentType.TEXT) {
@@ -89,7 +90,7 @@ public class QQPlatform implements IPlatform {
     }
 
     @Override
-    public void doLogin(@NonNull Activity activity, @Nullable LoginListener listener) {
+    public void doLogin(@NonNull Activity activity, @NonNull LoginListener listener) {
         Tencent tencent = Tencent.createInstance(ShareLoginLib.getValue(KEY_APP_ID), activity.getApplicationContext());
 
         if (tencent.isSessionValid()) {
@@ -100,7 +101,7 @@ public class QQPlatform implements IPlatform {
         uiListener = new LoginHelper.AbsUiListener(listener) {
             @Override
             public void onComplete(Object obj) {
-                LoginHelper.parseLoginResp(activity,obj, listener);
+                LoginHelper.parseLoginResp(activity, obj, listener);
             }
         };
 
@@ -108,16 +109,13 @@ public class QQPlatform implements IPlatform {
     }
 
     @Override
-    public void doShare(@NonNull Activity activity, String shareType, @NonNull ShareContent shareContent, @Nullable ShareListener listener) {
+    public void doShare(@NonNull Activity activity, String shareType, @NonNull ShareContent shareContent, @NonNull ShareListener listener) {
         Tencent tencent = Tencent.createInstance(ShareLoginLib.getValue(KEY_APP_ID), activity.getApplicationContext());
 
         uiListener = new LoginHelper.AbsUiListener(listener) {
-
             @Override
             public void onComplete(Object o) {
-                if (listener != null) {
-                    listener.onSuccess();
-                }
+                listener.onSuccess();
             }
         };
 

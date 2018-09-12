@@ -113,21 +113,30 @@ public class ShareLoginLib {
             }
         }
 
+        if (loginListener == null) {
+            loginListener = new LoginListener();
+        }
+
+        if (shareListener == null) {
+            shareListener = new ShareListener();
+        }
+
         try {
             curPlatform.checkEnvironment(activity, type, content != null ? content.getType() : -1);
         } catch (Throwable throwable) {
-            if (loginListener != null) {
-                loginListener.onError(throwable.getMessage());
-                return;
-            }
+            loginListener.onError(throwable.getMessage());
+            return;
         }
+
+        LoginListener finalLoginListener = loginListener;
+        ShareListener finalShareListener = shareListener;
 
         onCreateListener = (eventAct) -> {
             if (login) {
-                curPlatform.doLogin(eventAct, loginListener);
+                curPlatform.doLogin(eventAct, finalLoginListener);
             } else {
                 assert content != null;
-                curPlatform.doShare(eventAct, type, content, shareListener);
+                curPlatform.doShare(eventAct, type, content, finalShareListener);
             }
         };
 
@@ -183,32 +192,27 @@ public class ShareLoginLib {
         }
 
         @Override
-        public void onComplete(String s) {
+        public void onComplete(String json) {
             OAuthUserInfo userInfo = null;
             try {
-                userInfo = onSuccess(new JSONObject(s));
+                userInfo = json2UserInfo(new JSONObject(json));
             } catch (JSONException e) {
                 e.printStackTrace();
-                if (listener != null) {
-                    listener.onError(e.getMessage());
-                }
+                listener.onError(e.getMessage());
             }
-            if (listener != null && userInfo != null) {
+
+            if (userInfo != null) {
                 listener.onReceiveUserInfo(userInfo);
             }
         }
 
         @Override
         public void onWeiboException(WeiboException e) {
-            if (DEBUG) {
-                e.printStackTrace();
-            }
-            if (listener != null) {
-                listener.onError(e.getMessage());
-            }
+            e.printStackTrace();
+            listener.onError(e.getMessage());
         }
 
-        public abstract OAuthUserInfo onSuccess(JSONObject jsonObj) throws JSONException;
+        public abstract OAuthUserInfo json2UserInfo(JSONObject jsonObj) throws JSONException;
     }
 
 }

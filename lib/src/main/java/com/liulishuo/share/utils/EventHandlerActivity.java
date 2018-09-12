@@ -23,7 +23,7 @@ public class EventHandlerActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // 内存不足杀死后重建时的onCreate
+        // 内存不足杀死后重建时的onCreate()
         if (savedInstanceState != null) {
             handleResp(getIntent());
         } else {
@@ -41,8 +41,12 @@ public class EventHandlerActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        data.putExtra(KEY_REQUEST_CODE, requestCode);
-        data.putExtra(KEY_RESULT_CODE, resultCode);
+        if (data != null) {
+            data.putExtra(KEY_REQUEST_CODE, requestCode);
+            data.putExtra(KEY_RESULT_CODE, resultCode);
+        }
+
+        ShareLoginLib.printLog("onActivityResult data:" + data);
 
         handleResp(data);
 
@@ -53,7 +57,7 @@ public class EventHandlerActivity extends Activity {
     protected void onDestroy() {
         ShareLoginLib.curPlatform = null;
         ShareLoginLib.onCreateListener = null;
-        
+
         ShareLoginLib.printLog("event activity onDestroy");
         super.onDestroy();
     }

@@ -2,7 +2,7 @@ package com.liulishuo.share.weixin;
 
 import android.app.Activity;
 import android.content.Context;
-import android.support.annotation.Nullable;
+import android.support.annotation.NonNull;
 
 import com.liulishuo.share.LoginListener;
 import com.liulishuo.share.OAuthUserInfo;
@@ -32,8 +32,8 @@ class LoginHelper {
     /**
      * 解析用户登录的结果
      */
-    static void parseLoginResp(final Activity activity, BaseResp baseResp, @Nullable LoginListener listener) {
-        if (baseResp instanceof SendAuth.Resp && baseResp.getType() == TYPE_LOGIN && listener != null) {
+    static void parseLoginResp(final Activity activity, BaseResp baseResp, @NonNull LoginListener listener) {
+        if (baseResp instanceof SendAuth.Resp && baseResp.getType() == TYPE_LOGIN ) {
             SendAuth.Resp resp = (SendAuth.Resp) baseResp;
             switch (resp.errCode) {
                 case BaseResp.ErrCode.ERR_OK: // 登录成功
@@ -62,7 +62,7 @@ class LoginHelper {
      * "unionid":"o6_bmajkjhjhhkj"
      * }
      */
-    private static void code2Token(Context context, String code, final @Nullable LoginListener listener) {
+    private static void code2Token(Context context, String code, @NonNull final LoginListener listener) {
         String appId = ShareLoginLib.getValue(WeiXinPlatform.KEY_APP_ID);
         String secret = ShareLoginLib.getValue(WeiXinPlatform.KEY_SECRET_KEY);
 
@@ -74,30 +74,25 @@ class LoginHelper {
 
         new AsyncWeiboRunner(context).requestAsync("https://api.weixin.qq.com/sns/oauth2/access_token", params, "GET", new RequestListener() {
             @Override
-            public void onComplete(String s) {
+            public void onComplete(String json) {
                 try {
-                    JSONObject jsonObject = new JSONObject(s);
+                    JSONObject jsonObject = new JSONObject(json);
                     String token = jsonObject.getString("access_token"); // 接口调用凭证
                     String openid = jsonObject.getString("openid"); // 授权用户唯一标识
                     long expires_in = jsonObject.getLong("expires_in"); // access_token接口调用凭证超时时间，单位（秒）
 
-                    if (listener != null) {
-                        listener.onSuccess(token, openid, expires_in, jsonObject.toString());
-                        getUserInfo(context, token, openid, listener);
-                    }
+                    listener.onSuccess(token, openid, expires_in, jsonObject.toString());
+                    
+                    getUserInfo(context, token, openid, listener);
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    if (listener != null) {
-                        listener.onError(e.getMessage());
-                    }
+                    listener.onError(e.getMessage());
                 }
             }
 
             @Override
             public void onWeiboException(WeiboException e) {
-                if (listener != null) {
-                    listener.onError(e.getMessage());
-                }
+                listener.onError(e.getMessage());
             }
         });
     }
@@ -119,15 +114,14 @@ class LoginHelper {
      * }
      */
     public static void getUserInfo(Context context, String accessToken, String uid, final LoginListener listener) {
-        AsyncWeiboRunner runner = new AsyncWeiboRunner(context);
         WeiboParameters params = new WeiboParameters(null);
         params.put("access_token", accessToken);
         params.put("openid", uid);
 
-        runner.requestAsync("https://api.weixin.qq.com/sns/userinfo", params, "GET", new ShareLoginLib.UserInfoListener(listener) {
+        new AsyncWeiboRunner(context).requestAsync("https://api.weixin.qq.com/sns/userinfo", params, "GET", new ShareLoginLib.UserInfoListener(listener) {
 
             @Override
-            public OAuthUserInfo onSuccess(JSONObject jsonObj) throws JSONException {
+            public OAuthUserInfo json2UserInfo(JSONObject jsonObj) throws JSONException {
                 OAuthUserInfo userInfo = new OAuthUserInfo();
                 userInfo.nickName = jsonObj.getString("nickname");
                 userInfo.sex = jsonObj.getString("sex");

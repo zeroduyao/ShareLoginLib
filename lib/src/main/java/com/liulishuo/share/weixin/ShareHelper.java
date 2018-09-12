@@ -18,22 +18,22 @@ import com.tencent.mm.opensdk.modelmsg.WXWebpageObject;
  * @date 2018/9/10
  */
 class ShareHelper {
-    
+
     @NonNull
-    public SendMessageToWX.Req createRequest(@NonNull ShareContent shareContent, String shareType) {
+    static SendMessageToWX.Req createRequest(@NonNull ShareContent shareContent, String shareType) {
         // 建立信息体
         WXMediaMessage msg = new WXMediaMessage();
         msg.title = shareContent.getTitle();
         msg.description = shareContent.getSummary();
         msg.thumbData = shareContent.getThumbBmpBytes(); // 这里没有做缩略图的配置，缩略图和原图是同一个对象
-        
+
         msg.mediaObject = createMediaObject(shareContent);
 
         // 发送信息
         SendMessageToWX.Req req = new SendMessageToWX.Req();
         req.transaction = String.valueOf(System.currentTimeMillis());
         req.message = msg;
-        
+
         switch (shareType) {
             case WeiXinPlatform.FRIEND: // 好友
                 req.scene = SendMessageToWX.Req.WXSceneSession;
@@ -48,7 +48,7 @@ class ShareHelper {
         return req;
     }
 
-    private WXMediaMessage.IMediaObject createMediaObject(@NonNull ShareContent shareContent) {
+    private static WXMediaMessage.IMediaObject createMediaObject(@NonNull ShareContent shareContent) {
         WXMediaMessage.IMediaObject mediaObject;
         switch (shareContent.getType()) {
             case ShareContentType.TEXT:
@@ -76,26 +76,26 @@ class ShareHelper {
         return mediaObject;
     }
 
-    private WXMediaMessage.IMediaObject getTextObj(ShareContent shareContent) {
+    private static WXMediaMessage.IMediaObject getTextObj(ShareContent shareContent) {
         WXTextObject text = new WXTextObject();
         text.text = shareContent.getSummary();
         return text;
     }
 
-    private WXMediaMessage.IMediaObject getImageObj(ShareContent shareContent) {
+    private static WXMediaMessage.IMediaObject getImageObj(ShareContent shareContent) {
         WXImageObject image = new WXImageObject();
         image.imagePath = shareContent.getLargeBmpPath();
         return image;
     }
 
-    private WXMediaMessage.IMediaObject getMusicObj(ShareContent shareContent) {
+    private static WXMediaMessage.IMediaObject getMusicObj(ShareContent shareContent) {
         WXMusicObject music = new WXMusicObject();
         //Str1+"#wechat_music_url="+str2（str1是跳转的网页地址，str2是音乐地址）
         music.musicUrl = shareContent.getURL() + "#wechat_music_url=" + shareContent.getMusicUrl();
         return music;
     }
 
-    private WXMediaMessage.IMediaObject getWebPageObj(ShareContent shareContent) {
+    private static WXMediaMessage.IMediaObject getWebPageObj(ShareContent shareContent) {
         WXWebpageObject webPage = new WXWebpageObject();
         webPage.webpageUrl = shareContent.getURL();
         return webPage;
@@ -106,28 +106,26 @@ class ShareHelper {
      *
      * https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=open1419318634&token=&lang=zh_CN
      */
-    static void parseShareResp(BaseResp resp, ShareListener listener) {
-        if (listener != null) {
-            switch (resp.errCode) {
-                case BaseResp.ErrCode.ERR_OK:
-                    listener.onSuccess();
-                    break;
-                case BaseResp.ErrCode.ERR_USER_CANCEL:
-                    listener.onCancel();
-                    break;
-                case BaseResp.ErrCode.ERR_AUTH_DENIED:
-                    listener.onError("用户拒绝授权");
-                    break;
-                case BaseResp.ErrCode.ERR_SENT_FAILED:
-                    listener.onError("发送失败");
-                    break;
-                case BaseResp.ErrCode.ERR_COMM:
-                    listener.onError("一般错误");
-                    break;
-                default:
-                    listener.onError("未知错误");
-            }
+    static void parseShareResp(BaseResp resp, @NonNull ShareListener listener) {
+        switch (resp.errCode) {
+            case BaseResp.ErrCode.ERR_OK:
+                listener.onSuccess();
+                break;
+            case BaseResp.ErrCode.ERR_USER_CANCEL:
+                listener.onCancel();
+                break;
+            case BaseResp.ErrCode.ERR_AUTH_DENIED:
+                listener.onError("用户拒绝授权");
+                break;
+            case BaseResp.ErrCode.ERR_SENT_FAILED:
+                listener.onError("发送失败");
+                break;
+            case BaseResp.ErrCode.ERR_COMM:
+                listener.onError("一般错误");
+                break;
+            default:
+                listener.onError("未知错误");
         }
     }
-    
+
 }

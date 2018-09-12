@@ -2,16 +2,14 @@ package com.liulishuo.share.weibo;
 
 import android.app.Activity;
 import android.content.Context;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.liulishuo.share.LoginListener;
 import com.liulishuo.share.OAuthUserInfo;
 import com.liulishuo.share.ShareLoginLib;
+import com.sina.weibo.sdk.auth.AccessTokenKeeper;
 import com.sina.weibo.sdk.auth.Oauth2AccessToken;
-import com.sina.weibo.sdk.auth.WeiboAuthListener;
-import com.sina.weibo.sdk.exception.WeiboException;
 import com.sina.weibo.sdk.net.AsyncWeiboRunner;
 import com.sina.weibo.sdk.net.WeiboParameters;
 
@@ -24,19 +22,23 @@ import org.json.JSONObject;
  */
 class LoginHelper {
 
-    static void parseLoginResp(Activity activity, Bundle values, LoginListener listener) {
-        final Oauth2AccessToken accessToken = Oauth2AccessToken.parseAccessToken(values);
-        if (listener != null && accessToken != null) {
+    static void parseLoginResp(Activity activity, Oauth2AccessToken accessToken, LoginListener listener) {
+        if (accessToken != null) {
             if (accessToken.isSessionValid()) {
                 String token = accessToken.getToken();
                 String uid = accessToken.getUid();
-                
+
+                // 保存 Token 到 SharedPreferences
+                AccessTokenKeeper.writeAccessToken(activity, accessToken);
+
                 listener.onSuccess(token, uid, accessToken.getExpiresTime() / 1000000, data2Json(accessToken));
+                
                 getUserInfo(activity, token, uid, listener);
             } else {
-                String errorCode = values.getString("code");
-                listener.onError("签名不正确，error code: " + errorCode);
+                listener.onError("当前app的签名不正确");
             }
+        } else {
+            listener.onError("token is null");
         }
     }
 
@@ -61,13 +63,13 @@ class LoginHelper {
      * @see "http://open.weibo.com/wiki/2/users/show"
      */
     public static void getUserInfo(Context context, String accessToken, String uid, LoginListener listener) {
-        AsyncWeiboRunner runner = new AsyncWeiboRunner(context);
         WeiboParameters params = new WeiboParameters(null);
         params.put("access_token", accessToken);
         params.put("uid", uid);
-        runner.requestAsync("https://api.weibo.com/2/users/show.json", params, "GET", new ShareLoginLib.UserInfoListener(listener) {
+
+        new AsyncWeiboRunner(context).requestAsync("https://api.weibo.com/2/users/show.json", params, "GET", new ShareLoginLib.UserInfoListener(listener) {
             @Override
-            public OAuthUserInfo onSuccess(JSONObject jsonObj) throws JSONException {
+            public OAuthUserInfo json2UserInfo(JSONObject jsonObj) throws JSONException {
                 OAuthUserInfo userInfo = new OAuthUserInfo();
                 userInfo.nickName = jsonObj.getString("screen_name");
                 userInfo.sex = jsonObj.getString("gender");
@@ -77,29 +79,6 @@ class LoginHelper {
             }
         });
 
-    }
-
-    static abstract class AbsAuthListener implements WeiboAuthListener {
-
-        LoginListener listener;
-
-        public AbsAuthListener(LoginListener listener) {
-            this.listener = listener;
-        }
-
-        @Override
-        public void onWeiboException(WeiboException e) {
-            if (listener != null) {
-                listener.onError(e.getMessage());
-            }
-        }
-
-        @Override
-        public void onCancel() {
-            if (listener != null) {
-                listener.onCancel();
-            }
-        }
     }
 
 }

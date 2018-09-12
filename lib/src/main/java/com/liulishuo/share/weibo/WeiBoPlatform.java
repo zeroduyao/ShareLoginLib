@@ -3,24 +3,24 @@ package com.liulishuo.share.weibo;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
-import com.liulishuo.share.utils.IPlatform;
 import com.liulishuo.share.LoginListener;
 import com.liulishuo.share.ShareListener;
 import com.liulishuo.share.ShareLoginLib;
 import com.liulishuo.share.content.ShareContent;
+import com.liulishuo.share.content.ShareContentType;
 import com.liulishuo.share.utils.EventHandlerActivity;
-import com.sina.weibo.sdk.api.share.BaseRequest;
-import com.sina.weibo.sdk.api.share.IWeiboHandler;
-import com.sina.weibo.sdk.api.share.IWeiboShareAPI;
-import com.sina.weibo.sdk.api.share.SendMultiMessageToWeiboRequest;
-import com.sina.weibo.sdk.api.share.WeiboShareSDK;
+import com.liulishuo.share.utils.IPlatform;
+import com.sina.weibo.sdk.WbSdk;
 import com.sina.weibo.sdk.auth.AuthInfo;
+import com.sina.weibo.sdk.auth.Oauth2AccessToken;
+import com.sina.weibo.sdk.auth.WbAuthListener;
+import com.sina.weibo.sdk.auth.WbConnectErrorMessage;
 import com.sina.weibo.sdk.auth.sso.SsoHandler;
+import com.sina.weibo.sdk.share.WbShareCallback;
+import com.sina.weibo.sdk.share.WbShareHandler;
 
 /**
  * @author Kale
@@ -40,7 +40,9 @@ public class WeiBoPlatform implements IPlatform {
 
     public static final String TIME_LINE = "weibo_time_line";
 
-    private IWeiboHandler.Response response;
+    public static final String STORY = "weibo_story";
+
+    private WbShareCallback shareCallback;
 
     private SsoHandler ssoHandler;
 
@@ -51,76 +53,101 @@ public class WeiBoPlatform implements IPlatform {
 
     @Override
     public boolean isAppInstalled(@NonNull Context context) {
-        return getApi(context).isWeiboAppInstalled();
+        return WbSdk.isWbInstall(context);
     }
 
     @Override
     public void checkEnvironment(Context context, String type, int contentType) {
+        // 1. 检测是否初始化
         if (TextUtils.isEmpty(ShareLoginLib.getValue(KEY_APP_KEY))) {
             throw new IllegalArgumentException("微博的appId未被初始化，当前为空");
+        }
+
+        // 2. 进行进行初始化操作
+        try {
+            WbSdk.checkInit();
+        } catch (RuntimeException e) {
+            // 如果没有init，则init一次，之后都不用再做任何初始化操作
+            AuthInfo authInfo = new AuthInfo(context, ShareLoginLib.getValue(KEY_APP_KEY),
+                    ShareLoginLib.getValue(KEY_REDIRECT_URL), ShareLoginLib.getValue(KEY_SCOPE));
+            WbSdk.install(context, authInfo);
+        }
+
+        // 3. 检测分享的目标渠道是否合法
+        if (!type.equals(LOGIN)) {
+            // 是分享操作
+            if (!type.equals(TIME_LINE) && !type.equals(STORY)) {
+                throw new UnsupportedOperationException("不支持的分享渠道");
+            }
+        }
+
+        // 4. 微博不支持分享音乐
+        if (contentType == ShareContentType.MUSIC) {
+            throw new UnsupportedOperationException("目前不能向微博分享音乐");
         }
     }
 
     @Override
-    public void doLogin(@NonNull Activity activity, @Nullable LoginListener listener) {
-        // 注意：SsoHandler 仅当 SDK 支持 SSO 时有效
-        ssoHandler = new SsoHandler(activity,
-                new AuthInfo(
-                        activity.getApplicationContext(),
-                        ShareLoginLib.getValue(KEY_APP_KEY),
-                        ShareLoginLib.getValue(KEY_REDIRECT_URL),
-                        ShareLoginLib.getValue(KEY_SCOPE)
-                )
-        );
-
-        ssoHandler.authorize(new LoginHelper.AbsAuthListener(listener) {
+    public void doLogin(@NonNull Activity activity, @NonNull LoginListener listener) {
+        ssoHandler = new SsoHandler(activity);
+        ssoHandler.authorize(new WbAuthListener() {
             @Override
-            public void onComplete(Bundle bundle) {
-                LoginHelper.parseLoginResp(activity,bundle, listener);
+            public void onSuccess(Oauth2AccessToken token) {
+                LoginHelper.parseLoginResp(activity, token, listener);
+            }
+
+            @Override
+            public void cancel() {
+                listener.onCancel();
+            }
+
+            @Override
+            public void onFailure(WbConnectErrorMessage err) {
+                listener.onError(err.getErrorMessage());
             }
         });
     }
 
     @Override
-    public void doShare(@NonNull Activity activity, String shareType, @NonNull ShareContent shareContent, @Nullable ShareListener listener) {
-        // 建立请求体
-        SendMultiMessageToWeiboRequest request = new SendMultiMessageToWeiboRequest();
-        request.transaction = String.valueOf(System.currentTimeMillis());// 用transaction唯一标识一个请求
-        request.multiMessage = new ShareHelper().createShareObject(shareContent);
+    public void doShare(@NonNull Activity activity, String shareType, @NonNull ShareContent shareContent, @NonNull ShareListener listener) {
+        shareCallback = new WbShareCallback() {
+            @Override
+            public void onWbShareSuccess() {
+                listener.onSuccess();
+            }
 
-        sendRequest(activity, request, resp -> {
-            ShareHelper.parseShareResp(resp, listener);
-            activity.finish();
-        });
-    }
+            @Override
+            public void onWbShareCancel() {
+                listener.onCancel();
+            }
 
-    private void sendRequest(Activity activity, BaseRequest request, IWeiboHandler.Response resp) {
-        response = resp;
-        IWeiboShareAPI api = getApi(activity);
-        api.registerApp(); // 将应用注册到微博客户端
-        api.sendRequest(activity, request);
+            @Override
+            public void onWbShareFail() {
+                listener.onError("未知异常");
+            }
+        };
+
+        WbShareHandler shareHandler = new WbShareHandler(activity);
+        shareHandler.registerApp();
+
+        if (shareType.equals(TIME_LINE)) {
+            shareHandler.shareMessage(ShareHelper.createShareObject(shareContent), false);
+        } else if (shareType.equals(STORY)) {
+            shareHandler.shareToStory(ShareHelper.createStoryMessage(shareContent));
+        }
     }
 
     @Override
     public void onResponse(Activity activity, Intent data) {
-        if (response != null) {
-            /*
-              从当前应用唤起微博并进行分享后，返回到当前应用时，需要在此处调用该函数
-              来接收微博客户端返回的数据；执行成功，返回 true，并调用
-              {@link IWeiboHandler.Response#onResponse}；失败返回 false，不调用上述回调
-             */
-            getApi(activity).handleWeiboResponse(data, response); // 当前应用唤起微博分享后，返回当前应用
-        } else if (ssoHandler != null) {
-            // 處理登陸操作后的結果
+        if (shareCallback != null) {
+            // 分享
+            new WbShareHandler(activity).doResultIntent(data, shareCallback);
+        } else {
+            // 登录
             int requestCode = data.getIntExtra(EventHandlerActivity.KEY_REQUEST_CODE, -1);
             int resultCode = data.getIntExtra(EventHandlerActivity.KEY_RESULT_CODE, -1);
-
             ssoHandler.authorizeCallBack(requestCode, resultCode, data);
         }
     }
 
-    private static IWeiboShareAPI getApi(Context context) {
-        return WeiboShareSDK.createWeiboAPI(context.getApplicationContext(),
-                ShareLoginLib.getValue(KEY_APP_KEY));
-    }
 }

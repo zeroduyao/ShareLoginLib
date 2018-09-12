@@ -4,15 +4,14 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
-import com.liulishuo.share.utils.IPlatform;
 import com.liulishuo.share.LoginListener;
 import com.liulishuo.share.ShareListener;
 import com.liulishuo.share.ShareLoginLib;
 import com.liulishuo.share.content.ShareContent;
 import com.liulishuo.share.content.ShareContentType;
+import com.liulishuo.share.utils.IPlatform;
 import com.tencent.mm.opensdk.modelbase.BaseReq;
 import com.tencent.mm.opensdk.modelbase.BaseResp;
 import com.tencent.mm.opensdk.modelmsg.SendAuth;
@@ -46,8 +45,7 @@ public class WeiXinPlatform implements IPlatform {
 
     @Override
     public boolean isAppInstalled(@NonNull Context context) {
-        IWXAPI api = WXAPIFactory.createWXAPI(context, ShareLoginLib.getValue(KEY_APP_ID), true);
-        return api.isWXAppInstalled();
+        return getApi(context).isWXAppInstalled();
     }
 
     @Override
@@ -60,21 +58,27 @@ public class WeiXinPlatform implements IPlatform {
         }
 
         // 2. 检测是否安装了微信
-        IWXAPI api = WXAPIFactory.createWXAPI(context.getApplicationContext(), appId, true);
-        if (!api.isWXAppInstalled()) {
+        if (!isAppInstalled(context)) {
             throw new IllegalArgumentException("当设备上未安装微信");
+        }
+
+        // 3. 检测分享的目标渠道是否合法
+        if (!type.equals(LOGIN)) {
+            // 是分享操作
+            if (!type.equals(FRIEND) && !type.equals(FRIEND_ZONE)) {
+                throw new UnsupportedOperationException("不支持的分享渠道");
+            }
         }
     }
 
     @Override
-    public void doLogin(@NonNull final Activity activity, @Nullable final LoginListener listener) {
+    public void doLogin(@NonNull final Activity activity, @NonNull final LoginListener listener) {
         SendAuth.Req request = new SendAuth.Req();
         request.scope = "snsapi_userinfo"; // 期望得到用户信息
 
         sendRequest(activity, request, new IWXAPIEventHandler() {
             @Override
             public void onReq(BaseReq baseReq) {
-                activity.finish();
             }
 
             @Override
@@ -85,13 +89,12 @@ public class WeiXinPlatform implements IPlatform {
         });
     }
 
-    public void doShare(@NonNull Activity activity, String shareType, @NonNull ShareContent shareContent, @Nullable ShareListener listener) {
-        SendMessageToWX.Req request = new ShareHelper().createRequest(shareContent, shareType);
+    public void doShare(@NonNull Activity activity, String shareType, @NonNull ShareContent shareContent, @NonNull ShareListener listener) {
+        SendMessageToWX.Req request = ShareHelper.createRequest(shareContent, shareType);
 
         sendRequest(activity, request, new IWXAPIEventHandler() {
             @Override
             public void onReq(BaseReq baseReq) {
-                activity.finish();
             }
 
             @Override
@@ -103,7 +106,7 @@ public class WeiXinPlatform implements IPlatform {
     }
 
     private void sendRequest(@NonNull Activity activity, BaseReq request, IWXAPIEventHandler eventHandler) {
-        IWXAPI api = WXAPIFactory.createWXAPI(activity.getApplicationContext(), ShareLoginLib.getValue(KEY_APP_ID), true);
+        IWXAPI api = getApi(activity);
         api.registerApp(ShareLoginLib.getValue(KEY_APP_ID));
 
         wxEventHandler = eventHandler;
@@ -113,8 +116,11 @@ public class WeiXinPlatform implements IPlatform {
 
     @Override
     public void onResponse(Activity activity, Intent data) {
-        IWXAPI api = WXAPIFactory.createWXAPI(activity, ShareLoginLib.getValue(KEY_APP_ID), true);
-        api.handleIntent(data, wxEventHandler);
+        getApi(activity).handleIntent(data, wxEventHandler);
+    }
+
+    private static IWXAPI getApi(Context context) {
+        return WXAPIFactory.createWXAPI(context.getApplicationContext(), ShareLoginLib.getValue(KEY_APP_ID), true);
     }
 
 }

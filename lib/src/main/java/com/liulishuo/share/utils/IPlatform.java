@@ -34,10 +34,10 @@ public interface IPlatform {
      */
     void checkEnvironment(Context context, String type, @ShareContentType int contentType);
 
-    void doLogin(@NonNull Activity activity, @Nullable LoginListener listener);
+    void doLogin(@NonNull Activity activity, @NonNull LoginListener listener);
 
-    void doShare(@NonNull final Activity activity, String shareType, @NonNull ShareContent shareContent, @Nullable ShareListener listener);
+    void doShare(@NonNull final Activity activity, String shareType, @NonNull ShareContent shareContent, @NonNull ShareListener listener);
 
-    void onResponse(Activity activity, Intent data);
+    void onResponse(Activity activity, @Nullable Intent data);
 
 }
