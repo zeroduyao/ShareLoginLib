@@ -2,17 +2,21 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     >
 
-    <!-- 访问网络的权限，不用多解释 -->
+    <!-- 访问网络的权限，不用多解释，qq需要-->
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    
     <!-- 外部存储的权限，分享的图片会先存放在本地，把图片地址交给第三方，第三方最后会进行读取 -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application android:allowBackup="true">
 
-        <!-- Only fullscreen opaque activities can request orientation 8.0不能加这个属性-->
+        <!-- Only fullscreen opaque activities can request orientation 8.0不能加orientation属性-->
+        <!-- 不要使用：android:screenOrientation="portrait" -->
+        
         <activity
             android:name=".utils.EventHandlerActivity"
             android:configChanges="keyboardHidden|orientation"
@@ -20,17 +24,16 @@
             android:launchMode="singleInstance"
 
             android:theme="@android:style/Theme.Translucent.NoTitleBar"
-            >
-        </activity>
+            />
 
-        <!-- ============================= weibo ============================= -->
+        <!-- ============================= 微信 ============================= -->
 
-        <!-- 必须注册在微博授权，分享微博时候用到 -->
-        <activity
-            android:name="com.sina.weibo.sdk.component.WeiboSdkBrowser"
-            android:configChanges="keyboardHidden|orientation"
-            android:exported="false"
-            android:windowSoftInputMode="adjustResize"
+        <activity-alias
+            android:name="${applicationId}.wxapi.WXEntryActivity"
+            android:exported="true"
+            android:screenOrientation="portrait"
+            android:targetActivity=".utils.EventHandlerActivity"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
             />
 
         <!-- ============================= qq ============================= -->
@@ -39,7 +42,6 @@
         <activity
             android:name="com.tencent.connect.common.AssistActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Translucent.NoTitleBar"
             />
 
@@ -59,16 +61,6 @@
                 <data android:scheme="${tencentAuthId}" />
             </intent-filter>
         </activity>
-
-        <!-- ============================= 微信 ============================= -->
-
-        <activity-alias
-            android:name="${applicationId}.wxapi.WXEntryActivity"
-            android:exported="true"
-            android:screenOrientation="portrait"
-            android:targetActivity=".utils.EventHandlerActivity"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar"
-            />
 
     </application>
 

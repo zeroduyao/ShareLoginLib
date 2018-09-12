@@ -29,7 +29,7 @@ class LoginHelper {
             String token = jsonObject.getString(Constants.PARAM_ACCESS_TOKEN);
             String openId = jsonObject.getString(Constants.PARAM_OPEN_ID);
             String expires = jsonObject.getString(Constants.PARAM_EXPIRES_IN);
-            
+
             listener.onReceiveToken(token, openId, Long.valueOf(expires), object.toString());
 
             getUserInfo(activity.getApplicationContext(), token, openId, listener);
@@ -79,9 +79,25 @@ class LoginHelper {
             listener.onCancel();
         }
 
+        /**
+         * 110201：未登陆
+         * 110405：登录请求被限制
+         * 110404：请求参数缺少appId
+         * 110401：请求的应用不存在
+         * 110407：应用已经下架
+         * 110406：应用没有通过审核
+         * 100044：错误的sign
+         * 110500：获取用户授权信息失败
+         * 110501：获取应用的授权信息失败
+         * 110502：设置用户授权失败
+         * 110503：获取token失败
+         * 110504：系统内部错误
+         * 
+         * http://wiki.open.qq.com/wiki/mobile/API%E8%B0%83%E7%94%A8%E8%AF%B4%E6%98%8E
+         */
         @Override
         public void onError(UiError resp) {
-            listener.onError(resp.errorCode + " - " + resp.errorMessage + " - " + resp.errorDetail);
+            listener.onError("code:" + resp.errorCode + ", message:" + resp.errorMessage + ", detail:" + resp.errorDetail);
         }
 
     }
