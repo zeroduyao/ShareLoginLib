@@ -2,15 +2,18 @@ package com.liulishuo.share.qq;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Map;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.util.ArrayMap;
 
 import com.liulishuo.share.ShareLoginLib;
 import com.liulishuo.share.content.ShareContent;
 import com.liulishuo.share.content.ShareContentType;
+import com.liulishuo.share.utils.IPlatform;
 import com.liulishuo.share.utils.SlUtils;
 import com.tencent.connect.share.QQShare;
 import com.tencent.connect.share.QzonePublish;
@@ -26,21 +29,13 @@ class ShareHelper {
      * "http://wiki.open.qq.com/wiki/mobile/API%E8%B0%83%E7%94%A8%E8%AF%B4%E6%98%8E#1.13_.E5.88.86.E4.BA.AB.E6.B6.88.E6.81.AF.E5.88.B0QQ.EF.BC.88.E6.97.A0.E9.9C.80QQ.E7.99.BB.E5.BD.95.EF.BC.89"
      */
     static Bundle qqFriendBundle(ShareContent shareContent) {
-        Intent intent = null;
-        switch (shareContent.getType()) {
-            case ShareContentType.PIC:
-                // 纯图片
-                intent = getImageObj(shareContent);
-                break;
-            case ShareContentType.WEBPAGE:
-                // 网页
-                intent = getWebPageObj(shareContent);
-                break;
-            case ShareContentType.MUSIC:
-                // 音乐
-                intent = getMusicObj(shareContent);
-                break;
-        }
+        Map<Integer, IPlatform.Function<Intent>> map = new ArrayMap<>();
+
+        map.put(ShareContentType.WEBPAGE, ShareHelper::getWebPageObj);
+        map.put(ShareContentType.PIC, ShareHelper::getImageObj);
+        map.put(ShareContentType.MUSIC, ShareHelper::getMusicObj);
+
+        Intent intent = map.get(shareContent.getType()).apply(shareContent);
         return buildQQParams(intent, shareContent).getExtras();
     }
 

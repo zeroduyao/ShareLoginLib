@@ -1,10 +1,14 @@
 package com.liulishuo.share.weixin;
 
+import java.util.Map;
+
 import android.support.annotation.NonNull;
+import android.support.v4.util.ArrayMap;
 
 import com.liulishuo.share.ShareListener;
 import com.liulishuo.share.content.ShareContent;
 import com.liulishuo.share.content.ShareContentType;
+import com.liulishuo.share.utils.IPlatform;
 import com.tencent.mm.opensdk.modelbase.BaseResp;
 import com.tencent.mm.opensdk.modelmsg.SendMessageToWX;
 import com.tencent.mm.opensdk.modelmsg.WXImageObject;
@@ -21,59 +25,30 @@ class ShareHelper {
 
     @NonNull
     static SendMessageToWX.Req createRequest(@NonNull ShareContent shareContent, String shareType) {
-        // 建立信息体
+        // 1. 建立信息体
         WXMediaMessage msg = new WXMediaMessage();
         msg.title = shareContent.getTitle();
         msg.description = shareContent.getSummary();
-        msg.thumbData = shareContent.getThumbBmpBytes(); // 这里没有做缩略图的配置，缩略图和原图是同一个对象
-
+        msg.thumbData = shareContent.getThumbBmpBytes();
         msg.mediaObject = createMediaObject(shareContent);
 
-        // 发送信息
+        // 2. 发送信息
         SendMessageToWX.Req req = new SendMessageToWX.Req();
         req.transaction = String.valueOf(System.currentTimeMillis());
         req.message = msg;
-
-        switch (shareType) {
-            case WeiXinPlatform.FRIEND: // 好友
-                req.scene = SendMessageToWX.Req.WXSceneSession;
-                break;
-            case WeiXinPlatform.FRIEND_ZONE: // 朋友圈
-                req.scene = SendMessageToWX.Req.WXSceneTimeline;
-                break;
-            case WeiXinPlatform.FAVORITE: // 收藏
-                req.scene = SendMessageToWX.Req.WXSceneFavorite;
-                break;
-        }
+        req.scene = Integer.valueOf(shareType.substring(shareType.length() - 1));
         return req;
     }
 
     private static WXMediaMessage.IMediaObject createMediaObject(@NonNull ShareContent shareContent) {
-        WXMediaMessage.IMediaObject mediaObject;
-        switch (shareContent.getType()) {
-            case ShareContentType.TEXT:
-                // 纯文字
-                mediaObject = getTextObj(shareContent);
-                break;
-            case ShareContentType.PIC:
-                // 纯图片
-                mediaObject = getImageObj(shareContent);
-                break;
-            case ShareContentType.WEBPAGE:
-                // 网页
-                mediaObject = getWebPageObj(shareContent);
-                break;
-            case ShareContentType.MUSIC:
-                // 音乐
-                mediaObject = getMusicObj(shareContent);
-                break;
-            default:
-                throw new UnsupportedOperationException("不支持的分享内容");
-        }
-        if (!mediaObject.checkArgs()) {
-            throw new IllegalArgumentException("分享信息的参数类型不正确");
-        }
-        return mediaObject;
+        Map<Integer, IPlatform.Function<WXMediaMessage.IMediaObject>> map = new ArrayMap<>();
+
+        map.put(ShareContentType.WEBPAGE, ShareHelper::getWebPageObj);
+        map.put(ShareContentType.TEXT, ShareHelper::getTextObj);
+        map.put(ShareContentType.PIC, ShareHelper::getImageObj);
+        map.put(ShareContentType.MUSIC, ShareHelper::getMusicObj);
+
+        return map.get(shareContent.getType()).apply(shareContent);
     }
 
     private static WXMediaMessage.IMediaObject getTextObj(ShareContent shareContent) {
@@ -120,11 +95,8 @@ class ShareHelper {
             case BaseResp.ErrCode.ERR_SENT_FAILED:
                 listener.onError("发送失败");
                 break;
-            case BaseResp.ErrCode.ERR_COMM:
-                listener.onError("一般错误");
-                break;
             default:
-                listener.onError("未知错误");
+                listener.onError("未知错误，code：" + resp.errCode + ", message：" + resp.errStr);
         }
     }
 

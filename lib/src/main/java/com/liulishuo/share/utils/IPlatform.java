@@ -50,4 +50,10 @@ public interface IPlatform {
      */
     void onResponse(@NonNull Activity activity, @Nullable Intent data);
 
+    
+    interface Function<T> {
+
+        T apply(ShareContent content);
+    }
+
 }

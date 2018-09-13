@@ -35,7 +35,11 @@ public class WeiXinPlatform implements IPlatform {
 
     public static final String LOGIN = "weixin_login";
 
-    public static final String FRIEND = "weixin_friend", FRIEND_ZONE = "weixin_friend_zone", FAVORITE = "weixin_favorite";
+    public static final String FRIEND = "weixin_friend" + SendMessageToWX.Req.WXSceneSession, // 好友 
+
+    FRIEND_ZONE = "weixin_friend_zone" + SendMessageToWX.Req.WXSceneTimeline, // 朋友圈
+
+    FAVORITE = "weixin_favorite" + SendMessageToWX.Req.WXSceneFavorite; // 收藏
 
     private IWXAPIEventHandler wxEventHandler;
 

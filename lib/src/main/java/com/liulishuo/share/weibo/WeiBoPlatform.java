@@ -136,9 +136,9 @@ public class WeiBoPlatform implements IPlatform {
         shareHandler.registerApp();
 
         if (shareType.equals(TIME_LINE)) {
-            shareHandler.shareMessage(ShareHelper.createShareObject(shareContent), false);
+            shareHandler.shareMessage(ShareHelper.shareMessage(shareContent), false);
         } else if (shareType.equals(STORY)) {
-            shareHandler.shareToStory(ShareHelper.createStoryMessage(shareContent));
+            shareHandler.shareToStory(ShareHelper.storyMessage(shareContent));
         }
     }
 

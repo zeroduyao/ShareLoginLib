@@ -21,38 +21,29 @@ import com.sina.weibo.sdk.utils.Utility;
  */
 class ShareHelper {
 
-    static StoryMessage createStoryMessage(ShareContent shareContent) {
+    static StoryMessage storyMessage(ShareContent shareContent) {
         StoryMessage storyMessage = new StoryMessage();
         storyMessage.setImageUri(Uri.fromFile(new File(shareContent.getLargeBmpPath())));
         return storyMessage;
     }
 
-    static WeiboMultiMessage createShareObject(@NonNull ShareContent shareContent) {
+    static WeiboMultiMessage shareMessage(@NonNull ShareContent shareContent) {
         WeiboMultiMessage weiboMultiMessage = new WeiboMultiMessage();
         switch (shareContent.getType()) {
             case ShareContentType.TEXT:
-                // 纯文字
-                weiboMultiMessage.textObject = getTextObj(shareContent);
+                weiboMultiMessage.textObject = getTextObj(shareContent); // 纯文字
                 break;
             case ShareContentType.PIC:
-                // 纯图片
-                weiboMultiMessage.imageObject = getImageObj(shareContent);
+                weiboMultiMessage.imageObject = getImageObj(shareContent); // 纯图片
                 break;
             case ShareContentType.WEBPAGE:
-                // 网页
                 if (shareContent.getURL() == null) {
                     weiboMultiMessage.imageObject = getImageObj(shareContent);
                     weiboMultiMessage.textObject = getTextObj(shareContent);
                 } else {
-                    weiboMultiMessage.mediaObject = getWebPageObj(shareContent);
+                    weiboMultiMessage.mediaObject = getWebPageObj(shareContent); // 网页
                 }
                 break;
-            case ShareContentType.MUSIC:
-            default:
-                throw new UnsupportedOperationException("目前不能向微博分享音乐");
-        }
-        if (!weiboMultiMessage.checkArgs()) {
-            throw new IllegalArgumentException("分享信息的参数类型不正确");
         }
         return weiboMultiMessage;
     }
