@@ -154,7 +154,10 @@ public class ShareLoginLib {
         final ShareListener finalShareListener = shareListener;
 
         SlUtils.startActivity(activity, new Intent(activity, EventHandlerActivity.class), eventActivity -> {
-            sEventHandlerActivity = eventActivity;
+            if (DEBUG) {
+                // 仅debug模式才只持有activity的引用，用来检测activity是否已经关闭
+                sEventHandlerActivity = eventActivity;
+            }
 
             if (isLoginAction) {
                 curPlatform.doLogin(eventActivity, finalLoginListener);
@@ -203,7 +206,7 @@ public class ShareLoginLib {
                 printLog("没有泄漏，EventHandlerActivity已经正常关闭");
             } 
             
-        }, 2000);
+        }, 1000);
     }
 
     public static boolean isQQInstalled(Context context) {

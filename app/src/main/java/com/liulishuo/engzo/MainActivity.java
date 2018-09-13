@@ -87,6 +87,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         loadPicFromTempFile();
+        
+        ShareLoginLib.printLog("MainActivity onResume()");
         ShareLoginLib.checkLeak();
     }
 
