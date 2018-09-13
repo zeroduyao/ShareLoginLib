@@ -1,5 +1,13 @@
 package com.liulishuo.engzo.login;
 
+import android.support.test.InstrumentationRegistry;
+import android.support.test.filters.LargeTest;
+import android.support.test.filters.SdkSuppress;
+import android.support.test.runner.AndroidJUnit4;
+import android.support.test.uiautomator.By;
+import android.support.test.uiautomator.UiDevice;
+import android.widget.Button;
+
 import com.liulishuo.engzo.utils.TestUtil;
 import com.liulishuo.engzo.utils.With;
 
@@ -8,14 +16,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.LargeTest;
-import android.support.test.filters.SdkSuppress;
-import android.support.test.runner.AndroidJUnit4;
-import android.support.test.uiautomator.By;
-import android.support.test.uiautomator.UiDevice;
-import android.widget.Button;
 
 /**
  * @author Kale
@@ -46,7 +46,7 @@ public class QQLoginTest {
 
     @Test
     public void testLoginSuccess() {
-        device.findObject(By.res("com.tencent.mobileqq:id/name").clazz(Button.class)).click();
+        device.findObject(By.text("授权并登录").clazz(Button.class)).click(1000);
         TestUtil.assertLoginSucceed(device);
     }
 

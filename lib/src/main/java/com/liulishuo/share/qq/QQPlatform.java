@@ -10,6 +10,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.liulishuo.share.LoginListener;
@@ -61,7 +62,7 @@ public class QQPlatform implements IPlatform {
     }
 
     @Override
-    public void checkEnvironment(Context context, String type, @ShareContentType int contentType) {
+    public void checkEnvironment(Context context, @NonNull String type, @ShareContentType int shareContentType) {
         // 1. 检测是否已经初始化
         if (TextUtils.isEmpty(ShareLoginLib.getValue(KEY_APP_ID))) {
             throw new IllegalArgumentException("appId未被初始化");
@@ -70,7 +71,7 @@ public class QQPlatform implements IPlatform {
         // 2. 检测分享的内容是否合法
         if (!type.equals(LOGIN)) {
             // 如果是分享到qq好友
-            if (type.equals(FRIEND) && contentType == ShareContentType.TEXT) {
+            if (type.equals(FRIEND) && shareContentType == ShareContentType.TEXT) {
                 // 文档中说：本接口支持3种模式，每种模式的参数设置不同"
                 // （1） 分享图文消息；（2） 分享纯图片；（3） 分享音乐，即不包含纯文本
                 throw new IllegalArgumentException("目前不支持分享纯文本信息给QQ好友");
@@ -82,7 +83,7 @@ public class QQPlatform implements IPlatform {
                 // 即qq空间不支持纯文字、纯图片
 
                 // 注意：QZone接口暂不支持发送多张图片的能力，若传入多张图片，则会自动选入第一张图片作为预览图。多图的能力将会在以后支持。
-                if (contentType == ShareContentType.TEXT || contentType == ShareContentType.PIC) {
+                if (shareContentType == ShareContentType.TEXT || shareContentType == ShareContentType.PIC) {
                     throw new IllegalArgumentException("QQ空间目前只支持分享图文信息");
                 }
             }
@@ -109,7 +110,7 @@ public class QQPlatform implements IPlatform {
     }
 
     @Override
-    public void doShare(@NonNull Activity activity, String shareType, @NonNull ShareContent shareContent, @NonNull ShareListener listener) {
+    public void doShare(Activity activity, String shareType, @NonNull ShareContent shareContent, @NonNull ShareListener listener) {
         Tencent tencent = Tencent.createInstance(ShareLoginLib.getValue(KEY_APP_ID), activity.getApplicationContext());
 
         uiListener = new LoginHelper.AbsUiListener(listener) {
@@ -129,7 +130,7 @@ public class QQPlatform implements IPlatform {
     }
 
     @Override
-    public void onResponse(Activity activity, Intent data) {
+    public void onResponse(@NonNull Activity activity, @Nullable Intent data) {
         if (uiListener != null) {
             Tencent.handleResultData(data, uiListener);
         }

@@ -30,14 +30,24 @@ public interface IPlatform {
     /**
      * 检查当前环境，如果异常则直接终止
      *
-     * type：可以是loginType和shareType
+     * @param type        当前平台支持的操作类型
+     * @param shareContentType 分享时传入的分享类型，如果是登录则会传{@link ShareContent#NO_CONTENT}
      */
-    void checkEnvironment(Context context, String type, @ShareContentType int contentType);
+    void checkEnvironment(Context context, @NonNull String type, @ShareContentType int shareContentType);
 
+    /**
+     * 执行登录的操作
+     */
     void doLogin(@NonNull Activity activity, @NonNull LoginListener listener);
 
-    void doShare(@NonNull final Activity activity, String shareType, @NonNull ShareContent shareContent, @NonNull ShareListener listener);
+    /**
+     * 执行分享的操作
+     */
+    void doShare(Activity activity, String shareType, @NonNull ShareContent shareContent, @NonNull ShareListener listener);
 
-    void onResponse(Activity activity, @Nullable Intent data);
+    /**
+     * 处理响应的结果
+     */
+    void onResponse(@NonNull Activity activity, @Nullable Intent data);
 
 }

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.liulishuo.share.LoginListener;
@@ -49,7 +50,7 @@ public class WeiXinPlatform implements IPlatform {
     }
 
     @Override
-    public void checkEnvironment(Context context, String type, @ShareContentType int contentType) {
+    public void checkEnvironment(Context context, @NonNull String type, @ShareContentType int shareContentType) {
         String appId = ShareLoginLib.getValue(KEY_APP_ID);
 
         // 1. 检测id是否为空
@@ -81,7 +82,7 @@ public class WeiXinPlatform implements IPlatform {
         });
     }
 
-    public void doShare(@NonNull Activity activity, String shareType, @NonNull ShareContent shareContent, @NonNull ShareListener listener) {
+    public void doShare(Activity activity, String shareType, @NonNull ShareContent shareContent, @NonNull ShareListener listener) {
         SendMessageToWX.Req request = ShareHelper.createRequest(shareContent, shareType);
 
         sendRequest(activity, request, new IWXAPIEventHandler() {
@@ -107,7 +108,7 @@ public class WeiXinPlatform implements IPlatform {
     }
 
     @Override
-    public void onResponse(Activity activity, Intent data) {
+    public void onResponse(@NonNull Activity activity, @Nullable Intent data) {
         getApi(activity).handleIntent(data, wxEventHandler);
     }
 

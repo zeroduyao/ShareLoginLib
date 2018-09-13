@@ -57,6 +57,24 @@ public class EventHandlerActivity extends Activity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        ShareLoginLib.printLog("EventHandlerActivity:onResume()");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        ShareLoginLib.printLog("EventHandlerActivity:onPause()");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        ShareLoginLib.printLog("EventHandlerActivity:onStop()");
+    }
+
+    @Override
     protected void onDestroy() {
         ShareLoginLib.printLog("EventHandlerActivity:onDestroy()");
         ShareLoginLib.destroy();

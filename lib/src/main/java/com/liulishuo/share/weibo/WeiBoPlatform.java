@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.liulishuo.share.LoginListener;
@@ -57,7 +58,7 @@ public class WeiBoPlatform implements IPlatform {
     }
 
     @Override
-    public void checkEnvironment(Context context, String type, int contentType) {
+    public void checkEnvironment(Context context, @NonNull String type, int shareContentType) {
         // 1. 检测是否初始化
         if (TextUtils.isEmpty(ShareLoginLib.getValue(KEY_APP_KEY))) {
             throw new IllegalArgumentException("微博的appId未被初始化，当前为空");
@@ -74,7 +75,7 @@ public class WeiBoPlatform implements IPlatform {
         }
 
         // 3. 微博不支持分享音乐
-        if (contentType == ShareContentType.MUSIC) {
+        if (shareContentType == ShareContentType.MUSIC) {
             throw new UnsupportedOperationException("目前不能向微博分享音乐");
         }
 
@@ -84,7 +85,7 @@ public class WeiBoPlatform implements IPlatform {
                 throw new UnsupportedOperationException("必须安装微博后才能分享微博故事");
             }
 
-            if (contentType != ShareContentType.PIC) {
+            if (shareContentType != ShareContentType.PIC) {
                 throw new UnsupportedOperationException("微博故事只能分享单个图片和视频");
             }
         }
@@ -113,7 +114,7 @@ public class WeiBoPlatform implements IPlatform {
     }
 
     @Override
-    public void doShare(@NonNull Activity activity, String shareType, @NonNull ShareContent shareContent, @NonNull ShareListener listener) {
+    public void doShare(Activity activity, String shareType, @NonNull ShareContent shareContent, @NonNull ShareListener listener) {
         shareCallback = new WbShareCallback() {
             @Override
             public void onWbShareSuccess() {
@@ -142,7 +143,7 @@ public class WeiBoPlatform implements IPlatform {
     }
 
     @Override
-    public void onResponse(Activity activity, Intent data) {
+    public void onResponse(@NonNull Activity activity, @Nullable Intent data) {
         if (shareCallback != null) {
             // 分享
             if (data == null) {

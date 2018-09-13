@@ -14,8 +14,7 @@
         android:layout_width="80dp"
         android:layout_height="80dp"
         android:layout_gravity="center|right"
-        android:contentDescription="default pic"
-        tools:background="#aaaaaa"
+        android:background="#d3d3d3"
         />
 
     <RadioGroup
@@ -79,16 +78,11 @@
             android:text="分享给QQ好友"
             />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="-----------------------------------------------"
-            />
-
         <Button
             android:id="@+id/微博登录"
             android:layout_width="180dp"
             android:layout_height="40dp"
+            android:layout_marginTop="20dp"
             android:onClick="onClick"
             android:text="微博登录"
             />
@@ -117,16 +111,11 @@
             android:text="分享到微博(不带URL)"
             />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="-----------------------------------------------"
-            />
-
         <Button
             android:id="@+id/微信登录"
             android:layout_width="180dp"
             android:layout_height="40dp"
+            android:layout_marginTop="20dp"
             android:onClick="onClick"
             android:text="微信登录"
             />
@@ -158,8 +147,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
             android:layout_marginTop="20dp"
+            android:orientation="horizontal"
             >
 
             <TextView
