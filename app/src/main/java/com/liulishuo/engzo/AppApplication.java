@@ -18,7 +18,7 @@ public class AppApplication extends Application {
 
     private static final String TAG = "Application";
 
-    protected static String qq_app_id, qq_scope,
+    protected static String qq_app_id, qq_scope, // 应用需要获得哪些API的权限，由“，”分隔。例如：SCOPE = “get_user_info,add_t”；所有权限用“all”
             weibo_app_key, weibo_scope, weibo_redirect_url,
             weixin_app_id, weixin_secret;
 

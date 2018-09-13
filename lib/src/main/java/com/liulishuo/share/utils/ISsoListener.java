@@ -1,12 +1,28 @@
 package com.liulishuo.share.utils;
 
+import android.support.annotation.CallSuper;
+
+import com.liulishuo.share.ShareLoginLib;
+
 /**
  * @author Kale
  * @date 2018/9/10
  */
 public interface ISsoListener {
 
-    void onError(String errorMsg);
+    @CallSuper
+    default void onError(String errorMsg){
+        ShareLoginLib.printErr("login or share error:" + errorMsg);
+        onComplete();
+    }
 
-    void onCancel();
+    @CallSuper
+    default void onCancel() {
+        ShareLoginLib.printLog("login or share cancel:");
+        onComplete();
+    }
+
+    default void onComplete() {
+        
+    }
 }

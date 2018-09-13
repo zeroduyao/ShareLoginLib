@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
             } else if (checkedId == R.id.only_image) {
                 mShareContent = new ShareContentPic(thumbBmp, largeBmp);
             } else if (checkedId == R.id.only_text) {
-                mShareContent = new ShareContentText("doShare text");
+                mShareContent = new ShareContentText("这里是纯文本的文案");
             }
         });
         shareTypeRg.check(R.id.rich_text);
@@ -87,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         loadPicFromTempFile();
+        ShareLoginLib.checkLeak();
     }
 
     public void onClick(View v) {

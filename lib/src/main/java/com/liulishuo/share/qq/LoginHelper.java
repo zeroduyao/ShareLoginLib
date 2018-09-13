@@ -23,6 +23,20 @@ import org.json.JSONObject;
  */
 class LoginHelper {
 
+    /**
+     * http://wiki.open.qq.com/wiki/QQ%E7%99%BB%E5%BD%95%E5%92%8C%E6%B3%A8%E9%94%80
+     *
+     * {
+     * "ret":0,
+     * "pay_token":"xxxxxxxxxxxxxxxx",
+     * "pf":"openmobile_android",
+     * "expires_in":"7776000",
+     * "openid":"xxxxxxxxxxxxxxxxxxx",
+     * "pfkey":"xxxxxxxxxxxxxxxxxxx",
+     * "msg":"sucess",
+     * "access_token":"xxxxxxxxxxxxxxxxxxxxx"
+     * }
+     */
     static void parseLoginResp(Activity activity, Object object, @NonNull LoginListener listener) {
         JSONObject jsonObject = ((JSONObject) object);
         try {
@@ -41,7 +55,26 @@ class LoginHelper {
     /**
      * 得到用户的信息，是一个静态的基础方法
      *
-     * @see "http://wiki.open.qq.com/wiki/website/get_simple_userinfo"
+     * "http://wiki.open.qq.com/wiki/website/get_simple_userinfo"
+     *
+     * 返回结果：
+     * Content-type: text/html; charset=utf-8
+     * {
+     * "ret":0,
+     * "msg":"",
+     * "nickname":"Peter",
+     * "figureurl":"http://qzapp.qlogo.cn/qzapp/111111/942FEA70050EEAFBD4DCE2C1FC775E56/30",
+     * "figureurl_1":"http://qzapp.qlogo.cn/qzapp/111111/942FEA70050EEAFBD4DCE2C1FC775E56/50",
+     * "figureurl_2":"http://qzapp.qlogo.cn/qzapp/111111/942FEA70050EEAFBD4DCE2C1FC775E56/100",
+     * "figureurl_qq_1":"http://q.qlogo.cn/qqapp/100312990/DE1931D5330620DBD07FB4A5422917B6/40",
+     * "figureurl_qq_2":"http://q.qlogo.cn/qqapp/100312990/DE1931D5330620DBD07FB4A5422917B6/100",
+     * "gender":"男",
+     * "is_yellow_vip":"1",
+     * "vip":"1",
+     * "yellow_vip_level":"7",
+     * "level":"7",
+     * "is_yellow_year_vip":"1"
+     * }
      */
     private static void getUserInfo(Context context, final String accessToken, final String userId, LoginListener listener) {
         AsyncWeiboRunner runner = new AsyncWeiboRunner(context);
@@ -92,8 +125,6 @@ class LoginHelper {
          * 110502：设置用户授权失败
          * 110503：获取token失败
          * 110504：系统内部错误
-         * 
-         * http://wiki.open.qq.com/wiki/mobile/API%E8%B0%83%E7%94%A8%E8%AF%B4%E6%98%8E
          */
         @Override
         public void onError(UiError resp) {

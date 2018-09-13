@@ -91,7 +91,6 @@ public class SlUtils {
     @Nullable
     public static String saveBytesToFile(byte[] bytes, String picPath) {
         if (bytes == null) {
-            ShareLoginLib.printErr("bytes is null");
             return null;
         }
 

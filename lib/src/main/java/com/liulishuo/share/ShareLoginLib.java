@@ -1,5 +1,8 @@
 package com.liulishuo.share;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -8,6 +11,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -24,7 +28,10 @@ import com.liulishuo.share.weixin.WeiXinPlatform;
 import com.sina.weibo.sdk.exception.WeiboException;
 import com.sina.weibo.sdk.net.RequestListener;
 import com.sina.weibo.sdk.utils.LogUtil;
+import com.tencent.open.utils.HttpUtils;
+import com.tencent.tauth.IRequestListener;
 
+import org.apache.http.conn.ConnectTimeoutException;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -47,6 +54,8 @@ public class ShareLoginLib {
     public static EventHandlerActivity.OnCreateListener onCreateListener;
 
     private static IPlatform curPlatform;
+
+    private static EventHandlerActivity sEventHandlerActivity;
 
     public static void init(Application application, @Nullable String curAppName, @Nullable String tempPicDir, boolean debug) {
         APP_NAME = curAppName;
@@ -145,6 +154,8 @@ public class ShareLoginLib {
         final ShareListener finalShareListener = shareListener;
 
         SlUtils.startActivity(activity, new Intent(activity, EventHandlerActivity.class), eventActivity -> {
+            sEventHandlerActivity = eventActivity;
+
             if (isLoginAction) {
                 curPlatform.doLogin(eventActivity, finalLoginListener);
             } else {
@@ -165,6 +176,7 @@ public class ShareLoginLib {
     public static void destroy() {
         curPlatform = null;
         onCreateListener = null;
+        sEventHandlerActivity = null;
     }
 
     public static String getValue(String key) {
@@ -173,7 +185,7 @@ public class ShareLoginLib {
 
     public static void printLog(String message) {
         if (DEBUG) {
-            Log.i(TAG, message);
+            Log.i(TAG, "======> " + message);
         }
     }
 
@@ -181,6 +193,17 @@ public class ShareLoginLib {
         if (DEBUG) {
             Log.e(TAG, message);
         }
+    }
+
+    public static void checkLeak() {
+        new Handler().postDelayed(() -> {
+            if (sEventHandlerActivity != null) {
+                throw new RuntimeException("内存泄漏了");
+            } else {
+                printLog("没有泄漏，EventHandlerActivity已经正常关闭");
+            } 
+            
+        }, 2000);
     }
 
     public static boolean isQQInstalled(Context context) {
@@ -226,5 +249,63 @@ public class ShareLoginLib {
 
         public abstract OAuthUserInfo json2UserInfo(JSONObject jsonObj) throws JSONException;
     }
+
+    /**
+     * http://wiki.open.qq.com/wiki/%E8%8E%B7%E5%8F%96%E7%94%A8%E6%88%B7%E4%BF%A1%E6%81%AF
+     *
+     * graphPath    要调用的接口名称，通过SDK中的Constant类获取宏定义。
+     * params       以K-V组合的字符串参数。Params是一个Bundle类型的参数，里面以键值对（Key-value）的形式存储数据，应用传入的邀请分享等参数就是通过这种方式传递给SDK，然后由SDK发送到后台。
+     * httpMethod   使用的http方式，如Constants.HTTP_GET，Constants.HTTP_POST。
+     * listener     回调接口，IUiListener实例。
+     * state        状态对象，将在回调时原样传回给 listener，供应用识别异步调用。SDK内部不访问该对象。
+     */
+    public class MyRequestListener implements IRequestListener {
+
+        @Override
+        public void onComplete(JSONObject jsonObject) {
+
+        }
+
+        @Override
+        public void onIOException(IOException e) {
+
+        }
+
+        @Override
+        public void onMalformedURLException(MalformedURLException e) {
+
+        }
+
+        @Override
+        public void onJSONException(JSONException e) {
+
+        }
+
+        @Override
+        public void onConnectTimeoutException(ConnectTimeoutException e) {
+
+        }
+
+        @Override
+        public void onSocketTimeoutException(SocketTimeoutException e) {
+
+        }
+
+        @Override
+        public void onNetworkUnavailableException(HttpUtils.NetworkUnavailableException e) {
+
+        }
+
+        @Override
+        public void onHttpStatusException(HttpUtils.HttpStatusException e) {
+
+        }
+
+        @Override
+        public void onUnknowException(Exception e) {
+
+        }
+    }
+
 
 }

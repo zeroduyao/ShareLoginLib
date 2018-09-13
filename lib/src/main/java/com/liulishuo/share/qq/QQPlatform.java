@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -76,26 +75,14 @@ public class QQPlatform implements IPlatform {
                 // （1） 分享图文消息；（2） 分享纯图片；（3） 分享音乐，即不包含纯文本
                 throw new IllegalArgumentException("目前不支持分享纯文本信息给QQ好友");
             }
-
-            // 分享到qq空间
-            if (type.equals(ZONE)) {
-                // 分享到QQ空间支持两种模式，(1)图文分享；（2)发表说说、视频或上传图片
-                // 即qq空间不支持纯文字、纯图片
-
-                // 注意：QZone接口暂不支持发送多张图片的能力，若传入多张图片，则会自动选入第一张图片作为预览图。多图的能力将会在以后支持。
-                if (shareContentType == ShareContentType.TEXT || shareContentType == ShareContentType.PIC) {
-                    throw new IllegalArgumentException("QQ空间目前只支持分享图文信息");
-                }
-            }
         }
     }
 
     @Override
     public void doLogin(@NonNull Activity activity, @NonNull LoginListener listener) {
-        Tencent tencent = Tencent.createInstance(ShareLoginLib.getValue(KEY_APP_ID), activity.getApplicationContext());
+        Tencent tencent = getTencent(activity);
 
         if (tencent.isSessionValid()) {
-            tencent.logout(activity);
             return;
         }
 
@@ -105,14 +92,14 @@ public class QQPlatform implements IPlatform {
                 LoginHelper.parseLoginResp(activity, obj, listener);
             }
         };
-
         tencent.login(activity, ShareLoginLib.getValue(KEY_SCOPE), uiListener);
     }
 
+    /**
+     * QQ分享并不需要提前登录
+     */
     @Override
     public void doShare(Activity activity, String shareType, @NonNull ShareContent shareContent, @NonNull ShareListener listener) {
-        Tencent tencent = Tencent.createInstance(ShareLoginLib.getValue(KEY_APP_ID), activity.getApplicationContext());
-
         uiListener = new LoginHelper.AbsUiListener(listener) {
             @Override
             public void onComplete(Object o) {
@@ -120,12 +107,17 @@ public class QQPlatform implements IPlatform {
             }
         };
 
+        Tencent tencent = getTencent(activity);
+
         if (shareType.equals(FRIEND)) {
-            Bundle bundle = new ShareHelper().createQQFriendBundle(shareContent);
-            tencent.shareToQQ(activity, bundle, uiListener);
+            tencent.shareToQQ(activity, ShareHelper.qqFriendBundle(shareContent), uiListener);
         } else {
-            Bundle bundle = new ShareHelper().createQZoneBundle(shareContent);
-            tencent.shareToQzone(activity, bundle, uiListener);
+            // 因为空间不支持分享单个文字和图片，在这里对于单个图片做了额外的处理，让其走发布说说的api
+            if (shareContent.getType() == ShareContentType.TEXT || shareContent.getType() == ShareContentType.PIC) {
+                tencent.publishToQzone(activity, ShareHelper.publishToQzoneBundle(shareContent), uiListener);
+            } else {
+                tencent.shareToQzone(activity, ShareHelper.zoneBundle(shareContent), uiListener);
+            }
         }
     }
 
@@ -134,6 +126,13 @@ public class QQPlatform implements IPlatform {
         if (uiListener != null) {
             Tencent.handleResultData(data, uiListener);
         }
+    }
+
+    /**
+     * 传入应用程序的全局context，可通过activity的getApplicationContext方法获取
+     */
+    public static Tencent getTencent(Context context) {
+        return Tencent.createInstance(ShareLoginLib.getValue(KEY_APP_ID), context.getApplicationContext());
     }
 
 }

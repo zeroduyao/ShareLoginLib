@@ -39,6 +39,7 @@
         <!-- ============================= qq ============================= -->
 
         <!-- 腾讯sdk中增加的activity对象，用来在控制台打印日志 -->
+        <!-- http://wiki.open.qq.com/wiki/%E5%88%9B%E5%BB%BA%E5%B9%B6%E9%85%8D%E7%BD%AE%E5%B7%A5%E7%A8%8B -->
         <activity
             android:name="com.tencent.connect.common.AssistActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
