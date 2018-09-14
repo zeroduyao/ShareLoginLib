@@ -1,4 +1,4 @@
-package com.liulishuo.share.utils;
+package kale.sharelogin.utils;
 
 import android.support.annotation.CallSuper;
 

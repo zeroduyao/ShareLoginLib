@@ -18,17 +18,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.liulishuo.demo.R;
-import com.liulishuo.share.ShareListener;
-import com.liulishuo.share.ShareLoginLib;
-import com.liulishuo.share.content.ShareContent;
-import com.liulishuo.share.content.ShareContentPic;
-import com.liulishuo.share.content.ShareContentText;
-import com.liulishuo.share.content.ShareContentWebPage;
-import com.liulishuo.share.qq.QQPlatform;
-import com.liulishuo.share.utils.SlUtils;
-import com.liulishuo.share.weibo.WeiBoPlatform;
-import com.liulishuo.share.weixin.WeiXinPlatform;
 import com.squareup.picasso.Picasso;
+
+import kale.sharelogin.ShareListener;
+import kale.sharelogin.ShareLoginLib;
+import kale.sharelogin.content.ShareContent;
+import kale.sharelogin.content.ShareContentPic;
+import kale.sharelogin.content.ShareContentText;
+import kale.sharelogin.content.ShareContentWebPage;
+import kale.sharelogin.qq.QQPlatform;
+import kale.sharelogin.utils.SlUtils;
+import kale.sharelogin.weibo.WeiBoPlatform;
+import kale.sharelogin.weixin.WeiXinPlatform;
 
 /**
  * 步骤：

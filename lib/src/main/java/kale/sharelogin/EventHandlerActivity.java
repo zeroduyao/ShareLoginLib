@@ -1,10 +1,10 @@
-package com.liulishuo.share;
+package kale.sharelogin;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.liulishuo.share.utils.SlUtils;
+import kale.sharelogin.utils.SlUtils;
 
 /**
  * Created by echo on 5/19/15.

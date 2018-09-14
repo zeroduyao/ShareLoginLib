@@ -2,8 +2,8 @@ package com.liulishuo.engzo;
 
 import android.support.annotation.NonNull;
 
-import com.liulishuo.share.LoginListener;
-import com.liulishuo.share.OAuthUserInfo;
+import kale.sharelogin.LoginListener;
+import kale.sharelogin.OAuthUserInfo;
 
 /**
  * @author Kale

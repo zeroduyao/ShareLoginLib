@@ -1,4 +1,4 @@
-package com.liulishuo.share;
+package kale.sharelogin;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -16,10 +16,10 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
-import com.liulishuo.share.content.ShareContent;
-import com.liulishuo.share.content.ShareContentPic;
-import com.liulishuo.share.content.ShareContentWebPage;
-import com.liulishuo.share.utils.SlUtils;
+import kale.sharelogin.content.ShareContent;
+import kale.sharelogin.content.ShareContentPic;
+import kale.sharelogin.content.ShareContentWebPage;
+import kale.sharelogin.utils.SlUtils;
 import com.sina.weibo.sdk.exception.WeiboException;
 import com.sina.weibo.sdk.net.RequestListener;
 import com.sina.weibo.sdk.utils.LogUtil;

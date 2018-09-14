@@ -1,13 +1,13 @@
-package com.liulishuo.share.weibo;
+package kale.sharelogin.weibo;
 
 import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.liulishuo.share.LoginListener;
-import com.liulishuo.share.OAuthUserInfo;
-import com.liulishuo.share.ShareLoginLib;
+import kale.sharelogin.LoginListener;
+import kale.sharelogin.OAuthUserInfo;
+import kale.sharelogin.ShareLoginLib;
 import com.sina.weibo.sdk.auth.AccessTokenKeeper;
 import com.sina.weibo.sdk.auth.Oauth2AccessToken;
 import com.sina.weibo.sdk.net.AsyncWeiboRunner;

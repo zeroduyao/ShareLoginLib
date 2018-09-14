@@ -108,7 +108,7 @@
             android:layout_width="180dp"
             android:layout_height="40dp"
             android:onClick="onClick"
-            android:text="分享到微博(不带URL)"
+            android:text="分享到微博(无跳转url)"
             />
 
         <Button

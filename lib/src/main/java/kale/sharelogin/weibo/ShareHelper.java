@@ -1,12 +1,12 @@
-package com.liulishuo.share.weibo;
+package kale.sharelogin.weibo;
 
 import java.io.File;
 
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
-import com.liulishuo.share.content.ShareContent;
-import com.liulishuo.share.content.ShareContentType;
+import kale.sharelogin.content.ShareContent;
+import kale.sharelogin.content.ShareContentType;
 import com.sina.weibo.sdk.api.BaseMediaObject;
 import com.sina.weibo.sdk.api.ImageObject;
 import com.sina.weibo.sdk.api.StoryMessage;

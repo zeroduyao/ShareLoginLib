@@ -1,7 +1,7 @@
 package com.liulishuo.engzo;
 
 
-import com.liulishuo.share.ShareListener;
+import kale.sharelogin.ShareListener;
 
 /**
  * @author Jack Tony

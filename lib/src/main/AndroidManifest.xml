@@ -18,7 +18,7 @@
         <!-- 不要使用：android:screenOrientation="portrait" -->
         
         <activity
-            android:name=".EventHandlerActivity"
+            android:name="kale.sharelogin.EventHandlerActivity"
             android:configChanges="keyboardHidden|orientation"
             android:exported="true"
             android:launchMode="singleInstance"
@@ -32,7 +32,7 @@
             android:name="${applicationId}.wxapi.WXEntryActivity"
             android:exported="true"
             android:screenOrientation="portrait"
-            android:targetActivity=".EventHandlerActivity"
+            android:targetActivity="kale.sharelogin.EventHandlerActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar"
             />
 

@@ -5,10 +5,10 @@ import java.util.Arrays;
 import android.app.Application;
 
 import com.liulishuo.demo.R;
-import com.liulishuo.share.ShareLoginLib;
-import com.liulishuo.share.qq.QQPlatform;
-import com.liulishuo.share.weibo.WeiBoPlatform;
-import com.liulishuo.share.weixin.WeiXinPlatform;
+import kale.sharelogin.ShareLoginLib;
+import kale.sharelogin.qq.QQPlatform;
+import kale.sharelogin.weibo.WeiBoPlatform;
+import kale.sharelogin.weixin.WeiXinPlatform;
 
 /**
  * @author Kale

@@ -1,12 +1,12 @@
-package com.liulishuo.share.weixin;
+package kale.sharelogin.weixin;
 
 import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
-import com.liulishuo.share.LoginListener;
-import com.liulishuo.share.OAuthUserInfo;
-import com.liulishuo.share.ShareLoginLib;
+import kale.sharelogin.LoginListener;
+import kale.sharelogin.OAuthUserInfo;
+import kale.sharelogin.ShareLoginLib;
 import com.sina.weibo.sdk.exception.WeiboException;
 import com.sina.weibo.sdk.net.AsyncWeiboRunner;
 import com.sina.weibo.sdk.net.RequestListener;

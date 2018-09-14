@@ -1,4 +1,4 @@
-package com.liulishuo.share.content;
+package kale.sharelogin.content;
 
 import android.os.Parcel;
 import android.support.annotation.NonNull;

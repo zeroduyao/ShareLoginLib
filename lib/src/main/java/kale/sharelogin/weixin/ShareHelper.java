@@ -1,14 +1,14 @@
-package com.liulishuo.share.weixin;
+package kale.sharelogin.weixin;
 
 import java.util.Map;
 
 import android.support.annotation.NonNull;
 import android.support.v4.util.ArrayMap;
 
-import com.liulishuo.share.ShareListener;
-import com.liulishuo.share.content.ShareContent;
-import com.liulishuo.share.content.ShareContentType;
-import com.liulishuo.share.utils.SlUtils;
+import kale.sharelogin.ShareListener;
+import kale.sharelogin.content.ShareContent;
+import kale.sharelogin.content.ShareContentType;
+import kale.sharelogin.utils.SlUtils;
 import com.tencent.mm.opensdk.modelbase.BaseResp;
 import com.tencent.mm.opensdk.modelmsg.SendMessageToWX;
 import com.tencent.mm.opensdk.modelmsg.WXImageObject;

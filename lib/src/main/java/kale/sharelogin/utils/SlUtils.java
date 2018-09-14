@@ -1,4 +1,4 @@
-package com.liulishuo.share.utils;
+package kale.sharelogin.utils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -16,9 +16,9 @@ import android.support.annotation.RestrictTo;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.liulishuo.share.EventHandlerActivity;
-import com.liulishuo.share.ShareLoginLib;
-import com.liulishuo.share.content.ShareContent;
+import kale.sharelogin.EventHandlerActivity;
+import kale.sharelogin.ShareLoginLib;
+import kale.sharelogin.content.ShareContent;
 
 /**
  * @author Kale

@@ -1,4 +1,4 @@
-package com.liulishuo.share.content;
+package kale.sharelogin.content;
 
 import android.graphics.Bitmap;
 import android.os.Parcel;

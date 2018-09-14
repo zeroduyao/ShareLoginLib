@@ -1,4 +1,4 @@
-package com.liulishuo.share.qq;
+package kale.sharelogin.qq;
 
 import java.util.List;
 import java.util.Locale;
@@ -12,12 +12,12 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
-import com.liulishuo.share.LoginListener;
-import com.liulishuo.share.ShareListener;
-import com.liulishuo.share.ShareLoginLib;
-import com.liulishuo.share.content.ShareContent;
-import com.liulishuo.share.content.ShareContentType;
-import com.liulishuo.share.IPlatform;
+import kale.sharelogin.LoginListener;
+import kale.sharelogin.ShareListener;
+import kale.sharelogin.ShareLoginLib;
+import kale.sharelogin.content.ShareContent;
+import kale.sharelogin.content.ShareContentType;
+import kale.sharelogin.IPlatform;
 import com.tencent.tauth.IUiListener;
 import com.tencent.tauth.Tencent;
 

@@ -1,9 +1,9 @@
-package com.liulishuo.share;
+package kale.sharelogin;
 
 import android.support.annotation.CallSuper;
 
-import com.liulishuo.share.utils.ISsoListener;
-import com.liulishuo.share.utils.SlUtils;
+import kale.sharelogin.utils.ISsoListener;
+import kale.sharelogin.utils.SlUtils;
 
 /**
  * @author Kale

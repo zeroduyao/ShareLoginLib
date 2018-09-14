@@ -1,4 +1,4 @@
-package com.liulishuo.share;
+package kale.sharelogin;
 
 import android.app.Activity;
 import android.content.Context;
@@ -6,10 +6,8 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.liulishuo.share.LoginListener;
-import com.liulishuo.share.ShareListener;
-import com.liulishuo.share.content.ShareContent;
-import com.liulishuo.share.content.ShareContentType;
+import kale.sharelogin.content.ShareContent;
+import kale.sharelogin.content.ShareContentType;
 
 /**
  * @author Kale

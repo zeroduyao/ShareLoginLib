@@ -1,13 +1,13 @@
-package com.liulishuo.share.qq;
+package kale.sharelogin.qq;
 
 import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
-import com.liulishuo.share.LoginListener;
-import com.liulishuo.share.OAuthUserInfo;
-import com.liulishuo.share.ShareLoginLib;
-import com.liulishuo.share.utils.ISsoListener;
+import kale.sharelogin.LoginListener;
+import kale.sharelogin.OAuthUserInfo;
+import kale.sharelogin.ShareLoginLib;
+import kale.sharelogin.utils.ISsoListener;
 import com.sina.weibo.sdk.net.AsyncWeiboRunner;
 import com.sina.weibo.sdk.net.WeiboParameters;
 import com.tencent.connect.common.Constants;

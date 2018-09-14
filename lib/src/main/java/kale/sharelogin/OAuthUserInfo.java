@@ -1,4 +1,4 @@
-package com.liulishuo.share;
+package kale.sharelogin;
 
 /**
  * @author Jack Tony

@@ -1,4 +1,4 @@
-package com.liulishuo.share.qq;
+package kale.sharelogin.qq;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,10 +10,10 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.util.ArrayMap;
 
-import com.liulishuo.share.ShareLoginLib;
-import com.liulishuo.share.content.ShareContent;
-import com.liulishuo.share.content.ShareContentType;
-import com.liulishuo.share.utils.SlUtils;
+import kale.sharelogin.ShareLoginLib;
+import kale.sharelogin.content.ShareContent;
+import kale.sharelogin.content.ShareContentType;
+import kale.sharelogin.utils.SlUtils;
 import com.tencent.connect.share.QQShare;
 import com.tencent.connect.share.QzonePublish;
 import com.tencent.connect.share.QzoneShare;
