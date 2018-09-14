@@ -16,28 +16,22 @@
 #   public *;
 #}
 
-# ————————  微信 start    ————————
--keep class com.tencent.mm.opensdk.** {
-   *;
-}
--keep class com.tencent.wxop.** {
-   *;
-}
--keep class com.tencent.mm.sdk.** {
-   *;
-}
-# ————————  微信 end    ————————
+# ———————— 微信 ————————
 
-# ————————  微博 start    ————————   
--keep class com.sina.weibo.sdk.api.* {*;}
-# ————————  微微博 end    ————————
+-keep class com.tencent.mm.opensdk.** { *; }
+-keep class com.tencent.wxop.** { *; }
+-keep class com.tencent.mm.sdk.** { *; }
 
-# ————————  qq start    ————————
--keep class * extends android.app.Dialog {*;}
+# ———————— 微博 ————————
+
+-keep class com.sina.weibo.sdk.api.* { *; }
+
+# ———————— qq ————————
+
+-keep class * extends android.app.Dialog { *; }
 -keep class com.tencent.open.TDialog$*
--keep class com.tencent.open.TDialog$* {*;}
+-keep class com.tencent.open.TDialog$* { *; }
 -keep class com.tencent.open.PKDialog
--keep class com.tencent.open.PKDialog {*;}
+-keep class com.tencent.open.PKDialog { *; }
 -keep class com.tencent.open.PKDialog$*
--keep class com.tencent.open.PKDialog$* {*;}
-# ————————  qq end    ————————
+-keep class com.tencent.open.PKDialog$* { *; }

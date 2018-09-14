@@ -32,12 +32,9 @@ android {
 
     buildTypes {
         debug {
-            signingConfig signingConfigs.release // 让debug包用release签名，用来测试
-        }
-        release {
             minifyEnabled true // 開啓混淆
-            signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release // 让debug包用release签名，用来测试
         }
     }
     compileOptions {
