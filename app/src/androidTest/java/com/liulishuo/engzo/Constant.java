@@ -1,5 +1,7 @@
 package com.liulishuo.engzo;
 
+import com.liulishuo.demo.BuildConfig;
+
 /**
  * @author Kale
  * @date 2016/10/6
@@ -7,8 +9,7 @@ package com.liulishuo.engzo;
 
 public class Constant {
 
-    // TODO: 2016/10/7 将这里换成你要测试的app的包名 
-    public static final String APPLICATION_PACKAGE = "com.duitang.main";
+    public static final String APPLICATION_PACKAGE = BuildConfig.APPLICATION_ID;
 
     public static final int MAX_TIMEOUT = 30 * 1000;
     
