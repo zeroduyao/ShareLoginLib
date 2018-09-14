@@ -47,9 +47,10 @@ public class EventHandlerActivity extends Activity {
         if (intent != null) {
             intent.putExtra(KEY_REQUEST_CODE, requestCode);
             intent.putExtra(KEY_RESULT_CODE, resultCode);
+            SlUtils.printLog("EventHandlerActivity:onActivityResult() intent:" + intent.getExtras());
+        } else {
+            SlUtils.printLog("EventHandlerActivity:onActivityResult() intent is null");
         }
-
-        SlUtils.printLog("EventHandlerActivity:onActivityResult() intent:" + intent);
 
         handleResp(intent);
 
@@ -59,6 +60,8 @@ public class EventHandlerActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
+        // 为了防止这个activity关不掉，这里给用户一个点击关闭的功能
+        findViewById(android.R.id.content).setOnClickListener(v -> finish());
         SlUtils.printLog("EventHandlerActivity:onResume()");
     }
 

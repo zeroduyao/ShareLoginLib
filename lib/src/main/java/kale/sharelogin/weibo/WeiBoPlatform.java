@@ -7,13 +7,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
-import kale.sharelogin.LoginListener;
-import kale.sharelogin.ShareListener;
-import kale.sharelogin.ShareLoginLib;
-import kale.sharelogin.content.ShareContent;
-import kale.sharelogin.content.ShareContentType;
-import kale.sharelogin.EventHandlerActivity;
-import kale.sharelogin.IPlatform;
 import com.sina.weibo.sdk.WbSdk;
 import com.sina.weibo.sdk.auth.AuthInfo;
 import com.sina.weibo.sdk.auth.Oauth2AccessToken;
@@ -22,6 +15,14 @@ import com.sina.weibo.sdk.auth.WbConnectErrorMessage;
 import com.sina.weibo.sdk.auth.sso.SsoHandler;
 import com.sina.weibo.sdk.share.WbShareCallback;
 import com.sina.weibo.sdk.share.WbShareHandler;
+
+import kale.sharelogin.EventHandlerActivity;
+import kale.sharelogin.IPlatform;
+import kale.sharelogin.LoginListener;
+import kale.sharelogin.ShareListener;
+import kale.sharelogin.ShareLoginLib;
+import kale.sharelogin.content.ShareContent;
+import kale.sharelogin.content.ShareContentType;
 
 /**
  * @author Kale
@@ -103,6 +104,7 @@ public class WeiBoPlatform implements IPlatform {
             @Override
             public void cancel() {
                 listener.onCancel();
+                // 网页登录时无法正常关闭activity，这里必须手动调用finish()
                 activity.finish();
             }
 
@@ -149,7 +151,12 @@ public class WeiBoPlatform implements IPlatform {
             if (data == null) {
                 shareCallback.onWbShareFail();
             } else {
-                new WbShareHandler(activity).doResultIntent(data, shareCallback);
+                // 处理保存到草稿箱的逻辑，判断是否有某个值，如果没有则说明是保存到草稿了
+                if (data.getIntExtra("_weibo_resp_errcode", -31) == -31) {
+                    shareCallback.onWbShareCancel();
+                } else {
+                    new WbShareHandler(activity).doResultIntent(data, shareCallback);
+                }
             }
         } else {
             // 登录
