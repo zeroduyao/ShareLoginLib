@@ -57,10 +57,22 @@ public class ShareLoginLib {
     }
 
     public static void doLogin(@NonNull final Activity activity, String type, @Nullable LoginListener listener) {
+        if (type == null) {
+            if (listener != null) {
+                listener.onError("type is null");
+            }
+            return;
+        }
         doAction(activity, true, type, null, listener, null);
     }
 
     public static void doShare(@NonNull final Activity activity, String type, @NonNull ShareContent shareContent, @Nullable ShareListener listener) {
+        if (type == null || shareContent == null) {
+            if (listener != null) {
+                listener.onError("type or shareContent is null");
+            }
+            return;
+        }
         doAction(activity, false, type, shareContent, null, listener);
     }
 
@@ -71,13 +83,7 @@ public class ShareLoginLib {
         ArrayList<IPlatform> platforms = new ArrayList<>();
 
         for (Class<? extends IPlatform> platformClz : supportPlatforms) {
-            try {
-                platforms.add(platformClz.newInstance());
-            } catch (InstantiationException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
+            platforms.add(SlUtils.createPlatform(platformClz));
         }
 
         // 2. 根据type匹配出一个目标平台
@@ -156,14 +162,14 @@ public class ShareLoginLib {
      */
     @CheckResult
     public static boolean isAppInstalled(Context context, Class<? extends IPlatform> platformClz) {
-        try {
-            return platformClz.newInstance().isAppInstalled(context.getApplicationContext());
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
-        return false;
+        return SlUtils.createPlatform(platformClz).isAppInstalled(context.getApplicationContext());
+    }
+
+    /**
+     * 得到用户的信息，会在{@link LoginListener#onReceiveUserInfo(OAuthUserInfo)}中进行回调
+     */
+    public static void getUserInfo(Context context, Class<? extends IPlatform> platformClz, String accessToken, String uid, LoginListener listener) {
+        SlUtils.createPlatform(platformClz).getUserInfo(context, accessToken, uid, listener);
     }
 
     public static String getValue(String key) {

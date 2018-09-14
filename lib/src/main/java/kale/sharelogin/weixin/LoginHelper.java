@@ -68,7 +68,7 @@ class LoginHelper {
      */
     private static void code2Token(Context context, String code, @NonNull final LoginListener listener) {
         String appId = ShareLoginLib.getValue(WeiXinPlatform.KEY_APP_ID);
-        String secret = ShareLoginLib.getValue(WeiXinPlatform.KEY_SECRET_KEY);
+        String secret = ShareLoginLib.getValue(WeiXinPlatform.KEY_SECRET);
 
         WeiboParameters params = new WeiboParameters(null);
         params.put("appid", appId);
@@ -117,7 +117,7 @@ class LoginHelper {
      * "unionid": " o6_bmasdasdsad6_2sgVt7hMZOPfL"
      * }
      */
-    public static void getUserInfo(Context context, String accessToken, String uid, final LoginListener listener) {
+    static void getUserInfo(Context context, String accessToken, String uid, final LoginListener listener) {
         LinkedHashMap<String, Object> params = new LinkedHashMap<>();
         params.put("access_token", accessToken);
         params.put("openid", uid);

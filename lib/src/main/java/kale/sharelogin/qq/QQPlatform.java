@@ -12,14 +12,15 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
+import com.tencent.tauth.IUiListener;
+import com.tencent.tauth.Tencent;
+
+import kale.sharelogin.IPlatform;
 import kale.sharelogin.LoginListener;
 import kale.sharelogin.ShareListener;
 import kale.sharelogin.ShareLoginLib;
 import kale.sharelogin.content.ShareContent;
 import kale.sharelogin.content.ShareContentType;
-import kale.sharelogin.IPlatform;
-import com.tencent.tauth.IUiListener;
-import com.tencent.tauth.Tencent;
 
 /**
  * @author Kale
@@ -126,6 +127,11 @@ public class QQPlatform implements IPlatform {
         if (uiListener != null) {
             Tencent.handleResultData(data, uiListener);
         }
+    }
+
+    @Override
+    public void getUserInfo(Context context, String accessToken, String uid, LoginListener listener) {
+        LoginHelper.getUserInfo(context, accessToken, uid, listener);
     }
 
     /**

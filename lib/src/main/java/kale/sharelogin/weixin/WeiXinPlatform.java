@@ -7,12 +7,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
-import kale.sharelogin.LoginListener;
-import kale.sharelogin.ShareListener;
-import kale.sharelogin.ShareLoginLib;
-import kale.sharelogin.content.ShareContent;
-import kale.sharelogin.content.ShareContentType;
-import kale.sharelogin.IPlatform;
 import com.tencent.mm.opensdk.modelbase.BaseReq;
 import com.tencent.mm.opensdk.modelbase.BaseResp;
 import com.tencent.mm.opensdk.modelmsg.SendAuth;
@@ -20,6 +14,13 @@ import com.tencent.mm.opensdk.modelmsg.SendMessageToWX;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.IWXAPIEventHandler;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
+
+import kale.sharelogin.IPlatform;
+import kale.sharelogin.LoginListener;
+import kale.sharelogin.ShareListener;
+import kale.sharelogin.ShareLoginLib;
+import kale.sharelogin.content.ShareContent;
+import kale.sharelogin.content.ShareContentType;
 
 /**
  * @author Kale
@@ -29,7 +30,7 @@ public class WeiXinPlatform implements IPlatform {
 
     public static final String KEY_APP_ID = "weixin_key_app_id";
 
-    public static final String KEY_SECRET_KEY = "weixin_key_secret_key";
+    public static final String KEY_SECRET = "weixin_key_secret";
 
     // ---------------------------------------------------------------
 
@@ -37,7 +38,7 @@ public class WeiXinPlatform implements IPlatform {
 
     public static final String FRIEND = "weixin_friend" + SendMessageToWX.Req.WXSceneSession, // 好友 
 
-    FRIEND_ZONE = "weixin_friend_zone" + SendMessageToWX.Req.WXSceneTimeline, // 朋友圈
+    TIMELINE = "weixin_timeline" + SendMessageToWX.Req.WXSceneTimeline, // 朋友圈
 
     FAVORITE = "weixin_favorite" + SendMessageToWX.Req.WXSceneFavorite; // 收藏
 
@@ -45,7 +46,7 @@ public class WeiXinPlatform implements IPlatform {
 
     @Override
     public String[] getSupportedTypes() {
-        return new String[]{LOGIN, FRIEND, FRIEND_ZONE, FAVORITE};
+        return new String[]{LOGIN, FRIEND, TIMELINE, FAVORITE};
     }
 
     @Override
@@ -114,6 +115,11 @@ public class WeiXinPlatform implements IPlatform {
     @Override
     public void onResponse(@NonNull Activity activity, @Nullable Intent data) {
         getApi(activity).handleIntent(data, wxEventHandler);
+    }
+
+    @Override
+    public void getUserInfo(Context context, String accessToken, String uid, LoginListener listener) {
+        LoginHelper.getUserInfo(context, accessToken, uid, listener);
     }
 
     private static IWXAPI getApi(Context context) {

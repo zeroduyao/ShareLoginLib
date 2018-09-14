@@ -17,6 +17,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import kale.sharelogin.EventHandlerActivity;
+import kale.sharelogin.IPlatform;
 import kale.sharelogin.ShareLoginLib;
 import kale.sharelogin.content.ShareContent;
 
@@ -165,6 +166,18 @@ public class SlUtils {
                 Toast.makeText(activity, "--- DONE ---", Toast.LENGTH_SHORT).show();
             }
         }, 1000);
+    }
+
+    public static IPlatform createPlatform(Class<? extends IPlatform> platformClz) {
+        try {
+            return platformClz.newInstance();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+
+        throw new RuntimeException("platform create error");
     }
 
     public interface Function<T> {

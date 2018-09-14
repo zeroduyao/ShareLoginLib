@@ -28,7 +28,7 @@ public interface IPlatform {
     /**
      * 检查当前环境，如果异常则直接终止
      *
-     * @param type        当前平台支持的操作类型
+     * @param type             当前平台支持的操作类型
      * @param shareContentType 分享时传入的分享类型，如果是登录则会传{@link ShareContent#NO_CONTENT}
      */
     void checkEnvironment(Context context, @NonNull String type, @ShareContentType int shareContentType);
@@ -47,5 +47,10 @@ public interface IPlatform {
      * 处理响应的结果
      */
     void onResponse(@NonNull Activity activity, @Nullable Intent data);
+
+    /**
+     * 得到用户的信息，会在{@link LoginListener#onReceiveUserInfo(OAuthUserInfo)}中进行回调
+     */
+    void getUserInfo(Context context, String accessToken, String uid, final LoginListener listener);
 
 }

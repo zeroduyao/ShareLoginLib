@@ -63,7 +63,7 @@ class LoginHelper {
      *
      * @see "http://open.weibo.com/wiki/2/users/show"
      */
-    public static void getUserInfo(Context context, String accessToken, String uid, LoginListener listener) {
+    static void getUserInfo(Context context, String accessToken, String uid, LoginListener listener) {
         LinkedHashMap<String, Object> params = new LinkedHashMap<>();
         params.put("access_token", accessToken);
         params.put("uid", uid);

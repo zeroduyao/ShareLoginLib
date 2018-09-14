@@ -40,7 +40,7 @@ public class WeiBoPlatform implements IPlatform {
 
     public static final String LOGIN = "weibo_login";
 
-    public static final String TIME_LINE = "weibo_time_line";
+    public static final String TIMELINE = "weibo_timeline";
 
     public static final String STORY = "weibo_story";
 
@@ -50,7 +50,7 @@ public class WeiBoPlatform implements IPlatform {
 
     @Override
     public String[] getSupportedTypes() {
-        return new String[]{LOGIN, TIME_LINE, STORY};
+        return new String[]{LOGIN, TIMELINE, STORY};
     }
 
     @Override
@@ -137,7 +137,7 @@ public class WeiBoPlatform implements IPlatform {
         WbShareHandler shareHandler = new WbShareHandler(activity);
         shareHandler.registerApp();
 
-        if (shareType.equals(TIME_LINE)) {
+        if (shareType.equals(TIMELINE)) {
             shareHandler.shareMessage(ShareHelper.shareMessage(shareContent), false);
         } else if (shareType.equals(STORY)) {
             shareHandler.shareToStory(ShareHelper.storyMessage(shareContent));
@@ -168,6 +168,11 @@ public class WeiBoPlatform implements IPlatform {
                 ssoHandler.authorizeCallBack(requestCode, resultCode, data);
             }
         }
+    }
+
+    @Override
+    public void getUserInfo(Context context, String accessToken, String uid, LoginListener listener) {
+        LoginHelper.getUserInfo(context, accessToken, uid, listener);
     }
 
 }

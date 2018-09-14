@@ -43,7 +43,7 @@ public class AppApplication extends Application {
                         WeiBoPlatform.KEY_REDIRECT_URL, weibo_redirect_url,
 
                         WeiXinPlatform.KEY_APP_ID, weixin_app_id,
-                        WeiXinPlatform.KEY_SECRET_KEY, weixin_secret
+                        WeiXinPlatform.KEY_SECRET, weixin_secret
                 ),
                 Arrays.asList(
                         QQPlatform.class,

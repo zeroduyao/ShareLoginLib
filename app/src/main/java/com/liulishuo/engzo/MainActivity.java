@@ -114,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
                 ShareLoginLib.doShare(this, QQPlatform.ZONE, mShareContent, shareListener);
                 break;
             case R.id.分享到微博:
-                ShareLoginLib.doShare(this, WeiBoPlatform.TIME_LINE, mShareContent, shareListener);
+                ShareLoginLib.doShare(this, WeiBoPlatform.TIMELINE, mShareContent, shareListener);
                 break;
             case R.id.分享到微博故事:
                 ShareLoginLib.doShare(this, WeiBoPlatform.STORY, mShareContent, shareListener);
@@ -128,16 +128,16 @@ public class MainActivity extends AppCompatActivity {
                             null, // url
                             BitmapFactory.decodeByteArray(mShareContent.getThumbBmpBytes(), 0, mShareContent.getThumbBmpBytes().length));
 
-                    ShareLoginLib.doShare(this, WeiBoPlatform.TIME_LINE, webPage, shareListener);
+                    ShareLoginLib.doShare(this, WeiBoPlatform.TIMELINE, webPage, shareListener);
                 } else {
-                    ShareLoginLib.doShare(this, WeiBoPlatform.TIME_LINE, mShareContent, shareListener);
+                    ShareLoginLib.doShare(this, WeiBoPlatform.TIMELINE, mShareContent, shareListener);
                 } 
                 break;
             case R.id.分享给微信好友:
                 ShareLoginLib.doShare(this, WeiXinPlatform.FRIEND, mShareContent, shareListener);
                 break;
             case R.id.分享到微信朋友圈:
-                ShareLoginLib.doShare(this, WeiXinPlatform.FRIEND_ZONE, mShareContent, shareListener);
+                ShareLoginLib.doShare(this, WeiXinPlatform.TIMELINE, mShareContent, shareListener);
                 break;
             case R.id.分享到微信收藏:
                 ShareLoginLib.doShare(this, WeiXinPlatform.FAVORITE, mShareContent, shareListener);

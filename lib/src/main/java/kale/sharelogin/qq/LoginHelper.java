@@ -77,7 +77,7 @@ class LoginHelper {
      * "is_yellow_year_vip":"1"
      * }
      */
-    private static void getUserInfo(Context context, final String accessToken, final String userId, LoginListener listener) {
+    static void getUserInfo(Context context, final String accessToken, final String userId, LoginListener listener) {
         LinkedHashMap<String, Object> params = new LinkedHashMap<>();
         params.put("access_token", accessToken);
         params.put("openid", userId);
