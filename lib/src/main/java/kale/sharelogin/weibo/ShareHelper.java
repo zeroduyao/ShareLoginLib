@@ -5,8 +5,6 @@ import java.io.File;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
-import kale.sharelogin.content.ShareContent;
-import kale.sharelogin.content.ShareContentType;
 import com.sina.weibo.sdk.api.BaseMediaObject;
 import com.sina.weibo.sdk.api.ImageObject;
 import com.sina.weibo.sdk.api.StoryMessage;
@@ -14,6 +12,9 @@ import com.sina.weibo.sdk.api.TextObject;
 import com.sina.weibo.sdk.api.WebpageObject;
 import com.sina.weibo.sdk.api.WeiboMultiMessage;
 import com.sina.weibo.sdk.utils.Utility;
+
+import kale.sharelogin.content.ShareContent;
+import kale.sharelogin.content.ShareContentType;
 
 /**
  * @author Kale

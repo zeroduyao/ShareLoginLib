@@ -6,7 +6,7 @@ import android.support.annotation.CallSuper;
  * @author Kale
  * @date 2018/9/10
  */
-public interface ISsoListener {
+public interface IBaseListener {
 
     @CallSuper
     default void onError(String errorMsg){

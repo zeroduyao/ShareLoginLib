@@ -1,15 +1,13 @@
 package kale.sharelogin.content;
 
-import android.os.Parcelable;
-
 /**
  * Created by echo on 5/18/15.
  */
 
-public interface ShareContent extends Parcelable {
+public interface ShareContent {
 
     int NO_CONTENT = 31415926;
-    
+
     /**
      * @return 分享的方式
      */
@@ -19,31 +17,43 @@ public interface ShareContent extends Parcelable {
     /**
      * 分享的描述信息(摘要)
      */
-    String getSummary();
+    default String getSummary() {
+        return null;
+    }
 
     /**
      * 分享的标题
      */
-    String getTitle();
+    default String getTitle() {
+        return null;
+    }
 
     /**
      * 获取跳转的链接
      */
-    String getURL();
+    default String getURL() {
+        return null;
+    }
 
     /**
      * 分享的缩略图片
      */
-    byte[] getThumbBmpBytes();
+    default byte[] getThumbBmpBytes() {
+        return null;
+    }
 
     /**
-     * 分享的大图
+     * 分享的大图地址
      */
-    String getLargeBmpPath();
+    default String getLargeBmpPath() {
+        return null;
+    }
 
     /**
      * 音频url
      */
-    String getMusicUrl();
+    default String getMusicUrl() {
+        return null;
+    }
 
 }

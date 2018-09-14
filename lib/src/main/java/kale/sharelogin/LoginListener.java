@@ -4,14 +4,14 @@ import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import kale.sharelogin.utils.ISsoListener;
+import kale.sharelogin.utils.IBaseListener;
 import kale.sharelogin.utils.SlUtils;
 
 /**
  * @author Kale
  * @date 2018/9/10
  */
-public class LoginListener implements ISsoListener {
+public class LoginListener implements IBaseListener {
 
     /**
      * @param accessToken 第三方给的一次性token，几分钟内会失效

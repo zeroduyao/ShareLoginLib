@@ -1,9 +1,10 @@
 package kale.sharelogin.content;
 
 import android.graphics.Bitmap;
-import android.os.Parcel;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+
+import kale.sharelogin.ShareLoginLib;
+import kale.sharelogin.utils.SlUtils;
 
 /**
  * Created by echo on 5/18/15.
@@ -11,9 +12,7 @@ import android.support.annotation.Nullable;
  */
 public class ShareContentPic implements ShareContent {
 
-    private Bitmap thumbBmp, largeBmp;
-
-    private byte[] thumbBmpBytes;
+    private Bitmap largeBmp;
 
     private String largeBmpPath;
 
@@ -31,90 +30,19 @@ public class ShareContentPic implements ShareContent {
         this.largeBmpPath = largeBmpPath;
     }
 
-    ShareContentPic(@Nullable Bitmap thumbBmp, @Nullable Bitmap largeBmp) {
-        this.thumbBmp = thumbBmp;
-        this.largeBmp = largeBmp;
-    }
-
-    @Override
-    public String getSummary() {
-        return null;
-    }
-
-    @Override
-    public String getTitle() {
-        return null;
-    }
-
-    @Override
-    public String getURL() {
-        return null;
-    }
-
-    @Override
-    public byte[] getThumbBmpBytes() {
-        return thumbBmpBytes;
-    }
-
-    @Override
-    public String getLargeBmpPath() {
-        return largeBmpPath;
-    }
-
-    @Override
-    public String getMusicUrl() {
-        return null;
-    }
-
     @ShareContentType
     @Override
     public int getType() {
         return ShareContentType.PIC;
     }
 
-    @Nullable
-    public Bitmap getThumbBmp() {
-        return thumbBmp;
-    }
-
-    @Nullable
-    public Bitmap getLargeBmp() {
-        return largeBmp;
-    }
-
-    public void setThumbBmpBytes(byte[] thumbBmpBytes) {
-        this.thumbBmpBytes = thumbBmpBytes;
-    }
-
-    public void setLargeBmpPath(String largeBmpPath) {
-        this.largeBmpPath = largeBmpPath;
-    }
-
     @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeByteArray(this.thumbBmpBytes);
-        dest.writeString(this.largeBmpPath);
-    }
-
-    ShareContentPic(Parcel in) {
-        this.thumbBmpBytes = in.createByteArray();
-        this.largeBmpPath = in.readString();
-    }
-
-    public static final Creator<ShareContentPic> CREATOR = new Creator<ShareContentPic>() {
-        @Override
-        public ShareContentPic createFromParcel(Parcel source) {
-            return new ShareContentPic(source);
+    public String getLargeBmpPath() {
+        if (largeBmpPath != null) {
+            return largeBmpPath;
+        } else {
+            return SlUtils.saveBitmapToFile(largeBmp, ShareLoginLib.TEMP_PIC_DIR + "share_login_lib_large_pic.jpg");
         }
+    }
 
-        @Override
-        public ShareContentPic[] newArray(int size) {
-            return new ShareContentPic[size];
-        }
-    };
 }

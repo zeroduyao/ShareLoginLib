@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
 
         shareTypeRg.setOnCheckedChangeListener((group, checkedId) -> {
             if (checkedId == R.id.rich_text) {
-                mShareContent = new ShareContentWebPage(thumbBmp, TITLE, MSG, URL);
+                mShareContent = new ShareContentWebPage(TITLE, MSG, URL, thumbBmp);
             } else if (checkedId == R.id.only_image) {
                 mShareContent = new ShareContentPic(largeBmp);
             } else if (checkedId == R.id.only_text) {
@@ -119,12 +119,19 @@ public class MainActivity extends AppCompatActivity {
             case R.id.分享到微博故事:
                 ShareLoginLib.doShare(this, WeiBoPlatform.STORY, mShareContent, shareListener);
                 break;
-            case R.id.分享到微博_不带跳转链接:
-                // 如果不带外链则会变成单图的分享
+            case R.id.发送图文微博:
                 if (mShareContent instanceof ShareContentWebPage) {
-                    ((ShareContentWebPage) mShareContent).setUrl(null);
-                }
-                ShareLoginLib.doShare(this, WeiBoPlatform.TIME_LINE, mShareContent, shareListener);
+                    // 如果不带外链则会变成单图的分享，即url是null
+                    ShareContentWebPage webPage = new ShareContentWebPage(
+                            mShareContent.getTitle(), // title
+                            mShareContent.getSummary(), // summary
+                            null, // url
+                            BitmapFactory.decodeByteArray(mShareContent.getThumbBmpBytes(), 0, mShareContent.getThumbBmpBytes().length));
+
+                    ShareLoginLib.doShare(this, WeiBoPlatform.TIME_LINE, webPage, shareListener);
+                } else {
+                    ShareLoginLib.doShare(this, WeiBoPlatform.TIME_LINE, mShareContent, shareListener);
+                } 
                 break;
             case R.id.分享给微信好友:
                 ShareLoginLib.doShare(this, WeiXinPlatform.FRIEND, mShareContent, shareListener);

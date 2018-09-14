@@ -1,8 +1,5 @@
 package kale.sharelogin;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -16,19 +13,10 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
-import kale.sharelogin.content.ShareContent;
-import kale.sharelogin.content.ShareContentPic;
-import kale.sharelogin.content.ShareContentWebPage;
-import kale.sharelogin.utils.SlUtils;
-import com.sina.weibo.sdk.exception.WeiboException;
-import com.sina.weibo.sdk.net.RequestListener;
 import com.sina.weibo.sdk.utils.LogUtil;
-import com.tencent.open.utils.HttpUtils;
-import com.tencent.tauth.IRequestListener;
 
-import org.apache.http.conn.ConnectTimeoutException;
-import org.json.JSONException;
-import org.json.JSONObject;
+import kale.sharelogin.content.ShareContent;
+import kale.sharelogin.utils.SlUtils;
 
 /**
  * @author Kale
@@ -73,15 +61,6 @@ public class ShareLoginLib {
     }
 
     public static void doShare(@NonNull final Activity activity, String type, @NonNull ShareContent shareContent, @Nullable ShareListener listener) {
-        if (shareContent instanceof ShareContentWebPage) {
-            // 将缩略图图进行压缩
-            ShareContentWebPage content = (ShareContentWebPage) shareContent;
-            content.setThumbBmpBytes(SlUtils.getImageThumbByteArr(content.getThumbBmp()));
-        } else if (shareContent instanceof ShareContentPic) {
-            // 将大图存放在本地
-            ShareContentPic content = (ShareContentPic) shareContent;
-            content.setLargeBmpPath(SlUtils.saveBitmapToFile(content.getLargeBmp(), ShareLoginLib.TEMP_PIC_DIR + "share_login_lib_large_pic.jpg"));
-        }
         doAction(activity, false, type, shareContent, null, listener);
     }
 
@@ -190,95 +169,5 @@ public class ShareLoginLib {
     public static String getValue(String key) {
         return sValueMap.get(key);
     }
-
-    public abstract static class UserInfoListener implements RequestListener {
-
-        private LoginListener listener;
-
-        protected UserInfoListener(LoginListener listener) {
-            this.listener = listener;
-        }
-
-        @Override
-        public void onComplete(String json) {
-            OAuthUserInfo userInfo = null;
-            try {
-                userInfo = json2UserInfo(new JSONObject(json));
-            } catch (JSONException e) {
-                e.printStackTrace();
-                listener.onError(e.getMessage());
-            }
-
-            if (userInfo != null) {
-                listener.onReceiveUserInfo(userInfo);
-            }
-        }
-
-        @Override
-        public void onWeiboException(WeiboException e) {
-            e.printStackTrace();
-            listener.onError(e.getMessage());
-        }
-
-        public abstract OAuthUserInfo json2UserInfo(JSONObject jsonObj) throws JSONException;
-    }
-
-    /**
-     * http://wiki.open.qq.com/wiki/%E8%8E%B7%E5%8F%96%E7%94%A8%E6%88%B7%E4%BF%A1%E6%81%AF
-     *
-     * graphPath    要调用的接口名称，通过SDK中的Constant类获取宏定义。
-     * params       以K-V组合的字符串参数。Params是一个Bundle类型的参数，里面以键值对（Key-value）的形式存储数据，应用传入的邀请分享等参数就是通过这种方式传递给SDK，然后由SDK发送到后台。
-     * httpMethod   使用的http方式，如Constants.HTTP_GET，Constants.HTTP_POST。
-     * listener     回调接口，IUiListener实例。
-     * state        状态对象，将在回调时原样传回给 listener，供应用识别异步调用。SDK内部不访问该对象。
-     */
-    public class MyRequestListener implements IRequestListener {
-
-        @Override
-        public void onComplete(JSONObject jsonObject) {
-
-        }
-
-        @Override
-        public void onIOException(IOException e) {
-
-        }
-
-        @Override
-        public void onMalformedURLException(MalformedURLException e) {
-
-        }
-
-        @Override
-        public void onJSONException(JSONException e) {
-
-        }
-
-        @Override
-        public void onConnectTimeoutException(ConnectTimeoutException e) {
-
-        }
-
-        @Override
-        public void onSocketTimeoutException(SocketTimeoutException e) {
-
-        }
-
-        @Override
-        public void onNetworkUnavailableException(HttpUtils.NetworkUnavailableException e) {
-
-        }
-
-        @Override
-        public void onHttpStatusException(HttpUtils.HttpStatusException e) {
-
-        }
-
-        @Override
-        public void onUnknowException(Exception e) {
-
-        }
-    }
-
 
 }

@@ -4,9 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
-import kale.sharelogin.LoginListener;
-import kale.sharelogin.OAuthUserInfo;
-import kale.sharelogin.ShareLoginLib;
 import com.sina.weibo.sdk.exception.WeiboException;
 import com.sina.weibo.sdk.net.AsyncWeiboRunner;
 import com.sina.weibo.sdk.net.RequestListener;
@@ -16,6 +13,11 @@ import com.tencent.mm.opensdk.modelmsg.SendAuth;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import kale.sharelogin.LoginListener;
+import kale.sharelogin.OAuthUserInfo;
+import kale.sharelogin.ShareLoginLib;
+import kale.sharelogin.utils.UserInfoListener;
 
 /**
  * @author Kale
@@ -118,7 +120,7 @@ class LoginHelper {
         params.put("access_token", accessToken);
         params.put("openid", uid);
 
-        new AsyncWeiboRunner(context).requestAsync("https://api.weixin.qq.com/sns/userinfo", params, "GET", new ShareLoginLib.UserInfoListener(listener) {
+        new AsyncWeiboRunner(context).requestAsync("https://api.weixin.qq.com/sns/userinfo", params, "GET", new UserInfoListener(listener) {
 
             @Override
             public OAuthUserInfo json2UserInfo(JSONObject jsonObj) throws JSONException {

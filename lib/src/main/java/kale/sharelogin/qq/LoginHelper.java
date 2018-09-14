@@ -4,10 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
-import kale.sharelogin.LoginListener;
-import kale.sharelogin.OAuthUserInfo;
-import kale.sharelogin.ShareLoginLib;
-import kale.sharelogin.utils.ISsoListener;
 import com.sina.weibo.sdk.net.AsyncWeiboRunner;
 import com.sina.weibo.sdk.net.WeiboParameters;
 import com.tencent.connect.common.Constants;
@@ -16,6 +12,12 @@ import com.tencent.tauth.UiError;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import kale.sharelogin.LoginListener;
+import kale.sharelogin.OAuthUserInfo;
+import kale.sharelogin.ShareLoginLib;
+import kale.sharelogin.utils.IBaseListener;
+import kale.sharelogin.utils.UserInfoListener;
 
 /**
  * @author Kale
@@ -85,7 +87,7 @@ class LoginHelper {
         params.put("format", "json");
 
         runner.requestAsync("https://graph.qq.com/user/get_simple_userinfo", params, "GET",
-                new ShareLoginLib.UserInfoListener(listener) {
+                new UserInfoListener(listener) {
 
                     @Override
                     public OAuthUserInfo json2UserInfo(JSONObject jsonObj) throws JSONException {
@@ -101,9 +103,9 @@ class LoginHelper {
 
     abstract static class AbsUiListener implements IUiListener {
 
-        private ISsoListener listener;
+        private IBaseListener listener;
 
-        AbsUiListener(ISsoListener listener) {
+        AbsUiListener(IBaseListener listener) {
             this.listener = listener;
         }
 
