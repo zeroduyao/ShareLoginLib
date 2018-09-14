@@ -2,6 +2,7 @@ package com.liulishuo.share.content;
 
 import android.graphics.Bitmap;
 import android.os.Parcel;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 /**
@@ -17,9 +18,20 @@ public class ShareContentPic implements ShareContent {
     private String largeBmpPath;
 
     /**
-     * @param thumbBmp 如果需要分享图片，则必传
+     * @param largeBmp 大图的bitmap，必须在10m以内
      */
-    public ShareContentPic(@Nullable Bitmap thumbBmp, @Nullable Bitmap largeBmp) {
+    public ShareContentPic(@NonNull Bitmap largeBmp) {
+        this.largeBmp = largeBmp;
+    }
+
+    /**
+     * @param largeBmpPath 分享图片的本地存储地址
+     */
+    public ShareContentPic(@NonNull String largeBmpPath) {
+        this.largeBmpPath = largeBmpPath;
+    }
+
+    ShareContentPic(@Nullable Bitmap thumbBmp, @Nullable Bitmap largeBmp) {
         this.thumbBmp = thumbBmp;
         this.largeBmp = largeBmp;
     }
@@ -60,10 +72,12 @@ public class ShareContentPic implements ShareContent {
         return ShareContentType.PIC;
     }
 
+    @Nullable
     public Bitmap getThumbBmp() {
         return thumbBmp;
     }
 
+    @Nullable
     public Bitmap getLargeBmp() {
         return largeBmp;
     }

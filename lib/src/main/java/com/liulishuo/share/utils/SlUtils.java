@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import android.app.Activity;
 import android.app.Application;
 import android.graphics.Bitmap;
 import android.media.ThumbnailUtils;
@@ -13,6 +14,7 @@ import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.annotation.RestrictTo;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.liulishuo.share.EventHandlerActivity;
 import com.liulishuo.share.ShareLoginLib;
@@ -25,7 +27,7 @@ import com.liulishuo.share.content.ShareContent;
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 public class SlUtils {
 
-    public static final String TAG = "ShareLoginLib";
+    private static final String TAG = "ShareLoginLib";
 
     public static void printLog(String message) {
         if (ShareLoginLib.DEBUG) {
@@ -154,12 +156,13 @@ public class SlUtils {
      */
     public static EventHandlerActivity sEventHandlerActivity;
 
-    public static void checkLeak() {
+    public static void checkLeak(Activity activity) {
         new Handler().postDelayed(() -> {
             if (sEventHandlerActivity != null) {
                 throw new RuntimeException("内存泄漏了");
             } else {
                 printLog("没有泄漏，EventHandlerActivity已经正常关闭");
+                Toast.makeText(activity, "--- DONE ---", Toast.LENGTH_SHORT).show();
             }
         }, 1000);
     }

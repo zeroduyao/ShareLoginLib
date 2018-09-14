@@ -71,9 +71,9 @@ public class MainActivity extends AppCompatActivity {
 
         shareTypeRg.setOnCheckedChangeListener((group, checkedId) -> {
             if (checkedId == R.id.rich_text) {
-                mShareContent = new ShareContentWebPage(TITLE, MSG, URL, thumbBmp, largeBmp);
+                mShareContent = new ShareContentWebPage(thumbBmp, TITLE, MSG, URL);
             } else if (checkedId == R.id.only_image) {
-                mShareContent = new ShareContentPic(thumbBmp, largeBmp);
+                mShareContent = new ShareContentPic(largeBmp);
             } else if (checkedId == R.id.only_text) {
                 mShareContent = new ShareContentText("这里是纯文本的文案");
             }
@@ -87,9 +87,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         loadPicFromTempFile();
-        
+
         SlUtils.printLog("MainActivity onResume()");
-        SlUtils.checkLeak();
+        SlUtils.checkLeak(this);
     }
 
     public void onClick(View v) {

@@ -18,6 +18,7 @@ import android.text.TextUtils;
 
 import com.liulishuo.share.content.ShareContent;
 import com.liulishuo.share.content.ShareContentPic;
+import com.liulishuo.share.content.ShareContentWebPage;
 import com.liulishuo.share.utils.SlUtils;
 import com.sina.weibo.sdk.exception.WeiboException;
 import com.sina.weibo.sdk.net.RequestListener;
@@ -72,7 +73,12 @@ public class ShareLoginLib {
     }
 
     public static void doShare(@NonNull final Activity activity, String type, @NonNull ShareContent shareContent, @Nullable ShareListener listener) {
-        if (shareContent instanceof ShareContentPic) {
+        if (shareContent instanceof ShareContentWebPage) {
+            // 将缩略图图进行压缩
+            ShareContentWebPage content = (ShareContentWebPage) shareContent;
+            content.setThumbBmpBytes(SlUtils.getImageThumbByteArr(content.getThumbBmp()));
+        } else if (shareContent instanceof ShareContentPic) {
+            // 将大图存放在本地
             ShareContentPic content = (ShareContentPic) shareContent;
             content.setLargeBmpPath(SlUtils.saveBitmapToFile(content.getLargeBmp(), ShareLoginLib.TEMP_PIC_DIR + "share_login_lib_large_pic.jpg"));
         }
