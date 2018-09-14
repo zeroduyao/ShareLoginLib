@@ -50,6 +50,8 @@ public class AppApplication extends Application {
                         WeiBoPlatform.class,
                         WeiXinPlatform.class)
         );
+
+        boolean installed = ShareLoginLib.isAppInstalled(this, QQPlatform.class);
     }
 
     /**

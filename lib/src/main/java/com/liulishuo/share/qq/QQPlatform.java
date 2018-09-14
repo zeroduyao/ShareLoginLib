@@ -17,7 +17,7 @@ import com.liulishuo.share.ShareListener;
 import com.liulishuo.share.ShareLoginLib;
 import com.liulishuo.share.content.ShareContent;
 import com.liulishuo.share.content.ShareContentType;
-import com.liulishuo.share.utils.IPlatform;
+import com.liulishuo.share.IPlatform;
 import com.tencent.tauth.IUiListener;
 import com.tencent.tauth.Tencent;
 

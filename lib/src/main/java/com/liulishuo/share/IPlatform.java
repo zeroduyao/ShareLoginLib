@@ -1,4 +1,4 @@
-package com.liulishuo.share.utils;
+package com.liulishuo.share;
 
 import android.app.Activity;
 import android.content.Context;
@@ -49,11 +49,5 @@ public interface IPlatform {
      * 处理响应的结果
      */
     void onResponse(@NonNull Activity activity, @Nullable Intent data);
-
-    
-    interface Function<T> {
-
-        T apply(ShareContent content);
-    }
 
 }

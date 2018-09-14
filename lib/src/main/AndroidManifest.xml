@@ -18,12 +18,12 @@
         <!-- 不要使用：android:screenOrientation="portrait" -->
         
         <activity
-            android:name=".utils.EventHandlerActivity"
+            android:name=".EventHandlerActivity"
             android:configChanges="keyboardHidden|orientation"
             android:exported="true"
             android:launchMode="singleInstance"
 
-            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen"
             />
 
         <!-- ============================= 微信 ============================= -->
@@ -32,7 +32,7 @@
             android:name="${applicationId}.wxapi.WXEntryActivity"
             android:exported="true"
             android:screenOrientation="portrait"
-            android:targetActivity=".utils.EventHandlerActivity"
+            android:targetActivity=".EventHandlerActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar"
             />
 

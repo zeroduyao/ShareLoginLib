@@ -12,7 +12,7 @@ import com.liulishuo.share.ShareListener;
 import com.liulishuo.share.ShareLoginLib;
 import com.liulishuo.share.content.ShareContent;
 import com.liulishuo.share.content.ShareContentType;
-import com.liulishuo.share.utils.IPlatform;
+import com.liulishuo.share.IPlatform;
 import com.tencent.mm.opensdk.modelbase.BaseReq;
 import com.tencent.mm.opensdk.modelbase.BaseResp;
 import com.tencent.mm.opensdk.modelmsg.SendAuth;

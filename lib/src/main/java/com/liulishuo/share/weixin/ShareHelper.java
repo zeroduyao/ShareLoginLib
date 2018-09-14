@@ -8,7 +8,7 @@ import android.support.v4.util.ArrayMap;
 import com.liulishuo.share.ShareListener;
 import com.liulishuo.share.content.ShareContent;
 import com.liulishuo.share.content.ShareContentType;
-import com.liulishuo.share.utils.IPlatform;
+import com.liulishuo.share.utils.SlUtils;
 import com.tencent.mm.opensdk.modelbase.BaseResp;
 import com.tencent.mm.opensdk.modelmsg.SendMessageToWX;
 import com.tencent.mm.opensdk.modelmsg.WXImageObject;
@@ -41,7 +41,7 @@ class ShareHelper {
     }
 
     private static WXMediaMessage.IMediaObject createMediaObject(@NonNull ShareContent shareContent) {
-        Map<Integer, IPlatform.Function<WXMediaMessage.IMediaObject>> map = new ArrayMap<>();
+        Map<Integer, SlUtils.Function<WXMediaMessage.IMediaObject>> map = new ArrayMap<>();
 
         map.put(ShareContentType.WEBPAGE, ShareHelper::getWebPageObj);
         map.put(ShareContentType.TEXT, ShareHelper::getTextObj);

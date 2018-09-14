@@ -88,8 +88,8 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         loadPicFromTempFile();
         
-        ShareLoginLib.printLog("MainActivity onResume()");
-        ShareLoginLib.checkLeak();
+        SlUtils.printLog("MainActivity onResume()");
+        SlUtils.checkLeak();
     }
 
     public void onClick(View v) {
@@ -154,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void loadPicFromTempFile() {
         try {
-            File file = new File(SlUtils.getTempPicFilePath());
+            File file = new File(ShareLoginLib.TEMP_PIC_DIR + "share_login_lib_large_pic.jpg");
             if (file.exists()) {
                 FileInputStream fis = new FileInputStream(file);
                 tempPicIv.setImageBitmap(BitmapFactory.decodeStream(fis));

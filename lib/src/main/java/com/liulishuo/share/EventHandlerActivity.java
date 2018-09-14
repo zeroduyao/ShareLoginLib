@@ -1,10 +1,10 @@
-package com.liulishuo.share.utils;
+package com.liulishuo.share;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.liulishuo.share.ShareLoginLib;
+import com.liulishuo.share.utils.SlUtils;
 
 /**
  * Created by echo on 5/19/15.
@@ -24,7 +24,7 @@ public class EventHandlerActivity extends Activity {
         super.onCreate(savedInstanceState);
         // 内存不足杀死后重建时的onCreate()
         if (savedInstanceState != null) {
-            ShareLoginLib.printLog("EventHandlerActivity:onCreate(2) intent:" + getIntent());
+            SlUtils.printLog("EventHandlerActivity:onCreate(2) intent:" + getIntent());
             handleResp(getIntent());
         } else {
             ShareLoginLib.onActivityCreate(this);
@@ -35,7 +35,7 @@ public class EventHandlerActivity extends Activity {
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
 
-        ShareLoginLib.printLog("EventHandlerActivity:onNewIntent() intent:" + intent);
+        SlUtils.printLog("EventHandlerActivity:onNewIntent() intent:" + intent);
 
         handleResp(intent);
     }
@@ -49,7 +49,7 @@ public class EventHandlerActivity extends Activity {
             intent.putExtra(KEY_RESULT_CODE, resultCode);
         }
 
-        ShareLoginLib.printLog("EventHandlerActivity:onActivityResult() intent:" + intent);
+        SlUtils.printLog("EventHandlerActivity:onActivityResult() intent:" + intent);
 
         handleResp(intent);
 
@@ -59,24 +59,24 @@ public class EventHandlerActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        ShareLoginLib.printLog("EventHandlerActivity:onResume()");
+        SlUtils.printLog("EventHandlerActivity:onResume()");
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        ShareLoginLib.printLog("EventHandlerActivity:onPause()");
+        SlUtils.printLog("EventHandlerActivity:onPause()");
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        ShareLoginLib.printLog("EventHandlerActivity:onStop()");
+        SlUtils.printLog("EventHandlerActivity:onStop()");
     }
 
     @Override
     protected void onDestroy() {
-        ShareLoginLib.printLog("EventHandlerActivity:onDestroy()");
+        SlUtils.printLog("EventHandlerActivity:onDestroy()");
         ShareLoginLib.destroy();
         super.onDestroy();
     }
@@ -85,7 +85,7 @@ public class EventHandlerActivity extends Activity {
         if (ShareLoginLib.getCurPlatform() != null) {
             ShareLoginLib.getCurPlatform().onResponse(this, data);
         } else {
-            ShareLoginLib.printLog("ShareLoginLib.curPlatform is null");
+            SlUtils.printLog("ShareLoginLib.curPlatform is null");
         }
     }
 

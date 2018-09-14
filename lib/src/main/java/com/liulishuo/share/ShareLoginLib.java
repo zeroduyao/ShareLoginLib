@@ -11,20 +11,14 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Handler;
+import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.liulishuo.share.content.ShareContent;
 import com.liulishuo.share.content.ShareContentPic;
-import com.liulishuo.share.qq.QQPlatform;
-import com.liulishuo.share.utils.EventHandlerActivity;
-import com.liulishuo.share.utils.IPlatform;
 import com.liulishuo.share.utils.SlUtils;
-import com.liulishuo.share.weibo.WeiBoPlatform;
-import com.liulishuo.share.weixin.WeiXinPlatform;
 import com.sina.weibo.sdk.exception.WeiboException;
 import com.sina.weibo.sdk.net.RequestListener;
 import com.sina.weibo.sdk.utils.LogUtil;
@@ -41,30 +35,25 @@ import org.json.JSONObject;
  */
 public class ShareLoginLib {
 
-    public static final String TAG = "ShareLoginLib";
-
-    private static Map<String, String> sMap;
-
-    private static boolean DEBUG = false;
+    public static boolean DEBUG = false;
 
     public static String APP_NAME, TEMP_PIC_DIR;
 
-    private static List<Class<? extends IPlatform>> supportPlatforms;
+    private static Map<String, String> sValueMap;
 
-    public static EventHandlerActivity.OnCreateListener onCreateListener;
+    private static List<Class<? extends IPlatform>> supportPlatforms;
 
     private static IPlatform curPlatform;
 
-    private static EventHandlerActivity sEventHandlerActivity;
+    private static EventHandlerActivity.OnCreateListener onCreateListener;
 
     public static void init(Application application, @Nullable String curAppName, @Nullable String tempPicDir, boolean debug) {
         APP_NAME = curAppName;
+        DEBUG = debug;
 
         if (TextUtils.isEmpty(tempPicDir)) {
             TEMP_PIC_DIR = SlUtils.generateTempPicDir(application);
         }
-
-        DEBUG = debug;
 
         if (DEBUG) {
             LogUtil.enableLog();
@@ -74,7 +63,7 @@ public class ShareLoginLib {
     }
 
     public static void initPlatforms(Map<String, String> keyValue, List<Class<? extends IPlatform>> platforms) {
-        sMap = keyValue;
+        sValueMap = keyValue;
         supportPlatforms = platforms;
     }
 
@@ -84,20 +73,13 @@ public class ShareLoginLib {
 
     public static void doShare(@NonNull final Activity activity, String type, @NonNull ShareContent shareContent, @Nullable ShareListener listener) {
         if (shareContent instanceof ShareContentPic) {
-            // 针对小图和大图做针对性的处理
             ShareContentPic content = (ShareContentPic) shareContent;
-            // 压缩图片大小至符合要求的size
-            content.setThumbBmpBytes(SlUtils.getImageThumbByteArr(content.getThumbBmp()));
-            // 将大图保存到磁盘中，供第三方app进行读取
-            content.setLargeBmpPath(SlUtils.saveBitmapToFile(content.getLargeBmp(), SlUtils.getTempPicFilePath()));
-
-            shareContent = content;
+            content.setLargeBmpPath(SlUtils.saveBitmapToFile(content.getLargeBmp(), ShareLoginLib.TEMP_PIC_DIR + "share_login_lib_large_pic.jpg"));
         }
-
         doAction(activity, false, type, shareContent, null, listener);
     }
 
-    private static void doAction(Activity activity, boolean isLoginAction, String type, @Nullable ShareContent content,
+    private static void doAction(Activity activity, boolean isLoginAction, @NonNull String type, @Nullable ShareContent content,
             LoginListener loginListener, ShareListener shareListener) {
 
         // 1. 得到目前支持的平台列表
@@ -153,10 +135,10 @@ public class ShareLoginLib {
         final LoginListener finalLoginListener = loginListener;
         final ShareListener finalShareListener = shareListener;
 
-        SlUtils.startActivity(activity, new Intent(activity, EventHandlerActivity.class), eventActivity -> {
+        ShareLoginLib.onCreateListener = eventActivity -> {
             if (DEBUG) {
                 // 仅debug模式才只持有activity的引用，用来检测activity是否已经关闭
-                sEventHandlerActivity = eventActivity;
+                SlUtils.sEventHandlerActivity = eventActivity;
             }
 
             if (isLoginAction) {
@@ -165,60 +147,42 @@ public class ShareLoginLib {
                 assert content != null;
                 curPlatform.doShare(eventActivity, type, content, finalShareListener);
             }
-        });
+        };
+        activity.startActivity(new Intent(activity, EventHandlerActivity.class));
+        activity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 
-    public static void onActivityCreate(EventHandlerActivity activity) {
+    static void onActivityCreate(EventHandlerActivity activity) {
         onCreateListener.onCreate(activity);
     }
 
-    public static IPlatform getCurPlatform() {
+    static IPlatform getCurPlatform() {
         return curPlatform;
     }
 
     public static void destroy() {
         curPlatform = null;
         onCreateListener = null;
-        sEventHandlerActivity = null;
+        SlUtils.sEventHandlerActivity = null;
+    }
+
+    /**
+     * 判断目标平台的app是否已经安装了
+     */
+    @CheckResult
+    public static boolean isAppInstalled(Context context, Class<? extends IPlatform> platformClz) {
+        try {
+            return platformClz.newInstance().isAppInstalled(context.getApplicationContext());
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     public static String getValue(String key) {
-        return sMap.get(key);
-    }
-
-    public static void printLog(String message) {
-        if (DEBUG) {
-            Log.i(TAG, "======> " + message);
-        }
-    }
-
-    public static void printErr(String message) {
-        if (DEBUG) {
-            Log.e(TAG, message);
-        }
-    }
-
-    public static void checkLeak() {
-        new Handler().postDelayed(() -> {
-            if (sEventHandlerActivity != null) {
-                throw new RuntimeException("内存泄漏了");
-            } else {
-                printLog("没有泄漏，EventHandlerActivity已经正常关闭");
-            } 
-            
-        }, 1000);
-    }
-
-    public static boolean isQQInstalled(Context context) {
-        return new QQPlatform().isAppInstalled(context);
-    }
-
-    public static boolean isWeiBoInstalled(Context context) {
-        return new WeiBoPlatform().isAppInstalled(context);
-    }
-
-    public static boolean isWeiXinInstalled(Context context) {
-        return new WeiXinPlatform().isAppInstalled(context);
+        return sValueMap.get(key);
     }
 
     public abstract static class UserInfoListener implements RequestListener {

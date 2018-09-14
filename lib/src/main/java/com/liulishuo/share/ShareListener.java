@@ -3,6 +3,7 @@ package com.liulishuo.share;
 import android.support.annotation.CallSuper;
 
 import com.liulishuo.share.utils.ISsoListener;
+import com.liulishuo.share.utils.SlUtils;
 
 /**
  * @author Kale
@@ -12,7 +13,7 @@ public class ShareListener implements ISsoListener {
 
     @CallSuper
     public void onSuccess() {
-        ShareLoginLib.printLog("share success");
+        SlUtils.printLog("share success");
 
         onComplete();
     }

@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.liulishuo.share.utils.ISsoListener;
+import com.liulishuo.share.utils.SlUtils;
 
 /**
  * @author Kale
@@ -20,7 +21,7 @@ public class LoginListener implements ISsoListener {
      */
     @CallSuper
     public void onReceiveToken(String accessToken, String uId, long expiresIn, @Nullable String wholeData) {
-        ShareLoginLib.printLog("login success \naccessToken = " + accessToken + "\nuserId = " + uId + "\nexpires_in = " + expiresIn);
+        SlUtils.printLog("login success \naccessToken = " + accessToken + "\nuserId = " + uId + "\nexpires_in = " + expiresIn);
     }
 
     /**
@@ -29,7 +30,7 @@ public class LoginListener implements ISsoListener {
      * 本库希望不要获取太多的用户信息，故{OAuthUserInfo}仅提供基础的信息，如果不满足请请提交{issue}
      */
     public void onReceiveUserInfo(@NonNull OAuthUserInfo userInfo) {
-        ShareLoginLib.printLog("nickname = " + userInfo.nickName + "\nsex = " + userInfo.sex + "\nid = " + userInfo.userId);
+        SlUtils.printLog("nickname = " + userInfo.nickName + "\nsex = " + userInfo.sex + "\nid = " + userInfo.userId);
         onComplete();
     }
 }

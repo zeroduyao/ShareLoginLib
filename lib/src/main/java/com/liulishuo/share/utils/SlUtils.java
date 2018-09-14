@@ -5,22 +5,43 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import android.app.Activity;
 import android.app.Application;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.media.ThumbnailUtils;
 import android.os.Environment;
+import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.annotation.RestrictTo;
+import android.util.Log;
 
+import com.liulishuo.share.EventHandlerActivity;
 import com.liulishuo.share.ShareLoginLib;
+import com.liulishuo.share.content.ShareContent;
 
 /**
  * @author Kale
  * @date 2017/3/21
  */
+@RestrictTo(RestrictTo.Scope.LIBRARY)
 public class SlUtils {
 
+    public static final String TAG = "ShareLoginLib";
+
+    public static void printLog(String message) {
+        if (ShareLoginLib.DEBUG) {
+            Log.i(TAG, "======> " + message);
+        }
+    }
+
+    public static void printErr(String message) {
+        if (ShareLoginLib.DEBUG) {
+            Log.e(TAG, message);
+        }
+    }
+
+    /**
+     * 得到缓存图片的本地目录
+     */
     public static String generateTempPicDir(Application application) {
         String tempPicDir = null;
 
@@ -39,10 +60,6 @@ public class SlUtils {
         return tempPicDir;
     }
 
-    public static String getTempPicFilePath() {
-        return ShareLoginLib.TEMP_PIC_DIR + "share_login_lib_large_pic.jpg";
-    }
-
     /**
      * 将bitmap缩小到可以分享的大小，并变为byte数组
      *
@@ -57,28 +74,34 @@ public class SlUtils {
             return null;
         }
 
-        final int WIDTH = 500;
+        final int WIDTH = 500, HEIGHT = 500;
+        final long SIZE = '耀'; // 最大的图片大小
 
         final Bitmap bitmap;
         if (src.getWidth() > WIDTH || src.getHeight() > WIDTH) {
             // 裁剪为正方形的图片
-            bitmap = ThumbnailUtils.extractThumbnail(src, WIDTH, WIDTH);
+            bitmap = ThumbnailUtils.extractThumbnail(src, WIDTH, HEIGHT);
+            printLog("预览图过大，进行了裁剪");
         } else {
             bitmap = src;
         }
-
-        final long SIZE = '耀'; // 最大的大小
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream(bitmap.getWidth() * bitmap.getHeight());
 
         int options = 100;
         bitmap.compress(Bitmap.CompressFormat.JPEG, options, outputStream);
 
+        if (outputStream.size() > SIZE) {
+            printLog("裁剪后的预览图仍旧过大，需要进一步压缩");
+        }
+
         while (outputStream.size() > SIZE && options > 6) {
             outputStream.reset();
             options -= 6; // 不断的压缩图片的质量
             bitmap.compress(Bitmap.CompressFormat.JPEG, options, outputStream);
         }
+
+        printLog("最终的预览图大小：" + outputStream.size() + " ,目标大小：" + SIZE);
 
 //        bitmap.recycle();
 
@@ -100,7 +123,7 @@ public class SlUtils {
             return picPath;
         } catch (IOException e) {
             e.printStackTrace();
-            ShareLoginLib.printErr("save thumb picture error");
+            printErr("save thumb picture error");
             return null;
         }
     }
@@ -112,7 +135,7 @@ public class SlUtils {
      */
     public static String saveBitmapToFile(Bitmap bitmap, String imagePath) {
         if (bitmap == null) {
-            ShareLoginLib.printErr("bitmap is null");
+            printErr("bitmap is null");
             return null;
         }
 
@@ -121,15 +144,29 @@ public class SlUtils {
             return imagePath;
         } catch (Exception e) {
             e.printStackTrace();
-            ShareLoginLib.printErr("save bitmap picture error");
+            printErr("save bitmap picture error");
             return null;
         }
     }
 
-    public static void startActivity(Activity activity, Intent intent,EventHandlerActivity.OnCreateListener listener) {
-        ShareLoginLib.onCreateListener = listener;
-        activity.startActivity(intent);
-        activity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+    /**
+     * 用来检测是否出现了内存泄漏
+     */
+    public static EventHandlerActivity sEventHandlerActivity;
+
+    public static void checkLeak() {
+        new Handler().postDelayed(() -> {
+            if (sEventHandlerActivity != null) {
+                throw new RuntimeException("内存泄漏了");
+            } else {
+                printLog("没有泄漏，EventHandlerActivity已经正常关闭");
+            }
+        }, 1000);
+    }
+
+    public interface Function<T> {
+
+        T apply(ShareContent content);
     }
 
 }
