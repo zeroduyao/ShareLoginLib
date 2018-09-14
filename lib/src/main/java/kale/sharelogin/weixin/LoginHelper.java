@@ -1,5 +1,7 @@
 package kale.sharelogin.weixin;
 
+import java.util.LinkedHashMap;
+
 import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -17,7 +19,7 @@ import org.json.JSONObject;
 import kale.sharelogin.LoginListener;
 import kale.sharelogin.OAuthUserInfo;
 import kale.sharelogin.ShareLoginLib;
-import kale.sharelogin.utils.UserInfoListener;
+import kale.sharelogin.utils.UserInfoHelper;
 
 /**
  * @author Kale
@@ -116,22 +118,18 @@ class LoginHelper {
      * }
      */
     public static void getUserInfo(Context context, String accessToken, String uid, final LoginListener listener) {
-        WeiboParameters params = new WeiboParameters(null);
+        LinkedHashMap<String, Object> params = new LinkedHashMap<>();
         params.put("access_token", accessToken);
         params.put("openid", uid);
 
-        new AsyncWeiboRunner(context).requestAsync("https://api.weixin.qq.com/sns/userinfo", params, "GET", new UserInfoListener(listener) {
-
-            @Override
-            public OAuthUserInfo json2UserInfo(JSONObject jsonObj) throws JSONException {
-                OAuthUserInfo userInfo = new OAuthUserInfo();
-                userInfo.nickName = jsonObj.getString("nickname");
-                userInfo.sex = jsonObj.getString("sex");
-                // 用户头像，最后一个数值代表正方形头像大小（有0、46、64、96、132数值可选，0代表640*640正方形头像），用户没有头像时该项为空
-                userInfo.headImgUrl = jsonObj.getString("headimgurl");
-                userInfo.userId = jsonObj.getString("unionid");
-                return userInfo;
-            }
+        UserInfoHelper.getUserInfo(context,"https://api.weixin.qq.com/sns/userinfo", params, listener, jsonObj -> {
+            OAuthUserInfo userInfo = new OAuthUserInfo();
+            userInfo.nickName = jsonObj.getString("nickname");
+            userInfo.sex = jsonObj.getString("sex");
+            // 用户头像，最后一个数值代表正方形头像大小（有0、46、64、96、132数值可选，0代表640*640正方形头像），用户没有头像时该项为空
+            userInfo.headImgUrl = jsonObj.getString("headimgurl");
+            userInfo.userId = jsonObj.getString("unionid");
+            return userInfo;
         });
     }
 

@@ -1,23 +1,22 @@
 package kale.sharelogin.qq;
 
+import java.util.LinkedHashMap;
+
 import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
-import com.sina.weibo.sdk.net.AsyncWeiboRunner;
-import com.sina.weibo.sdk.net.WeiboParameters;
 import com.tencent.connect.common.Constants;
 import com.tencent.tauth.IUiListener;
 import com.tencent.tauth.UiError;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import kale.sharelogin.LoginListener;
 import kale.sharelogin.OAuthUserInfo;
 import kale.sharelogin.ShareLoginLib;
 import kale.sharelogin.utils.IBaseListener;
-import kale.sharelogin.utils.UserInfoListener;
+import kale.sharelogin.utils.UserInfoHelper;
 
 /**
  * @author Kale
@@ -79,26 +78,20 @@ class LoginHelper {
      * }
      */
     private static void getUserInfo(Context context, final String accessToken, final String userId, LoginListener listener) {
-        AsyncWeiboRunner runner = new AsyncWeiboRunner(context);
-        WeiboParameters params = new WeiboParameters(null);
+        LinkedHashMap<String, Object> params = new LinkedHashMap<>();
         params.put("access_token", accessToken);
         params.put("openid", userId);
         params.put("oauth_consumer_key", ShareLoginLib.getValue(QQPlatform.KEY_APP_ID));
         params.put("format", "json");
 
-        runner.requestAsync("https://graph.qq.com/user/get_simple_userinfo", params, "GET",
-                new UserInfoListener(listener) {
-
-                    @Override
-                    public OAuthUserInfo json2UserInfo(JSONObject jsonObj) throws JSONException {
-                        OAuthUserInfo userInfo = new OAuthUserInfo();
-                        userInfo.nickName = jsonObj.getString("nickname");
-                        userInfo.sex = jsonObj.getString("gender");
-                        userInfo.headImgUrl = jsonObj.getString("figureurl_qq_1");
-                        userInfo.userId = userId;
-                        return userInfo;
-                    }
-                });
+        UserInfoHelper.getUserInfo(context, "https://graph.qq.com/user/get_simple_userinfo", params, listener, jsonObj -> {
+            OAuthUserInfo userInfo = new OAuthUserInfo();
+            userInfo.nickName = jsonObj.getString("nickname");
+            userInfo.sex = jsonObj.getString("gender");
+            userInfo.headImgUrl = jsonObj.getString("figureurl_qq_1");
+            userInfo.userId = userId;
+            return userInfo;
+        });
     }
 
     abstract static class AbsUiListener implements IUiListener {

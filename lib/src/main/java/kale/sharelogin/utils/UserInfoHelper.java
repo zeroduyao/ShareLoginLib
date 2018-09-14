@@ -19,8 +19,11 @@ import kale.sharelogin.OAuthUserInfo;
  * @author Kale
  * @date 2018/9/14
  */
-public class UserInfoRequestor {
+public class UserInfoHelper {
 
+    /**
+     * 通过网络请求得到用户信息，这里用的是微博自带的网络请求库，也可以用腾讯的请求库
+     */
     public static void getUserInfo(Context context, String url, LinkedHashMap<String, Object> params, LoginListener listener, UserAdapter adapter) {
         WeiboParameters wbParameters = new WeiboParameters(null);
         wbParameters.setParams(params);

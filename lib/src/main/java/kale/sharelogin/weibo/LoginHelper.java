@@ -1,5 +1,7 @@
 package kale.sharelogin.weibo;
 
+import java.util.LinkedHashMap;
+
 import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -7,15 +9,13 @@ import android.support.annotation.Nullable;
 
 import com.sina.weibo.sdk.auth.AccessTokenKeeper;
 import com.sina.weibo.sdk.auth.Oauth2AccessToken;
-import com.sina.weibo.sdk.net.AsyncWeiboRunner;
-import com.sina.weibo.sdk.net.WeiboParameters;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import kale.sharelogin.LoginListener;
 import kale.sharelogin.OAuthUserInfo;
-import kale.sharelogin.utils.UserInfoListener;
+import kale.sharelogin.utils.UserInfoHelper;
 
 /**
  * @author Kale
@@ -33,7 +33,7 @@ class LoginHelper {
                 AccessTokenKeeper.writeAccessToken(activity, accessToken);
 
                 listener.onReceiveToken(token, uid, accessToken.getExpiresTime() / 1000000, data2Json(accessToken));
-                
+
                 getUserInfo(activity, token, uid, listener);
             } else {
                 listener.onError("当前app的签名不正确");
@@ -64,22 +64,18 @@ class LoginHelper {
      * @see "http://open.weibo.com/wiki/2/users/show"
      */
     public static void getUserInfo(Context context, String accessToken, String uid, LoginListener listener) {
-        WeiboParameters params = new WeiboParameters(null);
+        LinkedHashMap<String, Object> params = new LinkedHashMap<>();
         params.put("access_token", accessToken);
         params.put("uid", uid);
 
-        new AsyncWeiboRunner(context).requestAsync("https://api.weibo.com/2/users/show.json", params, "GET", new UserInfoListener(listener) {
-            @Override
-            public OAuthUserInfo json2UserInfo(JSONObject jsonObj) throws JSONException {
-                OAuthUserInfo userInfo = new OAuthUserInfo();
-                userInfo.nickName = jsonObj.getString("screen_name");
-                userInfo.sex = jsonObj.getString("gender");
-                userInfo.headImgUrl = jsonObj.getString("avatar_large");
-                userInfo.userId = jsonObj.getString("id");
-                return userInfo;
-            }
+        UserInfoHelper.getUserInfo(context, "https://api.weibo.com/2/users/show.json", params, listener, jsonObj -> {
+            OAuthUserInfo userInfo = new OAuthUserInfo();
+            userInfo.nickName = jsonObj.getString("screen_name");
+            userInfo.sex = jsonObj.getString("gender");
+            userInfo.headImgUrl = jsonObj.getString("avatar_large");
+            userInfo.userId = jsonObj.getString("id");
+            return userInfo;
         });
-
     }
 
 }

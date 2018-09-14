@@ -145,7 +145,7 @@ public class ShareLoginLib {
         return curPlatform;
     }
 
-    public static void destroy() {
+    static void destroy() {
         curPlatform = null;
         onCreateListener = null;
         SlUtils.sEventHandlerActivity = null;
