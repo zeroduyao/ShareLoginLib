@@ -42,10 +42,6 @@ public class MainActivity extends AppCompatActivity {
 
     public static final String URL = "https://www.zhihu.com/question/22913650";
 
-    public static final String TITLE = "这里是标题";
-
-    public static final String MSG = "这是描述信息";
-
     private ShareContent mShareContent;
 
     private ImageView tempPicIv;
@@ -72,11 +68,11 @@ public class MainActivity extends AppCompatActivity {
 
         shareTypeRg.setOnCheckedChangeListener((group, checkedId) -> {
             if (checkedId == R.id.rich_text) {
-                mShareContent = new ShareContentWebPage(TITLE, MSG, URL, thumbBmp);
+                mShareContent = new ShareContentWebPage("这里是我们的标题", "这是一段描述信息……", URL, thumbBmp);
             } else if (checkedId == R.id.only_image) {
                 mShareContent = new ShareContentPic(largeBmp);
             } else if (checkedId == R.id.only_text) {
-                mShareContent = new ShareContentText("这里是纯文本的文案");
+                mShareContent = new ShareContentText("这里是纯文本的文案……");
             }
         });
         shareTypeRg.check(R.id.rich_text);
@@ -87,10 +83,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        SlUtils.printLog("MainActivity onResume()");
+
         loadPicFromTempFile();
 
-        SlUtils.printLog("MainActivity onResume()");
-        SlUtils.checkLeak(this);
+        SlUtils.checkLeak(this); // TODO: 2018/9/14 delete this
     }
 
     public void onClick(View v) {
@@ -131,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
                     ShareLoginLib.doShare(this, WeiBoPlatform.TIMELINE, webPage, shareListener);
                 } else {
                     ShareLoginLib.doShare(this, WeiBoPlatform.TIMELINE, mShareContent, shareListener);
-                } 
+                }
                 break;
             case R.id.分享给微信好友:
                 ShareLoginLib.doShare(this, WeiXinPlatform.FRIEND, mShareContent, shareListener);

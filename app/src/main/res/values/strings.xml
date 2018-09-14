@@ -1,4 +1,3 @@
 <resources>
-    <string name="app_name">ShareLogin</string>
-    <string name="app_name2">Signed</string>
+    <string name="app_name">登录分享Demo</string>
 </resources>
