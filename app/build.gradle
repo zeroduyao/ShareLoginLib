@@ -12,7 +12,7 @@ android {
     buildToolsVersion '27.0.3'
 
     defaultConfig {
-        applicationId "com"
+        applicationId props['PACKAGE_NAME']
         minSdkVersion 18
         targetSdkVersion 27
         versionCode 1
@@ -32,13 +32,10 @@ android {
 
     buildTypes {
         debug {
-            applicationIdSuffix props['PACKAGE_NAME_SUFFIX']
             signingConfig signingConfigs.release // 让debug包用release签名，用来测试
         }
         release {
-            applicationIdSuffix props['PACKAGE_NAME_SUFFIX']
             signingConfig signingConfigs.release
-
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
