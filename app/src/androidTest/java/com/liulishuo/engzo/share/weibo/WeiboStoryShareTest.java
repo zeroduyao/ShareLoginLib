@@ -7,6 +7,7 @@ import com.liulishuo.engzo.utils.With;
 
 import org.junit.Assert;
 import org.junit.FixMethodOrder;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
@@ -14,8 +15,9 @@ import org.junit.runners.MethodSorters;
  * @author Kale
  * @date 2018/9/15
  */
+@Ignore
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class WeiboStoryShareTest extends AbsShareTestCase{
+public class WeiboStoryShareTest extends AbsShareTestCase {
 
     @Override
     protected void clickButton() throws UiObjectNotFoundException {
@@ -40,4 +42,5 @@ public class WeiboStoryShareTest extends AbsShareTestCase{
     public void shareSuccess_by_clickSendButton() throws UiObjectNotFoundException {
 
     }
+    
 }

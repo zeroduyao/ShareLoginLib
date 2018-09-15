@@ -47,9 +47,14 @@ public class WxTimelineShareTest extends AbsShareTestCase {
 
     @Test
     @Override
-    public void shareSuccess_by_clickSendButton() {
+    public void shareSuccess_by_clickSendButton() throws UiObjectNotFoundException {
         device.findObject(By.clazz("android.widget.EditText").textContains("这一刻的想法"))
                 .setText("test by kale");
+
+        device.findObject(With.text("谁可以看")).clickAndWaitForNewWindow();
+        device.findObject(With.text("私密")).click();
+        device.findObject(With.text("完成")).clickAndWaitForNewWindow();
+
         device.findObject(By.text("发表")).click();
         assertShareIsSucceed();
     }

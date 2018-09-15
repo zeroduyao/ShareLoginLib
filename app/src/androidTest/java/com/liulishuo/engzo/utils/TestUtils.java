@@ -46,7 +46,7 @@ public class TestUtils {
 
     private static void startTargetApp(UiDevice uiDevice,boolean wait) {
         // 1. Start from the home screen
-        uiDevice.pressHome();
+//        uiDevice.pressHome();
 
         // 2. Wait for launcher
         final String launcherPackage = getLauncherPackageName();
