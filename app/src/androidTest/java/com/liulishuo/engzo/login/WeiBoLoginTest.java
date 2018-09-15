@@ -1,22 +1,15 @@
 package com.liulishuo.engzo.login;
 
-import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.LargeTest;
-import android.support.test.filters.SdkSuppress;
-import android.support.test.runner.AndroidJUnit4;
 import android.support.test.uiautomator.By;
-import android.support.test.uiautomator.UiDevice;
 import android.support.test.uiautomator.UiObject2;
+import android.support.test.uiautomator.UiObjectNotFoundException;
 
 import com.liulishuo.engzo.Constant;
-import com.liulishuo.engzo.utils.TestUtil;
 import com.liulishuo.engzo.utils.With;
 
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.runners.MethodSorters;
 
 import static android.support.test.uiautomator.Until.findObject;
 
@@ -24,56 +17,49 @@ import static android.support.test.uiautomator.Until.findObject;
  * @author Kale
  * @date 2016/10/5
  */
-@RunWith(AndroidJUnit4.class)
-@LargeTest
-@SdkSuppress(minSdkVersion = 18)
-public class WeiBoLoginTest {
+@FixMethodOrder(MethodSorters.NAME_ASCENDING) // 按照方法的先后进行执行，而非通过hash值
+public class WeiBoLoginTest extends AbsLoginTestCase {
 
-    private static UiDevice device;
-
-    @BeforeClass
-    public static void setup() {
-        device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-        TestUtil.maybeStartTestApp(device);
-    }
-
-    @AfterClass
-    public static void teardown() {
-        device = null;
-    }
-
-    @Before
-    public void clickBtn() throws Exception {
+    @Override
+    protected void clickButton() throws UiObjectNotFoundException {
         device.findObject(With.text("微博登录")).clickAndWaitForNewWindow();
     }
 
+    /**
+     * 新版微博几乎无法取消了，所以直接是登录成功
+     */
     @Test
-    public void testLoginSuccess() {
+    @Override
+    public void loginCanceled_by_clickCancelButton() {
+        UiObject2 object = device.findObject(By.text("取消"));
+        if (object == null) {
+            assertLoginIsSucceed();
+        } else {
+            assertLoginIsCanceled();
+        }
+    }
+
+    /**
+     * 新版微博几乎无法取消了，所以直接是登录成功
+     */
+    @Test
+    @Override
+    public void loginCanceled_by_pressBackButton() {
+        device.wait(findObject(By.text("微博登录")), Constant.MAX_TIMEOUT);
+        assertLoginIsSucceed();
+    }
+
+    /**
+     * 新版微博几乎无法取消了，所以直接是登录成功
+     */
+    @Test
+    @Override
+    public void loginSuccess_by_click() {
         UiObject2 login = device.findObject(By.res("com.sina.weibo", "bnLogin"));
         if (login != null) {
             login.click();
         }
-        TestUtil.assertLoginSucceed(device);
-    }
-
-    @Test
-    public void testLoginCancelByClient() {
-        UiObject2 cancel = device.wait(findObject(By.text("取消")), 1000);
-        if (cancel != null) {
-            cancel.click();
-            TestUtil.assertLoginCanceled(device);
-        } else {
-            // 新版微博登录没办法取消了
-            TestUtil.assertLoginSucceed(device);
-        }
-    }
-
-    @Test
-    public void testLoginCancelByPressBack() {
-        device.wait(findObject(By.text("微博登录")), Constant.MAX_TIMEOUT);
-//        device.pressBack();
-        TestUtil.assertLoginSucceed(device);
-//        TestUtil.assertLoginCanceled(device);
+        assertLoginIsSucceed();
     }
 
 }

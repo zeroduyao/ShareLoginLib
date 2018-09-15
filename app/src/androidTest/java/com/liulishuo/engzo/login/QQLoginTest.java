@@ -1,65 +1,47 @@
 package com.liulishuo.engzo.login;
 
-import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.LargeTest;
-import android.support.test.filters.SdkSuppress;
-import android.support.test.runner.AndroidJUnit4;
 import android.support.test.uiautomator.By;
-import android.support.test.uiautomator.UiDevice;
+import android.support.test.uiautomator.UiObjectNotFoundException;
 import android.widget.Button;
 
-import com.liulishuo.engzo.utils.TestUtil;
 import com.liulishuo.engzo.utils.With;
 
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.runners.MethodSorters;
 
 /**
  * @author Kale
  * @date 2016/10/5
  */
-@RunWith(AndroidJUnit4.class)
-@LargeTest
-@SdkSuppress(minSdkVersion = 18)
-public class QQLoginTest {
+@FixMethodOrder(MethodSorters.NAME_ASCENDING) // 按照方法的先后进行执行，而非通过hash值
+public class QQLoginTest extends AbsLoginTestCase {
 
-    private static UiDevice device;
-
-    @BeforeClass
-    public static void setup() {
-        device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-        TestUtil.maybeStartTestApp(device);
-    }
-
-    @AfterClass
-    public static void end() {
-        device = null;
-    }
-
-    @Before
-    public void clickBtn() throws Exception {
+    @Override
+    protected void clickButton() throws UiObjectNotFoundException {
         device.findObject(With.text("QQ登录")).clickAndWaitForNewWindow();
     }
 
     @Test
-    public void testLoginSuccess() {
-        device.findObject(By.text("授权并登录").clazz(Button.class)).click(1000);
-        TestUtil.assertLoginSucceed(device);
-    }
-
-    @Test
-    public void testLoginCancelByClient() {
-        device.findObject(By.res("com.tencent.mobileqq:id/ivTitleBtnLeft")).click();
-        TestUtil.assertLoginCanceled(device);
-    }
-
-    @Test
-    public void testLoginCancelByPressBack() {
+    @Override
+    public void loginCanceled_by_pressBackButton() {
         device.pressBack();
-        TestUtil.assertLoginCanceled(device);
+        assertLoginIsCanceled();
+    }
+
+    @Test
+    @Override
+    public void loginCanceled_by_clickCancelButton() {
+        // 点击返回按钮，下面是左上角返回按钮的id值
+        device.findObject(By.res("com.tencent.mobileqq:id/ivTitleBtnLeft")).click();
+        assertLoginIsCanceled();
+    }
+
+    @Test
+    @Override
+    public void loginSuccess_by_click() {
+        device.findObject(By.text("授权并登录").clazz(Button.class)).click(1000);
+        assertLoginIsSucceed();
     }
 
 }

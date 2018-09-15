@@ -1,68 +1,51 @@
 package com.liulishuo.engzo.login;
 
-import com.liulishuo.engzo.utils.TestUtil;
-import com.liulishuo.engzo.utils.With;
-
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.LargeTest;
-import android.support.test.filters.SdkSuppress;
-import android.support.test.runner.AndroidJUnit4;
 import android.support.test.uiautomator.By;
-import android.support.test.uiautomator.UiDevice;
+import android.support.test.uiautomator.UiObject2;
 import android.support.test.uiautomator.UiObjectNotFoundException;
 import android.widget.ImageView;
+
+import com.liulishuo.engzo.utils.With;
+
+import org.junit.FixMethodOrder;
+import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
 /**
  * @author Kale
  * @date 2016/10/5
  */
-@RunWith(AndroidJUnit4.class)
-@LargeTest
-@SdkSuppress(minSdkVersion = 18)
-public class WeiXinLoginTest {
+@FixMethodOrder(MethodSorters.NAME_ASCENDING) // 按照方法的先后进行执行，而非通过hash值
+public class WeiXinLoginTest extends AbsLoginTestCase {
 
-    private static UiDevice device;
-
-    @BeforeClass
-    public static void setup() {
-        device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-        TestUtil.maybeStartTestApp(device);
-    }
-
-    @AfterClass
-    public static void teardown() {
-        device = null;
-    }
-
-    @Before
-    public void clickBtn() throws UiObjectNotFoundException {
+    @Override
+    protected void clickButton() throws UiObjectNotFoundException {
         device.findObject(With.text("微信登录")).clickAndWaitForNewWindow();
     }
 
+    /**
+     * 微信无法取消了，直接成功
+     */
     @Test
-    public void testLoginSuccess() throws Exception {
+    @Override
+    public void loginCanceled_by_clickCancelButton() {
+        UiObject2 object = device.findObject(By.clazz(ImageView.class).desc("返回"));
+        if (object == null) {
+            assertLoginIsSucceed();
+        }
+    }
+
+    @Test
+    @Override
+    public void loginCanceled_by_pressBackButton() {
+        assertLoginIsSucceed();
+    }
+
+    @Test
+    @Override
+    public void loginSuccess_by_click() {
         device.waitForIdle();
-        device.click(427, 789); // WebView
-        device.click(560, 1179); // second click
-        TestUtil.assertLoginSucceed(device);
-    }
-
-    @Test
-    public void testLoginCancelByClient() {
-        device.findObject(By.clazz(ImageView.class).desc("返回")).click();
-        TestUtil.assertLoginCanceled(device);
-    }
-
-    @Test
-    public void testLoginCancelByPressBack() {
-        device.pressBack();
-        TestUtil.assertLoginCanceled(device);
+        assertLoginIsSucceed();
     }
 
 }

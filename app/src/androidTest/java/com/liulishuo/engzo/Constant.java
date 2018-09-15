@@ -9,8 +9,8 @@ import com.liulishuo.demo.BuildConfig;
 
 public class Constant {
 
-    public static final String APPLICATION_PACKAGE = BuildConfig.APPLICATION_ID;
+    public static final String APP_PACKAGE_NAME = BuildConfig.APPLICATION_ID;
 
-    public static final int MAX_TIMEOUT = 30 * 1000;
+    public static final int MAX_TIMEOUT = 5 * 1000;
     
 }

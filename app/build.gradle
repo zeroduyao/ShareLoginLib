@@ -32,7 +32,7 @@ android {
 
     buildTypes {
         debug {
-            minifyEnabled true // 開啓混淆
+            minifyEnabled false // 混淆开关
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release // 让debug包用release签名，用来测试
         }

@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
 
         loadPicFromTempFile();
 
-        SlUtils.checkLeak(this); // TODO: 2018/9/14 delete this
+//        SlUtils.checkLeak(this); // TODO: 2018/9/14 delete this
     }
 
     public void onClick(View v) {

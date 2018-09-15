@@ -1,5 +1,8 @@
 package com.liulishuo.engzo.utils;
 
+import java.util.Random;
+import java.util.function.Function;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -11,13 +14,14 @@ import android.support.test.uiautomator.SearchCondition;
 import android.support.test.uiautomator.UiDevice;
 import android.support.test.uiautomator.UiObject2;
 import android.support.test.uiautomator.Until;
+import android.util.Log;
 
 import com.liulishuo.demo.R;
+import com.liulishuo.engzo.Constant;
 
 import static android.support.test.uiautomator.Until.findObject;
-import static com.liulishuo.engzo.Constant.APPLICATION_PACKAGE;
+import static com.liulishuo.engzo.Constant.APP_PACKAGE_NAME;
 import static com.liulishuo.engzo.Constant.MAX_TIMEOUT;
-import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -26,45 +30,64 @@ import static org.junit.Assert.assertThat;
 /**
  * @author Kale
  * @date 2016/10/6
+ * 
+ * 辅助测试的类，主要处理基本的登录、分享断言
  */
 
-public class TestUtil {
+public class TestUtils {
 
     private static final int LAUNCH_TIMEOUT = 2000;
 
-    public static void maybeStartTestApp(UiDevice uiDevice) {
-        if (uiDevice.getCurrentPackageName().equals(APPLICATION_PACKAGE)) {
-            return;
+    public static void initEachTestEnvironment(UiDevice device) {
+        Context context = InstrumentationRegistry.getTargetContext();
+        String name = device.getCurrentActivityName();
+        if (name == null || (!name.equals(context.getString(R.string.app_name)))) {
+            startTargetApp(device,false);
         }
-        startTestApp(uiDevice);
     }
 
-    private static void startTestApp(UiDevice uiDevice) {
-        // Start from the home screen
+    public static void startTestApp(UiDevice uiDevice) {
+        if (uiDevice.getCurrentPackageName().equals(APP_PACKAGE_NAME)) {
+            return;
+        }
+        startTargetApp(uiDevice, false);
+    }
+    
+    public static void startTestAppAndWait(UiDevice uiDevice) {
+        if (uiDevice.getCurrentPackageName().equals(APP_PACKAGE_NAME)) {
+            return;
+        }
+        startTargetApp(uiDevice, true);
+    }
+
+    private static void startTargetApp(UiDevice uiDevice,boolean wait) {
+        // 1. Start from the home screen
         uiDevice.pressHome();
 
-        // Wait for launcher
+        // 2. Wait for launcher
         final String launcherPackage = getLauncherPackageName();
         uiDevice.wait(Until.hasObject(By.pkg(launcherPackage).depth(0)), LAUNCH_TIMEOUT);
 
-        // Launch the test app
+        // 3. Launch the test app
         Context context = InstrumentationRegistry.getContext();//获取上下文
-        final Intent intent = context.getPackageManager().getLaunchIntentForPackage(APPLICATION_PACKAGE);
+        final Intent intent = context.getPackageManager().getLaunchIntentForPackage(APP_PACKAGE_NAME);
         assertNotNull(intent);
 
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         context.startActivity(intent);
 
-        // Wait for the app to appear
-        //找到满足条件的包，取第一个
-        BySelector depth = By.pkg(APPLICATION_PACKAGE).depth(0);
-        uiDevice.wait(Until.hasObject(depth), LAUNCH_TIMEOUT);
+        // 4. Wait for the app to appear
+        BySelector depth = By.pkg(APP_PACKAGE_NAME).depth(0); //找到满足条件的包，取第一个
+        
+        if (wait) {
+            uiDevice.wait(Until.hasObject(depth), LAUNCH_TIMEOUT);
+        }
     }
 
     /**
      * Uses package manager to find the package name of the device launcher. Usually this package
      * is "com.android.launcher" but can be different at times. This is a generic solution which
-     * works on all platforms.`
+     * works on all platforms.
      */
     private static String getLauncherPackageName() {
         // Create launcher Intent
@@ -77,13 +100,18 @@ public class TestUtil {
         return resolveInfo.activityInfo.packageName;
     }
 
-    public static void initEachTestEnvironment(UiDevice device) {
-        Context context = InstrumentationRegistry.getTargetContext();
-        String name = device.getCurrentActivityName();
-        if (name == null ||
-                (!name.equals(context.getString(R.string.app_name))
-                        && !name.equals(context.getString(R.string.app_name2)))) {
-            TestUtil.startTestApp(device);
+
+    public static void randomExecuteFunction(UiDevice device, int methodCount, Function<Integer, Void> function) {
+        for (int i = 0; i < 10; i++) {
+            int randomNum = new Random().nextInt(methodCount);
+
+            Log.i("ddd", "==> 随机数为：" + randomNum);
+            System.out.println("==> 随机数为：" + randomNum);
+
+            function.apply(randomNum);
+
+            // wait
+            device.waitForWindowUpdate(Constant.APP_PACKAGE_NAME, 1500);
         }
     }
 
@@ -91,25 +119,13 @@ public class TestUtil {
     // assert
     ///////////////////////////////////////////////////////////////////////////
 
-    public static void assertLoginSucceed(UiDevice uiDevice) {
-        SearchCondition<UiObject2> infoTv = findObject(By.res(APPLICATION_PACKAGE, "user_info_tv"));
-        assertThat(uiDevice.wait(infoTv, MAX_TIMEOUT).getText(), is(containsString("nickname")));
-        assertThat(uiDevice.findObject(By.res(APPLICATION_PACKAGE, "result")).getText(),
-                is(equalTo("登录成功")));
-    }
-
-    public static void assertLoginCanceled(UiDevice uiDevice) {
-        SearchCondition<UiObject2> infoTv = findObject(By.res(APPLICATION_PACKAGE, "result"));
-        assertThat(uiDevice.wait(infoTv, MAX_TIMEOUT).getText(), is(equalTo("取消登录")));
-    }
-
-    public static void assertShareSucceed(UiDevice uiDevice) {
-        SearchCondition<UiObject2> infoTv = findObject(By.res(APPLICATION_PACKAGE, "result"));
+    public static void assertShareIsSucceed(UiDevice uiDevice) {
+        SearchCondition<UiObject2> infoTv = findObject(By.res(APP_PACKAGE_NAME, "result"));
         assertThat(uiDevice.wait(infoTv, MAX_TIMEOUT).getText(), is(equalTo("分享成功")));
     }
 
-    public static void assertShareCanceled(UiDevice uiDevice) {
-        SearchCondition<UiObject2> infoTv = findObject(By.res(APPLICATION_PACKAGE, "result"));
+    public static void assertShareIsCanceled(UiDevice uiDevice) {
+        SearchCondition<UiObject2> infoTv = findObject(By.res(APP_PACKAGE_NAME, "result"));
         assertThat(uiDevice.wait(infoTv, MAX_TIMEOUT).getText(), is(equalTo("取消分享")));
     }
 
