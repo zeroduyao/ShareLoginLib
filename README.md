@@ -128,7 +128,9 @@ SsoUserInfoManager.getUserInfo(context, SsoLoginType.XXX, accessToken, userId,
 
 ## 自动化测试
 
-视频地址：http://t.cn/EvcxDMx
+视频地址：  
+http://t.cn/EvcxDMx  
+http://t.cn/EvfKPR9
 
 ## 重要说明
 
