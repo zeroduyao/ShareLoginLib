@@ -4,7 +4,6 @@ import android.support.test.uiautomator.By;
 import android.support.test.uiautomator.UiObjectNotFoundException;
 
 import com.liulishuo.engzo.share.AbsShareTestCase;
-import com.liulishuo.engzo.utils.TestUtils;
 import com.liulishuo.engzo.utils.With;
 
 import org.junit.FixMethodOrder;
@@ -42,7 +41,7 @@ public class QZoneShareTest extends AbsShareTestCase {
     @Override
     public void shareSuccess_by_clickSendButton() throws UiObjectNotFoundException {
         device.findObject(With.text("发表")).click();
-        TestUtils.assertShareIsSucceed(device);
+        assertShareIsSucceed();
     }
 
 }

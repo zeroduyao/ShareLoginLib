@@ -6,6 +6,7 @@ import com.liulishuo.engzo.BaseTestCase;
 import com.liulishuo.engzo.utils.TestUtils;
 import com.liulishuo.engzo.utils.With;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -25,12 +26,14 @@ public class RandomQQShareTest extends BaseTestCase {
         // ignore
     }
 
+    @Ignore
     @Test
     public void testShareToFriend() {
         friendTest.setDevice(device);
         TestUtils.randomExecuteFunction(device, 4, this::executeFriendCase);
     }
 
+    @Ignore
     @Test
     public void testShareToQZone() {
         zoneShareTest.setDevice(device);

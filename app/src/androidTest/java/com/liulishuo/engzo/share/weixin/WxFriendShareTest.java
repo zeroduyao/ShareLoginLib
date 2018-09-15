@@ -10,7 +10,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.liulishuo.engzo.share.AbsShareTestCase;
-import com.liulishuo.engzo.utils.TestUtils;
 import com.liulishuo.engzo.utils.With;
 
 import org.junit.FixMethodOrder;
@@ -65,7 +64,7 @@ public class WxFriendShareTest extends AbsShareTestCase {
         device.findObject(With.text("分享")).click();
 
         device.findObject(By.clazz(Button.class).textContains("返回")).click();
-        TestUtils.assertShareIsSucceed(device);
+        assertShareIsSucceed();
     }
 
     /**
@@ -83,6 +82,24 @@ public class WxFriendShareTest extends AbsShareTestCase {
         device.findObject(With.clazz(Button.class).text("留在微信")).clickAndWaitForNewWindow();
 
         device.pressBack(); // 返回应用
+    }
+
+    public static class SingleTxtShareTest extends WxFriendShareTest {
+
+        @Override
+        protected void clickButton() throws UiObjectNotFoundException {
+            device.findObject(With.text("仅文字")).click(); // 测试分享单个文案
+            super.clickButton();
+        }
+    }
+
+    public static class SinglePicShareTest extends WxFriendShareTest {
+
+        @Override
+        protected void clickButton() throws UiObjectNotFoundException {
+            device.findObject(With.text("仅图片")).click(); // 测试分享单个图片
+            super.clickButton();
+        }
     }
 
 }

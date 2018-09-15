@@ -10,22 +10,14 @@ import android.content.pm.ResolveInfo;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.uiautomator.By;
 import android.support.test.uiautomator.BySelector;
-import android.support.test.uiautomator.SearchCondition;
 import android.support.test.uiautomator.UiDevice;
-import android.support.test.uiautomator.UiObject2;
 import android.support.test.uiautomator.Until;
 import android.util.Log;
 
-import com.liulishuo.demo.R;
 import com.liulishuo.engzo.Constant;
 
-import static android.support.test.uiautomator.Until.findObject;
 import static com.liulishuo.engzo.Constant.APP_PACKAGE_NAME;
-import static com.liulishuo.engzo.Constant.MAX_TIMEOUT;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 
 /**
  * @author Kale
@@ -37,14 +29,6 @@ import static org.junit.Assert.assertThat;
 public class TestUtils {
 
     private static final int LAUNCH_TIMEOUT = 2000;
-
-    public static void initEachTestEnvironment(UiDevice device) {
-        Context context = InstrumentationRegistry.getTargetContext();
-        String name = device.getCurrentActivityName();
-        if (name == null || (!name.equals(context.getString(R.string.app_name)))) {
-            startTargetApp(device,false);
-        }
-    }
 
     public static void startTestApp(UiDevice uiDevice) {
         if (uiDevice.getCurrentPackageName().equals(APP_PACKAGE_NAME)) {
@@ -100,7 +84,6 @@ public class TestUtils {
         return resolveInfo.activityInfo.packageName;
     }
 
-
     public static void randomExecuteFunction(UiDevice device, int methodCount, Function<Integer, Void> function) {
         for (int i = 0; i < 10; i++) {
             int randomNum = new Random().nextInt(methodCount);
@@ -113,20 +96,6 @@ public class TestUtils {
             // wait
             device.waitForWindowUpdate(Constant.APP_PACKAGE_NAME, 1500);
         }
-    }
-
-    ///////////////////////////////////////////////////////////////////////////
-    // assert
-    ///////////////////////////////////////////////////////////////////////////
-
-    public static void assertShareIsSucceed(UiDevice uiDevice) {
-        SearchCondition<UiObject2> infoTv = findObject(By.res(APP_PACKAGE_NAME, "result"));
-        assertThat(uiDevice.wait(infoTv, MAX_TIMEOUT).getText(), is(equalTo("分享成功")));
-    }
-
-    public static void assertShareIsCanceled(UiDevice uiDevice) {
-        SearchCondition<UiObject2> infoTv = findObject(By.res(APP_PACKAGE_NAME, "result"));
-        assertThat(uiDevice.wait(infoTv, MAX_TIMEOUT).getText(), is(equalTo("取消分享")));
     }
 
 }
