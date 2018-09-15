@@ -126,6 +126,10 @@ SsoUserInfoManager.getUserInfo(context, SsoLoginType.XXX, accessToken, userId,
 
 更多详细的操作请参考项目的demo。
 
+## 自动化测试
+
+视频地址：http://t.cn/EvcxDMx
+
 ## 重要说明
 
 - 需要强制获取外部存储卡的权限，否则会拿不到分享的图片
