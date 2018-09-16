@@ -36,6 +36,11 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release // 让debug包用release签名，用来测试
         }
+        release {
+            minifyEnabled true // 混淆开关
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8

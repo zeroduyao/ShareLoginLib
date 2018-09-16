@@ -50,8 +50,36 @@ public class ShareLoginLib {
 
         if (DEBUG) {
             LogUtil.enableLog();
+            com.tencent.mm.opensdk.utils.Log.setLogImpl(null); // 如果为null则会输出log
         } else {
             LogUtil.disableLog();
+            com.tencent.mm.opensdk.utils.Log.setLogImpl(new com.tencent.mm.opensdk.utils.ILog() {
+
+                @Override
+                public void v(String s, String s1) {
+                    // do nothing
+                }
+
+                @Override
+                public void d(String s, String s1) {
+                    // do nothing
+                }
+
+                @Override
+                public void i(String s, String s1) {
+                    // do nothing
+                }
+
+                @Override
+                public void w(String s, String s1) {
+                    // do nothing
+                }
+
+                @Override
+                public void e(String s, String s1) {
+                    // do nothing
+                }
+            });
         }
     }
 

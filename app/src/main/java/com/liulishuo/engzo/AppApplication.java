@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import android.app.Application;
 
+import com.liulishuo.demo.BuildConfig;
 import com.liulishuo.demo.R;
 import kale.sharelogin.ShareLoginLib;
 import kale.sharelogin.qq.QQPlatform;
@@ -30,7 +31,7 @@ public class AppApplication extends Application {
         initConstant();
 
         // 初始该库的基础常量
-        ShareLoginLib.init(this, getString(R.string.app_name), null, true);
+        ShareLoginLib.init(this, getString(R.string.app_name), null, BuildConfig.DEBUG);
 
         // 初始化第三方平台的信息
         ShareLoginLib.initPlatforms(
