@@ -9,18 +9,18 @@ import android.support.annotation.CallSuper;
 public interface IBaseListener {
 
     @CallSuper
-    default void onError(String errorMsg){
+    default void onError(String errorMsg) {
         SlUtils.printErr("login or share error:" + errorMsg);
         onComplete();
     }
 
     @CallSuper
     default void onCancel() {
-        SlUtils.printLog("login or share cancel:");
+        SlUtils.printLog("login or share canceled");
         onComplete();
     }
 
     default void onComplete() {
-        
+
     }
 }

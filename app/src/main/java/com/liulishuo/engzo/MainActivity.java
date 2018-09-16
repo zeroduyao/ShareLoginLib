@@ -15,12 +15,10 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.RadioGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.liulishuo.demo.R;
 import com.squareup.picasso.Picasso;
 
-import kale.sharelogin.ShareListener;
 import kale.sharelogin.ShareLoginLib;
 import kale.sharelogin.content.ShareContent;
 import kale.sharelogin.content.ShareContentPic;
@@ -38,7 +36,7 @@ import kale.sharelogin.weixin.WeiXinPlatform;
  */
 public class MainActivity extends AppCompatActivity {
 
-    private static final String TAG = "MainActivity";
+    private static final String TAG = "[ MainActivity ] ";
 
     public static final String URL = "https://www.zhihu.com/question/22913650";
 
@@ -83,16 +81,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        SlUtils.printLog("MainActivity onResume()");
+        SlUtils.printLog(TAG + "onResume() :" + this);
 
         loadPicFromTempFile();
 
-//        SlUtils.checkLeak(this); // TODO: 2018/9/14 delete this
+//        ShareLoginLib.checkLeak(this); // TODO: 2018/9/14 delete this
     }
 
     public void onClick(View v) {
-        ShareListener shareListener = new MyShareListener(this);
-
         int i = v.getId();
         switch (i) {
             case R.id.QQ登录:
@@ -105,16 +101,16 @@ public class MainActivity extends AppCompatActivity {
                 ShareLoginLib.doLogin(this, WeiXinPlatform.LOGIN, new MyLoginListener(this));
                 break;
             case R.id.分享给QQ好友:
-                ShareLoginLib.doShare(this, QQPlatform.FRIEND, mShareContent, shareListener);
+                ShareLoginLib.doShare(this, QQPlatform.FRIEND, mShareContent, new MyShareListener(this));
                 break;
             case R.id.分享到QQ空间:
-                ShareLoginLib.doShare(this, QQPlatform.ZONE, mShareContent, shareListener);
+                ShareLoginLib.doShare(this, QQPlatform.ZONE, mShareContent, new MyShareListener(this));
                 break;
             case R.id.分享到微博:
-                ShareLoginLib.doShare(this, WeiBoPlatform.TIMELINE, mShareContent, shareListener);
+                ShareLoginLib.doShare(this, WeiBoPlatform.TIMELINE, mShareContent, new MyShareListener(this));
                 break;
             case R.id.分享到微博故事:
-                ShareLoginLib.doShare(this, WeiBoPlatform.STORY, mShareContent, shareListener);
+                ShareLoginLib.doShare(this, WeiBoPlatform.STORY, mShareContent, new MyShareListener(this));
                 break;
             case R.id.发送图文微博:
                 if (mShareContent instanceof ShareContentWebPage) {
@@ -125,19 +121,19 @@ public class MainActivity extends AppCompatActivity {
                             null, // url
                             BitmapFactory.decodeByteArray(mShareContent.getThumbBmpBytes(), 0, mShareContent.getThumbBmpBytes().length));
 
-                    ShareLoginLib.doShare(this, WeiBoPlatform.TIMELINE, webPage, shareListener);
+                    ShareLoginLib.doShare(this, WeiBoPlatform.TIMELINE, webPage, new MyShareListener(this));
                 } else {
-                    ShareLoginLib.doShare(this, WeiBoPlatform.TIMELINE, mShareContent, shareListener);
+                    ShareLoginLib.doShare(this, WeiBoPlatform.TIMELINE, mShareContent, new MyShareListener(this));
                 }
                 break;
             case R.id.分享给微信好友:
-                ShareLoginLib.doShare(this, WeiXinPlatform.FRIEND, mShareContent, shareListener);
+                ShareLoginLib.doShare(this, WeiXinPlatform.FRIEND, mShareContent, new MyShareListener(this));
                 break;
             case R.id.分享到微信朋友圈:
-                ShareLoginLib.doShare(this, WeiXinPlatform.TIMELINE, mShareContent, shareListener);
+                ShareLoginLib.doShare(this, WeiXinPlatform.TIMELINE, mShareContent, new MyShareListener(this));
                 break;
             case R.id.分享到微信收藏:
-                ShareLoginLib.doShare(this, WeiXinPlatform.FAVORITE, mShareContent, shareListener);
+                ShareLoginLib.doShare(this, WeiXinPlatform.FAVORITE, mShareContent, new MyShareListener(this));
                 break;
         }
         userInfoTv.setText("");
@@ -146,15 +142,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onGotUserInfo(@Nullable String text, @Nullable String imageUrl) {
+        SlUtils.printLog(TAG + "gotUserInfo() :" + this);
         userInfoTv.setText(text);
         Picasso.with(this).load(imageUrl).into(userPicIv);
     }
 
     public void handResult(String result) {
-        resultTv.postDelayed(() -> {
-            resultTv.setText(result);
-            Toast.makeText(MainActivity.this, result, Toast.LENGTH_SHORT).show();
-        }, 100);
+        SlUtils.printLog(TAG + "handResult() :" + this);
+        resultTv.postDelayed(() -> resultTv.setText(result), 100);
     }
 
     private void loadPicFromTempFile() {
@@ -171,4 +166,17 @@ public class MainActivity extends AppCompatActivity {
             Log.e(TAG, "loadPicFromTempFile: FileNotFoundException" + e.getMessage());
         }
     }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        SlUtils.printLog(TAG + "onStop() :" + this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        SlUtils.printLog(TAG + "onDestroy() :" + this);
+    }
+
 }

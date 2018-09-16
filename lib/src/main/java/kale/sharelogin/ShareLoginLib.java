@@ -1,5 +1,6 @@
 package kale.sharelogin;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -8,10 +9,13 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
 import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 import android.text.TextUtils;
+import android.widget.Toast;
 
 import com.sina.weibo.sdk.utils.LogUtil;
 
@@ -32,9 +36,9 @@ public class ShareLoginLib {
 
     private static List<Class<? extends IPlatform>> supportPlatforms;
 
-    private static IPlatform curPlatform;
-
     private static EventHandlerActivity.OnCreateListener onCreateListener;
+
+    private static WeakReference<IPlatform> wrPlatform;
 
     public static void init(Application application, @Nullable String curAppName, @Nullable String tempPicDir, boolean debug) {
         APP_NAME = curAppName;
@@ -87,6 +91,9 @@ public class ShareLoginLib {
         }
 
         // 2. 根据type匹配出一个目标平台
+
+        @Nullable IPlatform curPlatform = null;
+
         for (IPlatform platform : platforms) {
             for (String s : platform.getSupportedTypes()) {
                 if (s.equals(type)) {
@@ -108,7 +115,7 @@ public class ShareLoginLib {
         // 4. 检测当前运行环境，看是否正常
         try {
             if (curPlatform == null) {
-                throw new UnsupportedOperationException("未找到支持该操作的平台");
+                throw new UnsupportedOperationException("未找到支持该操作的平台，当前的操作类型为：" + type);
             } else {
                 curPlatform.checkEnvironment(activity, type, content != null ? content.getType() : ShareContent.NO_CONTENT);
             }
@@ -125,36 +132,36 @@ public class ShareLoginLib {
 
         final LoginListener finalLoginListener = loginListener;
         final ShareListener finalShareListener = shareListener;
+        final IPlatform finalCurPlatform = curPlatform;
 
         ShareLoginLib.onCreateListener = eventActivity -> {
-            if (DEBUG) {
-                // 仅debug模式才只持有activity的引用，用来检测activity是否已经关闭
-                SlUtils.sEventHandlerActivity = eventActivity;
-            }
-
             if (isLoginAction) {
-                curPlatform.doLogin(eventActivity, finalLoginListener);
+                finalCurPlatform.doLogin(eventActivity, finalLoginListener);
             } else {
                 assert content != null;
-                curPlatform.doShare(eventActivity, type, content, finalShareListener);
+                finalCurPlatform.doShare(eventActivity, type, content, finalShareListener);
             }
         };
         activity.startActivity(new Intent(activity, EventHandlerActivity.class));
         activity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+
+        wrPlatform = new WeakReference<>(curPlatform);
     }
 
     static void onActivityCreate(EventHandlerActivity activity) {
         onCreateListener.onCreate(activity);
     }
 
-    static IPlatform getCurPlatform() {
-        return curPlatform;
+    static @Nullable
+    IPlatform getCurPlatform() {
+        return wrPlatform.get();
     }
 
     static void destroy() {
-        curPlatform = null;
+        // 如果不clear，那么在不保留活动的时候则会收到回调
+        // 但此时的回调已经没有意义，收到回调的activity已经被销毁，所以一般这里需要清理引用
+        wrPlatform.clear();
         onCreateListener = null;
-        SlUtils.sEventHandlerActivity = null;
     }
 
     /**
@@ -174,6 +181,21 @@ public class ShareLoginLib {
 
     public static String getValue(String key) {
         return sValueMap.get(key);
+    }
+
+    /**
+     * 用来检测是否出现了内存泄漏
+     */
+    @VisibleForTesting
+    public static void checkLeak(Activity activity) {
+        new Handler().postDelayed(() -> {
+            if (onCreateListener != null) {
+                throw new RuntimeException("内存泄漏了");
+            } else {
+                SlUtils.printLog("没有内存泄漏，EventHandlerActivity已经destroy");
+                Toast.makeText(activity, "--- DONE ---", Toast.LENGTH_SHORT).show();
+            }
+        }, 1000);
     }
 
 }

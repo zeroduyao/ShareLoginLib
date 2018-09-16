@@ -5,18 +5,14 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import android.app.Activity;
 import android.app.Application;
 import android.graphics.Bitmap;
 import android.media.ThumbnailUtils;
 import android.os.Environment;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.annotation.RestrictTo;
 import android.util.Log;
-import android.widget.Toast;
 
-import kale.sharelogin.EventHandlerActivity;
 import kale.sharelogin.IPlatform;
 import kale.sharelogin.ShareLoginLib;
 import kale.sharelogin.content.ShareContent;
@@ -38,7 +34,7 @@ public class SlUtils {
 
     public static void printErr(String message) {
         if (ShareLoginLib.DEBUG) {
-            Log.e(TAG, message);
+            Log.e(TAG, "======>" + message);
         }
     }
 
@@ -152,22 +148,6 @@ public class SlUtils {
         }
     }
 
-    /**
-     * 用来检测是否出现了内存泄漏
-     */
-    public static EventHandlerActivity sEventHandlerActivity;
-
-    public static void checkLeak(Activity activity) {
-        new Handler().postDelayed(() -> {
-            if (sEventHandlerActivity != null) {
-                throw new RuntimeException("内存泄漏了");
-            } else {
-                printLog("没有泄漏，EventHandlerActivity已经正常关闭");
-                Toast.makeText(activity, "--- DONE ---", Toast.LENGTH_SHORT).show();
-            }
-        }, 1000);
-    }
-
     public static IPlatform createPlatform(Class<? extends IPlatform> platformClz) {
         try {
             return platformClz.newInstance();
@@ -180,6 +160,7 @@ public class SlUtils {
         throw new RuntimeException("platform create error");
     }
 
+    @RestrictTo(RestrictTo.Scope.LIBRARY)
     public interface Function<T> {
 
         T apply(ShareContent content);

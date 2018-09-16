@@ -22,9 +22,12 @@ public class EventHandlerActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // 内存不足杀死后重建时的onCreate()
+        // 为了防止这个activity关不掉，这里给用户一个点击关闭的功能
+        findViewById(android.R.id.content).setOnClickListener(v -> finish());
+
         if (savedInstanceState != null) {
-            SlUtils.printLog("EventHandlerActivity:onCreate(2) intent:" + getIntent());
+            SlUtils.printLog("EventHandlerActivity:onCreate(2) intent:" + getIntent().getExtras());
+            
             handleResp(getIntent());
         } else {
             ShareLoginLib.onActivityCreate(this);
@@ -34,8 +37,7 @@ public class EventHandlerActivity extends Activity {
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-
-        SlUtils.printLog("EventHandlerActivity:onNewIntent() intent:" + intent);
+        SlUtils.printLog("EventHandlerActivity:onNewIntent() intent:" + intent.getExtras());
 
         handleResp(intent);
     }
@@ -49,7 +51,7 @@ public class EventHandlerActivity extends Activity {
             intent.putExtra(KEY_RESULT_CODE, resultCode);
             SlUtils.printLog("EventHandlerActivity:onActivityResult() intent:" + intent.getExtras());
         } else {
-            SlUtils.printLog("EventHandlerActivity:onActivityResult() intent is null");
+            SlUtils.printErr("EventHandlerActivity:onActivityResult() intent is null");
         }
 
         handleResp(intent);
@@ -57,11 +59,17 @@ public class EventHandlerActivity extends Activity {
         finish();
     }
 
+    private void handleResp(Intent data) {
+        if (ShareLoginLib.getCurPlatform() != null) {
+            ShareLoginLib.getCurPlatform().onResponse(this, data);
+        } else {
+            SlUtils.printErr("ShareLoginLib.curPlatform is null");
+        }
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
-        // 为了防止这个activity关不掉，这里给用户一个点击关闭的功能
-        findViewById(android.R.id.content).setOnClickListener(v -> finish());
         SlUtils.printLog("EventHandlerActivity:onResume()");
     }
 
@@ -82,14 +90,6 @@ public class EventHandlerActivity extends Activity {
         SlUtils.printLog("EventHandlerActivity:onDestroy()");
         ShareLoginLib.destroy();
         super.onDestroy();
-    }
-
-    private void handleResp(Intent data) {
-        if (ShareLoginLib.getCurPlatform() != null) {
-            ShareLoginLib.getCurPlatform().onResponse(this, data);
-        } else {
-            SlUtils.printLog("ShareLoginLib.curPlatform is null");
-        }
     }
 
     public interface OnCreateListener {
