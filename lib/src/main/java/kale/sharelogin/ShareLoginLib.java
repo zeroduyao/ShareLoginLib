@@ -50,7 +50,7 @@ public class ShareLoginLib {
 
         if (DEBUG) {
             LogUtil.enableLog();
-            com.tencent.mm.opensdk.utils.Log.setLogImpl(null); // 如果为null则会输出log
+            com.tencent.mm.opensdk.utils.Log.setLogImpl(null); // 如果为null则会用默认的log输出
         } else {
             LogUtil.disableLog();
             com.tencent.mm.opensdk.utils.Log.setLogImpl(new com.tencent.mm.opensdk.utils.ILog() {
