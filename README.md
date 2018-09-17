@@ -18,6 +18,7 @@ repositories {
   maven {
     url "https://jitpack.io"
   }
+  maven { url "https://dl.bintray.com/thelasterstar/maven/" }
 }
 ```
 
@@ -25,13 +26,22 @@ repositories {
 
 **如果你用的是1.+的版本，即1.3.9之前**
 
->	implementation'com.github.tianzhijiexian:ShareLoginLib:【你目前的版本】
+>	implementation 'com.github.tianzhijiexian:ShareLoginLib:【你目前的版本】
 
 > implementation 'com.github.tianzhijiexian:ShareLoginLib:adapter-SNAPSHOT'
 
 **如果你用的是2.+的版本**
 
-> implementation'com.github.tianzhijiexian:ShareLoginLib:[Latest release](https://github.com/tianzhijiexian/ShareLoginLib/releases/latest) (<- click it)
+> implementation 'com.github.tianzhijiexian:ShareLoginLib:[Latest release](https://github.com/tianzhijiexian/ShareLoginLib/releases/latest) (<- click it)
+
+3.支持java8语法
+
+```
+compileOptions {
+  sourceCompatibility JavaVersion.VERSION_1_8
+  targetCompatibility JavaVersion.VERSION_1_8 
+}
+```
 
 ## 配置（库版本1.+）
 
@@ -198,11 +208,15 @@ QQ空间|  ✓  |  ✓  |   ✓
 
 ### 自动化测试
 
-代码地址：
+测试代码：
+
 https://github.com/tianzhijiexian/ShareLoginLib/tree/master/app/src/androidTest/java/com/liulishuo/engzo
 
-视频地址：
-http://t.cn/EvcxDMx
+执行结果：
+
+![](./screenshot/login_test_report.jpg)
+
+http://t.cn/EvcxDMx   
 http://t.cn/EvfKPR9
 
 ## 运行本库提供的Demo
