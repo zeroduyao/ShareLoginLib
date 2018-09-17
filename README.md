@@ -195,6 +195,15 @@ QQ空间|  ✓  |  ✓  |   ✓
 微信朋友圈|  ✓  |  ✓  |   ✓（取消也会是成功的回调）
 微信收藏|   ✓  |   ✓  |   ✓（取消也会是成功的回调）
 
+### 自动化测试
+
+代码地址：
+https://github.com/tianzhijiexian/ShareLoginLib/tree/master/app/src/androidTest/java/com/liulishuo/engzo
+
+视频地址：
+http://t.cn/EvcxDMx
+http://t.cn/EvfKPR9
+
 ## 运行本库提供的Demo
 
 如果你要运行本项目给出的demo，那么可以修改本地的`gradle.properties`文件，将下列信息修改成你自己的值。   
