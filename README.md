@@ -26,9 +26,10 @@ repositories {
 
 **如果你用的是1.+的版本，即1.3.9之前**
 
->	implementation 'com.github.tianzhijiexian:ShareLoginLib:【你目前的版本】
-
-> implementation 'com.github.tianzhijiexian:ShareLoginLib:adapter-SNAPSHOT'
+```
+implementation 'com.github.tianzhijiexian:ShareLoginLib:【你目前的版本】
+implementation 'com.github.tianzhijiexian:ShareLoginLib:adapter-SNAPSHOT'
+```
 
 **如果你用的是2.+的版本**
 
