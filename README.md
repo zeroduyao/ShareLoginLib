@@ -85,7 +85,7 @@ protected void initConstant() {
 }
 ```
 
-## 使用
+## 使用（库版本1.+）
 
 ### 判断是否已安装第三方客户端  
 
