@@ -16,7 +16,7 @@ import kale.sharelogin.content.ShareContentType;
 public interface IPlatform {
 
     /**
-     * @return 该平台支持的方式
+     * @return 该平台支持的操作类型
      */
     String[] getSupportedTypes();
 
