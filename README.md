@@ -30,7 +30,9 @@ repositories {
 
 > implementation 'com.github.tianzhijiexian:ShareLoginLib:adapter-SNAPSHOT'
 
-**如果你用的是2.+的版本**
+[1.0版本的文档](https://github.com/tianzhijiexian/ShareLoginLib/blob/master/README-VERSION1.%2B.MD)
+
+**如果你用的是2.+的版本（强烈推荐）**
 
 > implementation 'com.github.tianzhijiexian:ShareLoginLib:[Latest release](https://github.com/tianzhijiexian/ShareLoginLib/releases/latest) (<- click it)
 
@@ -43,7 +45,7 @@ compileOptions {
 }
 ```
 
-## 配置（库版本1.+）
+## 配置（库版本2.+）
 
 ### 1. 在build.gradle中配置QQ的key  
 
@@ -86,7 +88,7 @@ ShareLoginLib.initPlatforms(
 );
 ```
 
-*平台的key和value用Map作为数据结构，支持的平台用list作为数据结构*
+平台的key和value用Map作为数据结构，支持的平台用list作为数据结构
 
 ****这里常量的具体值请和第三方平台进行申请，不要随意填写：**
 
@@ -173,7 +175,7 @@ ShareLoginLib.doShare(this, QQPlatform.FRIEND, shareContent, new ShareListener()
 
 如果你需要增加平台，那么可以实现`IPlatform`接口：
 
-```
+```java
 public interface IPlatform {
 
     /**
@@ -287,6 +289,9 @@ https://git.io/fAdsT
 执行结果：
 
 ![](./screenshot/login_test_report.jpg)
+![](./screenshot/share_test_report.jpg)
+
+测试过程：
 
 http://t.cn/EvcxDMx   
 http://t.cn/EvfKPR9
