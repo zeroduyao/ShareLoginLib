@@ -245,9 +245,9 @@ TENCENT_AUTHID   tencent123456
 
 你可以运行debug或release模式，可以测试开启混淆前和混淆后的情况。千万不要使用demo中的任何和签名、密码、AppId等有关信息。
 
----
-
 ## 测试
+
+![](./screenshot/test-types.png)
 
 ### 测试环境
 
