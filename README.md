@@ -30,7 +30,7 @@ repositories {
 
 > implementation 'com.github.tianzhijiexian:ShareLoginLib:adapter-SNAPSHOT'
 
-[1.0版本的文档](https://github.com/tianzhijiexian/ShareLoginLib/blob/master/README-VERSION1.%2B.MD)
+如果你用的是1.+的版本，请参考[1.+版本的文档](https://github.com/tianzhijiexian/ShareLoginLib/blob/master/README-VERSION1.%2B.MD)
 
 **如果你用的是2.+的版本（强烈推荐）**
 
@@ -90,7 +90,7 @@ ShareLoginLib.initPlatforms(
 
 平台的key和value用Map作为数据结构，支持的平台用list作为数据结构
 
-****这里常量的具体值请和第三方平台进行申请，不要随意填写：**
+**这里常量的具体值请和第三方平台进行申请，不要随意填写：**
 
 ```java
 /**
